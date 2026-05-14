@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>イオンスポーツクラブ MEOダッシュボード 2026年4月</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --navy: #1B2B4B;
+    --navy2: #0F1E38;
+    --teal: #00A896;
+    --teal2: #007A6E;
+    --light: #F4F7FB;
+    --white: #FFFFFF;
+    --gray: #64748B;
+    --gray2: #94A3B8;
+    --darkGray: #334155;
+    --border: #E2E8F0;
+    --green: #10B981;
+    --red: #EF4444;
+    --orange: #F59E0B;
+    --other-co: #F59E0B;
+    --other-co-bg: #FEF3C7;
+    --untrans: #94A3B8;
+    --untrans-bg: #F1F5F9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'メイリオ', Meiryo, sans-serif; background: var(--light); color: var(--navy); font-size: 13px; }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: var(--navy2);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    border-bottom: 2px solid var(--teal);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-gendai {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .logo-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #1565C0; flex-shrink: 0;
+  }
+  .logo-gendai span {
+    font-size: 13px; color: #fff; font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .logo-x {
+    color: var(--navy2); font-weight: 900; font-size: 14px;
+    background: #fff; padding: 2px 5px; border-radius: 3px;
+  }
+  .logo-h2 {
+    font-size: 14px; font-weight: 900; color: #FF6B00;
+    letter-spacing: 0.5px;
+  }
+  .header-right {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .report-period {
+    font-size: 11px; color: var(--gray2);
+  }
+
+  /* ─── TAB SWITCH ─── */
+  .tab-bar {
+    background: var(--navy2);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 2px solid rgba(255,255,255,0.08);
+    position: sticky;
+    top: 56px;
+    z-index: 99;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  }
+  .tab-bar-label {
+    font-size: 10px; color: #64748B; letter-spacing: 1px;
+    text-transform: uppercase; font-weight: 600;
+    margin-right: 4px; white-space: nowrap;
+  }
+  .tab-btn {
+    padding: 9px 22px;
+    border: 2px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: #94A3B8;
+    font-family: inherit; font-size: 13px;
+    font-weight: 700; cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 8px;
+    white-space: nowrap;
+  }
+  .tab-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .tab-btn.active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0,168,150,0.4);
+  }
+  .tab-btn .tab-count {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    font-size: 10px; font-weight: 800;
+    padding: 1px 7px;
+    line-height: 1.4;
+  }
+  .tab-btn.active .tab-count {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+  }
+  .tab-sep { display: none; }
+
+  /* ─── MAIN LAYOUT ─── */
+  .main { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+  .section-title {
+    font-size: 12px; font-weight: 700; color: var(--gray); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before {
+    content: ''; display: block;
+    width: 3px; height: 14px; background: var(--teal); border-radius: 2px;
+  }
+
+  /* ─── KPI CARDS ─── */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+    margin-bottom: 20px;
+  }
+  .kpi-card {
+    background: var(--white); border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 16px 16px 14px;
+    position: relative; overflow: hidden;
+  }
+  .kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--teal);
+  }
+  .kpi-card.goal::before { background: linear-gradient(90deg, var(--teal), var(--green)); }
+  .kpi-label { font-size: 10px; color: var(--gray); font-weight: 600; margin-bottom: 6px; }
+  .kpi-val { font-size: 26px; font-weight: 700; color: var(--navy); line-height: 1; }
+  .kpi-val span { font-size: 12px; font-weight: 400; color: var(--gray); margin-left: 2px; }
+  .kpi-sub { font-size: 11px; margin-top: 6px; }
+  .kpi-up { color: var(--green); font-weight: 700; }
+  .kpi-down { color: var(--red); font-weight: 700; }
+  .kpi-neutral { color: var(--gray); }
+
+  /* ─── TARGET PROGRESS ─── */
+  .target-section { margin-bottom: 20px; }
+  .target-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .target-card {
+    background: var(--white); border-radius: 10px;
+    border: 1px solid var(--border); padding: 14px 18px;
+  }
+  .target-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .target-name { font-size: 12px; font-weight: 700; color: var(--navy); }
+  .target-status {
+    font-size: 10px; font-weight: 700; padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .status-achieved { background: #D1FAE5; color: #065F46; }
+  .status-progress { background: #FEF3C7; color: #92400E; }
+  .status-below { background: #FEE2E2; color: #991B1B; }
+  .progress-row {
+    display: grid; grid-template-columns: 90px 1fr 90px;
+    gap: 10px; align-items: center; margin-bottom: 6px;
+  }
+  .progress-label { font-size: 10px; color: var(--gray); text-align: right; }
+  .progress-bar-wrap { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .progress-bar { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+  .progress-bar.teal { background: var(--teal); }
+  .progress-bar.green { background: var(--green); }
+  .progress-bar.orange { background: var(--orange); }
+  .progress-val { font-size: 10px; font-weight: 700; color: var(--navy); }
+
+  /* ─── CHARTS ─── */
+  .charts-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; margin-bottom: 20px; }
+  .chart-card {
+    background: var(--white); border-radius: 10px;
+    border: 1px solid var(--border); padding: 16px;
+  }
+  .chart-title {
+    font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .chart-legend {
+    display: flex; gap: 12px; font-size: 10px; color: var(--gray);
+  }
+  .legend-dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px;
+  }
+  .chart-wrap { position: relative; }
+
+  /* ─── STORE TABLE ─── */
+  .table-card {
+    background: var(--white); border-radius: 10px;
+    border: 1px solid var(--border); margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .table-header {
+    padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    background: #F8FAFC; padding: 9px 12px; text-align: right;
+    font-size: 10px; font-weight: 700; color: var(--gray);
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  th:first-child { text-align: left; }
+  td {
+    padding: 8px 12px; text-align: right;
+    border-bottom: 1px solid #F1F5F9; white-space: nowrap;
+  }
+  td:first-child { text-align: left; font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFBFF; }
+  .badge {
+    display: inline-block; font-size: 9px; font-weight: 700;
+    padding: 1px 6px; border-radius: 8px; margin-left: 4px;
+    vertical-align: middle;
+  }
+  .badge-other { background: var(--other-co-bg); color: #92400E; }
+  .badge-untrans { background: var(--untrans-bg); color: var(--gray); }
+  .up { color: var(--green); font-weight: 700; }
+  .down { color: var(--red); font-weight: 700; }
+  .neutral { color: var(--gray); }
+  .row-other td { background: #FFFBEB; }
+  .row-untrans td { background: #F8FAFC; color: #94A3B8; }
+
+  /* ─── KEYWORD SECTION ─── */
+  .kw-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .kw-card { background: var(--white); border-radius: 10px; border: 1px solid var(--border); padding: 16px; }
+  .kw-title { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+  .kw-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0; border-bottom: 1px solid #F1F5F9;
+  }
+  .kw-item:last-child { border-bottom: none; }
+  .kw-name { font-size: 12px; color: var(--navy); font-weight: 500; }
+  .kw-right { text-align: right; }
+  .kw-count { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .kw-yoy { font-size: 10px; font-weight: 700; margin-top: 1px; }
+  .kw-bar-wrap { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 3px; min-width: 80px; }
+  .kw-bar { height: 100%; background: var(--teal); border-radius: 2px; }
+
+  /* ─── REVIEW SECTION ─── */
+  .review-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .review-card {
+    background: var(--white); border-radius: 10px; border: 1px solid var(--border);
+    padding: 14px; text-align: center;
+  }
+  .review-card .store-name { font-size: 11px; color: var(--gray); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .review-stars { font-size: 16px; margin-bottom: 4px; }
+  .review-score { font-size: 22px; font-weight: 700; color: var(--navy); }
+  .review-count { font-size: 10px; color: var(--gray); margin-top: 2px; }
+  .review-new { font-size: 11px; font-weight: 700; color: var(--teal); margin-top: 3px; }
+
+  /* ─── SECTION DIVIDER ─── */
+  .divider { height: 1px; background: var(--border); margin: 6px 0 18px; }
+
+  /* ─── OTHER CO BANNER ─── */
+  .other-co-note {
+    background: #FEF3C7; border: 1px solid #F59E0B; border-radius: 8px;
+    padding: 10px 14px; font-size: 11px; color: #78350F;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .untrans-note {
+    background: #F1F5F9; border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; font-size: 11px; color: var(--gray);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center; padding: 16px; font-size: 10px; color: var(--gray2);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ─── SECTION TOGGLE ─── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    .kw-grid { grid-template-columns: 1fr 1fr; }
+    .review-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-gendai">
+      <div class="logo-dot"></div>
+      <span>GENDAI AGENCY Inc.</span>
+    </div>
+    <div class="logo-x">✕</div>
+    <div class="logo-h2">H2 Technology</div>
+  </div>
+  <div class="header-right" style="display:flex;align-items:center;gap:12px">
+    <span class="report-period" id="header-period">MEO Dashboard ／ 集計期間：2024年5月〜2026年4月</span>
+    <button onclick="showCover()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#CBD5E1;font-size:11px;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:inherit">🏠 表紙</button>
+  </div>
+</div>
+
+<!-- MONTH SELECTOR -->
+<div id="month-bar" style="background:#0F1E38;border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 24px;display:flex;align-items:center;gap:8px">
+  <span style="font-size:10px;color:#64748B;letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-right:4px">対象月</span>
+  <div id="month-btns" style="display:flex;gap:6px"></div>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <span class="tab-bar-label">表示切替 ▶</span>
+  <button class="tab-btn active" onclick="switchView('tokka')" id="tab-tokka">
+    <span>🏋️</span> 特化型（3FIT）<span class="tab-count">32店舗</span>
+  </button>
+  <button class="tab-btn" onclick="switchView('sogo')" id="tab-sogo">
+    <span>🏊</span> 総合<span class="tab-count">15店舗</span>
+  </button>
+</div>
+
+<!-- COVER -->
+<div id="view-cover" style="display:none;min-height:calc(100vh - 120px);background:linear-gradient(135deg,#0F1E38 0%,#1B3A5C 50%,#0F1E38 100%);position:relative;overflow:hidden">
+  <!-- decorative circles -->
+  <div style="position:absolute;top:-80px;right:-80px;width:400px;height:400px;border-radius:50%;background:rgba(0,168,150,0.06);pointer-events:none"></div>
+  <div style="position:absolute;bottom:-100px;left:-60px;width:300px;height:300px;border-radius:50%;background:rgba(0,168,150,0.04);pointer-events:none"></div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;padding:40px 60px;max-width:720px;width:100%">
+    <!-- logo -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:40px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="width:14px;height:14px;border-radius:50%;background:#1565C0"></div>
+        <span style="font-size:14px;color:#fff;font-weight:700;letter-spacing:.5px">GENDAI AGENCY Inc.</span>
+      </div>
+      <div style="background:#fff;color:#0F1E38;font-weight:900;font-size:14px;padding:2px 6px;border-radius:3px">✕</div>
+      <div style="font-size:15px;font-weight:900;color:#FF6B00;letter-spacing:.5px">H2 Technology</div>
+    </div>
+    <!-- title -->
+    <div style="font-size:11px;color:#00A896;letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:14px">MEO Monthly Report</div>
+    <div style="font-size:36px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px">イオンスポーツクラブ</div>
+    <div style="font-size:22px;font-weight:400;color:#94A3B8;margin-bottom:40px">MEO月次レポート</div>
+    <!-- month badge -->
+    <div id="cover-month-badge" style="display:inline-block;background:linear-gradient(90deg,#00A896,#007A6E);border-radius:50px;padding:10px 36px;font-size:22px;font-weight:700;color:#fff;margin-bottom:40px;box-shadow:0 8px 24px rgba(0,168,150,0.3)">2026年4月度</div>
+    <div id="cover-period" style="font-size:12px;color:#64748B;margin-bottom:50px">集計期間：2024年5月〜2026年4月</div>
+    <!-- info grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:50px">
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px">
+        <div style="font-size:10px;color:#64748B;margin-bottom:4px">対象（特化型）</div>
+        <div style="font-size:20px;font-weight:700;color:#fff">32<span style="font-size:12px;color:#94A3B8"> 店舗</span></div>
+        <div style="font-size:10px;color:#00A896;margin-top:2px">3FIT 特化型</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px">
+        <div style="font-size:10px;color:#64748B;margin-bottom:4px">対象（総合）</div>
+        <div style="font-size:20px;font-weight:700;color:#fff">15<span style="font-size:12px;color:#94A3B8"> 店舗</span></div>
+        <div style="font-size:10px;color:#00A896;margin-top:2px">総合型</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:14px">
+        <div style="font-size:10px;color:#64748B;margin-bottom:4px">作成</div>
+        <div style="font-size:15px;font-weight:700;color:#fff">H2Technology</div>
+        <div style="font-size:10px;color:#94A3B8;margin-top:2px">MEO事業部</div>
+      </div>
+    </div>
+    <!-- CTA -->
+    <button onclick="closeCover()" style="background:var(--teal,#00A896);color:#fff;border:none;border-radius:50px;padding:14px 48px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 20px rgba(0,168,150,0.4);letter-spacing:.5px">
+      レポートを開く →
+    </button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ======================================================= -->
+<!-- VIEW: 特化型 -->
+<!-- ======================================================= -->
+<div id="view-tokka" class="view active">
+
+
+  <div class="untrans-note">
+    ℹ️ <strong>白山店</strong>は譲渡未完了のため対策未実施。数値は参考値として表示。
+  </div>
+
+  <!-- ① 対象月 全体結果 & 昨年比 -->
+  <div class="section-title">① 2026年4月 全体結果と昨年比</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+
+    <!-- 表示回数ブロック -->
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal)"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:14px;letter-spacing:.5px">📊 表示回数</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+        <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">今月（4月）</div>
+          <div style="font-size:28px;font-weight:700;color:var(--navy);line-height:1">38,870</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px">回</div>
+        </div>
+        <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">前年同月（2025/3）</div>
+          <div style="font-size:28px;font-weight:700;color:#94A3B8;line-height:1">42,213</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px">回</div>
+        </div>
+        <div style="text-align:center;padding:10px">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">前年比</div>
+          <div style="font-size:28px;font-weight:700;color:#94A3B8;line-height:1">−7.9%</div>
+          <div style="font-size:10px;color:var(--gray);margin-top:2px">前年比 −3,343回</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:#F4F7FB;border-radius:6px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--gray)">PCマップ</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">2,011回 <span style="color:var(--green);font-size:11px">+17.5%</span></div>
+        </div>
+        <div style="background:#F4F7FB;border-radius:6px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--gray)">モバイルマップ</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">18,979回 <span style="color:#EF4444;font-size:11px">−3.6%</span></div>
+        </div>
+        <div style="background:#F4F7FB;border-radius:6px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--gray)">PCブラウザ</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">2,536回 <span style="color:var(--green);font-size:11px">+5.4%</span></div>
+        </div>
+        <div style="background:#F4F7FB;border-radius:6px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--gray)">モバイルブラウザ</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">15,344回 <span style="color:#EF4444;font-size:11px">−16.6%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- アクション合計ブロック -->
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal)"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:14px;letter-spacing:.5px">⚡ アクション合計</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+        <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">今月（4月）</div>
+          <div style="font-size:28px;font-weight:700;color:var(--navy);line-height:1">4,286</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px">件</div>
+        </div>
+        <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">前年同月（2025/3）</div>
+          <div style="font-size:28px;font-weight:700;color:#94A3B8;line-height:1">4,863</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px">件</div>
+        </div>
+        <div style="text-align:center;padding:10px">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">前年比</div>
+          <div style="font-size:28px;font-weight:700;color:#94A3B8;line-height:1">−11.9%</div>
+          <div style="font-size:10px;color:var(--gray);margin-top:2px">前年比 −577件</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;background:#F4F7FB;border-radius:6px;padding:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:10px;color:var(--gray);margin-bottom:2px">アクション率（今月）</div>
+            <div style="font-size:22px;font-weight:700;color:var(--navy)">11.03%</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--gray);margin-bottom:2px">前年同月</div>
+            <div style="font-size:18px;font-weight:600;color:#94A3B8">11.52%</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:10px;color:var(--gray);margin-bottom:2px">変化</div>
+            <div style="font-size:18px;font-weight:700;color:#EF4444"><span style="color:#94A3B8">−0.49pt</span></div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray);margin-bottom:4px">
+            <span>目標 15.00% まで</span><span style="font-weight:700;color:var(--orange)">あと +3.97pt</span>
+          </div>
+          <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+            <div style="height:100%;width:73.5%;background:var(--teal);border-radius:4px"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray);margin-top:3px">
+            <span>0%</span><span style="color:var(--teal);font-weight:700">11.08%</span><span>目標 15%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 各アクション内訳 & 目標 -->
+
+  <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #00A896;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#00A896;margin-bottom:4px;letter-spacing:.5px">💡 ① 全体結果の見解</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">PCマップ（+17.5%）・PCブラウザ（+5.4%）は前年を上回っています。モバイルブラウザの減少がGoogleコアアップデートの影響を受けている状況です。</div>
+    </div>
+    <div style="border-left:1px solid #E2E8F0;padding-left:12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px;letter-spacing:.5px">📌 来月（5月）の動き</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">モバイルブラウザ経由の推移を継続注視。GBP情報整備によるAI検索反映強化を進めます。</div>
+    </div>
+  </div>
+  <div class="section-title">② 各アクション内訳と目標（表示回数対比）</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+
+    <!-- WEB訪問 -->
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#3B82F6"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:10px">🌐 WEBサイト訪問</div>
+      <div style="font-size:26px;font-weight:700;color:var(--navy);margin-bottom:2px">2,243<span style="font-size:12px;font-weight:400;color:var(--gray)"> 件</span></div>
+      <div style="font-size:11px;color:#64748B;margin-bottom:10px">前年 2,679件（−16.3%）</div>
+      <div style="background:#EFF6FF;border-radius:6px;padding:8px">
+        <div style="font-size:10px;color:var(--gray)">表示対比 アクション率</div>
+        <div style="font-size:18px;font-weight:700;color:#3B82F6;margin-top:2px">5.77%</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:1px">前年 6.35%（−0.58pt）</div>
+      </div>
+    </div>
+
+    <!-- 経路案内 -->
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#10B981"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:10px">📍 経路案内</div>
+      <div style="font-size:26px;font-weight:700;color:var(--navy);margin-bottom:2px">1,657<span style="font-size:12px;font-weight:400;color:var(--gray)"> 件</span></div>
+      <div style="font-size:11px;color:#64748B;margin-bottom:10px">前年 1,671件（−0.8%）</div>
+      <div style="background:#ECFDF5;border-radius:6px;padding:8px">
+        <div style="font-size:10px;color:var(--gray)">表示対比 アクション率</div>
+        <div style="font-size:18px;font-weight:700;color:#10B981;margin-top:2px">4.26%</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:1px">前年 3.96%（+0.30pt）</div>
+      </div>
+    </div>
+
+    <!-- 電話 -->
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#F59E0B"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:10px">📞 電話発信</div>
+      <div style="font-size:26px;font-weight:700;color:var(--navy);margin-bottom:2px">386<span style="font-size:12px;font-weight:400;color:var(--gray)"> 件</span></div>
+      <div style="font-size:11px;color:#64748B;margin-bottom:10px">前年 513件（−24.8%）</div>
+      <div style="background:#FFFBEB;border-radius:6px;padding:8px">
+        <div style="font-size:10px;color:var(--gray)">表示対比 アクション率</div>
+        <div style="font-size:18px;font-weight:700;color:#F59E0B;margin-top:2px">0.99%</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:1px">前年 1.22%（−0.23pt）</div>
+      </div>
+    </div>
+
+    <!-- 目標達成カード -->
+    <div style="background:var(--navy);border-radius:10px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal)"></div>
+      <div style="font-size:11px;font-weight:700;color:#A0AEC0;margin-bottom:10px">🎯 アクション率 目標</div>
+      <div style="text-align:center;margin:10px 0">
+        <div style="font-size:13px;color:#A0AEC0;margin-bottom:2px">現在</div>
+        <div style="font-size:34px;font-weight:700;color:var(--white);line-height:1">11.08%</div>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.15);margin:10px 0"></div>
+      <div style="text-align:center">
+        <div style="font-size:12px;color:var(--teal);font-weight:700;margin-bottom:6px">目標 15.00%</div>
+        <div style="height:10px;background:rgba(255,255,255,0.15);border-radius:5px;overflow:hidden">
+          <div style="height:100%;width:73.9%;background:var(--teal);border-radius:5px"></div>
+        </div>
+        <div style="font-size:11px;color:#F59E0B;font-weight:700;margin-top:6px">あと +3.92pt</div>
+        <div style="font-size:10px;color:#A0AEC0;margin-top:2px">WEB↑・経路↑が課題</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #3B82F6;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#3B82F6;margin-bottom:4px;letter-spacing:.5px">💡 ② アクション内訳の見解</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">経路案内は−0.8%とほぼ横ばいを維持しており、<strong>来店意向は安定</strong>しています。WEB訪問（−16.3%）・電話（−24.8%）の改善がアクション率15%目標へのポイントです。</div>
+    </div>
+    <div style="border-left:1px solid #E2E8F0;padding-left:12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px;letter-spacing:.5px">📌 来月（5月）の動き</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">GBPの「WEBサイト」リンク先の内容確認と、電話番号表示の最適化を点検していきます。</div>
+    </div>
+  </div>
+  <!-- ③ 表示数とアクション率の推移 -->
+  <div class="section-title">③ 表示数とアクション率の推移（FY24 vs FY25）</div>
+  <!-- CHARTS -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">
+        月次 表示回数推移
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#CBD5E1"></span>FY24</span>
+          <span><span class="legend-dot" style="background:#00A896"></span>FY25</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="tokka-disp-chart" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">
+        アクション率推移
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#CBD5E1"></span>FY24</span>
+          <span><span class="legend-dot" style="background:#00A896"></span>FY25</span>
+          <span><span class="legend-dot" style="background:#10B981;border:1px dashed #10B981"></span>目標15%</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="tokka-ar-chart" height="200"></canvas></div>
+    </div>
+  </div>
+
+  <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #10B981;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#10B981;margin-bottom:4px;letter-spacing:.5px">💡 ③ 推移グラフの見解</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">FY25のアクション率はFY24を全月で上回る水準を維持しており、<strong>対策の効果が継続的に出ています</strong>。表示回数はFY25後半から安定しており、5月以降の季節需要増加に伴う回復が期待されます。</div>
+    </div>
+    <div style="border-left:1px solid #E2E8F0;padding-left:12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px;letter-spacing:.5px">📌 来月（5月）の動き</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">初夏・GW後の需要を見据えた投稿テンプレートを展開します。表示数の月次推移を確認しながらGBP整備の優先度を判断していきます。</div>
+    </div>
+  </div>
+
+  <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #10B981;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#10B981;margin-bottom:4px;letter-spacing:.5px">💡 ③ 推移グラフの見解</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">FY25のアクション率はFY24を全月で上回っており、<strong>対策の継続効果が数値に表れています</strong>。表示回数はFY25後半に安定しており、5月以降の季節需要増加に伴う回復が期待されます。</div>
+    </div>
+    <div style="border-left:1px solid #E2E8F0;padding-left:12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px;letter-spacing:.5px">📌 来月（5月）の動き</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">初夏・GW後の需要を踏まえた投稿テンプレートを展開。月次推移を確認しながらGBP整備の優先度を判断します。</div>
+    </div>
+  </div>
+  <!-- STORE TABLE -->
+  <div class="section-title">店舗別 FY24 vs FY25 一覧</div>
+  <div class="table-card">
+    <div class="table-header">
+      <div class="section-title" style="margin:0">32店舗 前年度比</div>
+      <div style="font-size:10px;color:var(--gray)">
+        <span style="background:#FEF3C7;padding:2px 6px;border-radius:4px;margin-right:6px">🟡 他社対応</span>
+        <span style="background:#F1F5F9;padding:2px 6px;border-radius:4px">⚪ 譲渡未完了</span>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="tokka-store-table">
+        <thead>
+          <tr>
+            <th style="width:130px">店舗名</th>
+            <th>FY24 月均表示</th>
+            <th>FY25 月均表示</th>
+            <th>表示前年比</th>
+            <th>アクション率<br>FY24</th>
+            <th>アクション率<br>FY25</th>
+            <th>アクション率<br>変化</th>
+            <th>上位表示率<br>（4月）</th>
+            <th>クチコミ総数</th>
+            <th>口コミ<br>（4月）</th>
+            <th>平均評価</th>
+          </tr>
+        </thead>
+        <tbody id="tokka-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- KEYWORD -->
+  <div class="section-title">ブランド検索以外の流入キーワード TOP（2026年4月）</div>
+  <div class="kw-grid">
+    <div class="kw-card">
+      <div class="kw-title">🏋️ ジム・施設系（4月）</div>
+      <div id="kw-gym"></div>
+    </div>
+    <div class="kw-card">
+      <div class="kw-title">🛁 温浴・癒し系（4月）</div>
+      <div id="kw-pool"></div>
+    </div>
+    <div class="kw-card">
+      <div class="kw-title">🏷️ 競合ブランド流入（4月）</div>
+      <div id="kw-brand"></div>
+    </div>
+  </div>
+
+  <!-- ④ 見解 -->
+  <div class="section-title">④ 4月結果に対する見解</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:18px">
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="background:var(--teal);color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">データ分析</span>
+        全体評価
+      </div>
+      <div style="font-size:13px;color:var(--darkGray);line-height:1.8">
+        4月はGWシーズンで新生活の体づくり需要が続く一方、<strong>連休前後の来館パターンの変化が出やすい時期</strong>です。表示回数は前年比<strong style="color:#E05050">−7.9%</strong>で推移していますが、アクション率は<strong style="color:var(--teal)">11.03%</strong>（前年11.52%）と<strong>目標15%に向けて一定水準を維持</strong>。経路案内は前年比−0.8%とほぼ横ばいで<strong>来店意向は底堅い</strong>一方、WEB訪問（−16.3%）・電話（−24.8%）の回復が課題です。<strong>FY25年間平均アクション率11.49%はFY24（10.21%）を大きく上回っており</strong>、中長期の改善傾向は継続しています。
+      </div>
+    </div>
+
+    <div style="background:#FEF9EC;border:1px solid #F59E0B;border-radius:10px;padding:18px">
+      <div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="background:#F59E0B;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">⚠️ Google動向</span>
+        コアアップデートの影響継続（4月）
+      </div>
+      <div style="font-size:13px;color:#78350F;line-height:1.8">
+        3月末に実施された<strong>Googleコアアップデートの影響が4月も継続</strong>しています。<br>
+        ローカル検索（MEO）への影響として、<strong>①カテゴリ・サービス内容と地域キーワードの一貫性が低い店舗の順位下落</strong>、<strong>②GBPの写真・属性情報がAI回答に直接反映</strong>される仕様変更が進行中です。<br>
+        複数店舗で上位表示率が低下・低下している要因のひとつとして、このアップデートの影響が考えられます。
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ⑥ ワースト店舗ピックアップ -->
+  <div class="section-title">⑥ ワースト店舗ピックアップ・課題と対策</div>
+  <div style="font-size:11px;color:var(--gray);background:#F8FAFC;border:1px solid var(--border);border-radius:6px;padding:8px 14px;margin-bottom:12px">
+    ※ ピックアップ条件：<strong>アクション率（表示回数に対するアクション数の割合）</strong>が低い店舗を優先的に選定しています。今月（4月）と先月（3月）を並べて継続状況を確認できます。
+  </div>
+  <div id="worst-cards" style="margin-bottom:20px"></div>
+
+  <!-- ⑦ 次月全体施策 -->
+  <div class="section-title">⑦ 次月（5月）全体施策</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+
+    <div style="background:var(--navy);border-radius:10px;padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal)"></div>
+      <div style="font-size:13px;font-weight:700;color:var(--teal);margin-bottom:12px">📸 最新投稿 4回／店舗</div>
+      <div style="font-size:12px;color:#CBD5E1;line-height:1.9">
+        <div style="font-size:10px;color:#94A3B8;margin-bottom:8px;padding:4px 8px;background:rgba(255,255,255,0.06);border-radius:4px">全店舗共通テンプレート投稿 ／ 地域キーワードのみ差し替え</div>
+        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">① 春需要投稿</span><br>春の体づくり需要を訴求。本文に「○○市 ジム」「春 フィットネス」を自然に配置</div>
+        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">② 温浴・施設紹介投稿</span><br>引き続き上昇傾向の「サウナ・銭湯・温泉」KWを踏まえた温浴設備訴求テンプレート</div>
+        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">③ GW向け投稿</span><br>「連休中も通える」安心感を訴求。地域名のみ差し替えで全店舗展開</div>
+        <div><span style="color:var(--teal);font-weight:700">④ Google動向対応投稿</span><br>コアアップデート後の評価傾向を踏まえ、地域名×サービス内容の一貫性を意識したキーワード配置のテンプレートを展開</div>
+      </div>
+    </div>
+
+    <div style="background:var(--navy);border-radius:10px;padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#3B82F6"></div>
+      <div style="font-size:13px;font-weight:700;color:#93C5FD;margin-bottom:12px">🔗 サイテーション 実施</div>
+      <div style="font-size:12px;color:#CBD5E1;line-height:1.9">
+        <div style="margin-bottom:8px"><span style="color:#93C5FD;font-weight:700">なぜやるか：</span>店舗名・住所・電話番号（NAP情報）が複数のウェブ媒体で一致していると、Googleが店舗情報を正確に認識しやすくなり、MEOの評価スコア底上げにつながります。</div>
+        <div style="color:#A0AEC0;font-size:11px">各種ウェブディレクトリへの登録・情報更新を継続して進めていきます。</div>
+      </div>
+    </div>
+
+    <div style="background:var(--navy);border-radius:10px;padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#10B981"></div>
+      <div style="font-size:13px;font-weight:700;color:#6EE7B7;margin-bottom:12px">📋 その他対応事項</div>
+      <div style="font-size:12px;color:#CBD5E1;line-height:1.85">
+        <div style="margin-bottom:8px">
+          <span style="color:#6EE7B7;font-weight:700">GBP変更対応（8店舗）</span><br>
+          変更有：葛西・白根・宇多津・福井開発・古川橋駅前（特化型5店舗）→ カテゴリ・住所・電話番号の再確認と修正<br>
+          → カテゴリ・住所・電話番号の再確認と修正
+        </div>
+        <div style="margin-bottom:8px">
+          <span style="color:#6EE7B7;font-weight:700">ワースト店舗 競合調査</span><br>
+          マリンピア・海浜幕張・相模原の上位競合GBPを調査し、カテゴリ・属性・写真数を比較分析
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- /view-tokka -->
+
+
+<!-- ======================================================= -->
+<!-- VIEW: 総合 -->
+<!-- ======================================================= -->
+<div id="view-sogo" class="view">
+
+  <div class="other-co-note">
+    ⚠️ <strong>他社対応：浦和美園店・3FIT熱田千年店・3FIT高知店</strong>は現在他社がMEO対策を実施中。データが低調な場合は詳細な分析・改善提案を行います。
+  </div>
+
+  <!-- ① 対象月 全体結果 & 昨年比 -->
+  <div class="section-title">① 2026年4月 全体結果と昨年比</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+
+    <!-- 表示回数 -->
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal)"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:14px;letter-spacing:.5px">📊 表示回数</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+        <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">今月（4月）</div>
+          <div style="font-size:28px;font-weight:700;color:var(--navy);line-height:1">53,516</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px">回</div>
+        </div>
+        <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">前年同月（2025/3）</div>
+          <div style="font-size:28px;font-weight:700;color:#94A3B8;line-height:1">42,552</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px">回</div>
+        </div>
+        <div style="text-align:center;padding:10px">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">前年比</div>
+          <div style="font-size:28px;font-weight:700;color:#10B981;line-height:1">+25.8%</div>
+          <div style="font-size:10px;color:var(--gray);margin-top:2px">+10,964回</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:#F4F7FB;border-radius:6px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--gray)">PCマップ</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">1,820回 <span style="color:var(--green);font-size:11px">+30.9%</span></div>
+        </div>
+        <div style="background:#F4F7FB;border-radius:6px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--gray)">モバイルマップ</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">34,441回 <span style="color:var(--green);font-size:11px">+74.8%</span></div>
+        </div>
+        <div style="background:#F4F7FB;border-radius:6px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--gray)">PCブラウザ</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">1,995回 <span style="color:var(--green);font-size:11px">+5.9%</span></div>
+        </div>
+        <div style="background:#F4F7FB;border-radius:6px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--gray)">モバイルブラウザ</div>
+          <div style="font-size:13px;font-weight:700;color:var(--navy)">15,260回 <span style="color:#EF4444;font-size:11px">−22.0%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- アクション合計 -->
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal)"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:14px;letter-spacing:.5px">⚡ アクション合計</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+        <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">今月（4月）</div>
+          <div style="font-size:28px;font-weight:700;color:var(--navy);line-height:1">4,387</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px">件</div>
+        </div>
+        <div style="text-align:center;padding:10px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">前年同月（2025/3）</div>
+          <div style="font-size:28px;font-weight:700;color:#94A3B8;line-height:1">4,591</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px">件</div>
+        </div>
+        <div style="text-align:center;padding:10px">
+          <div style="font-size:10px;color:var(--gray);margin-bottom:4px">前年比</div>
+          <div style="font-size:28px;font-weight:700;color:#94A3B8;line-height:1">−4.4%</div>
+          <div style="font-size:10px;color:var(--gray);margin-top:2px">前年比 −204件</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:6px;padding:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:10px;color:#92400E;margin-bottom:2px">アクション率（今月）</div>
+            <div style="font-size:22px;font-weight:700;color:var(--navy)">7.59%</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--gray);margin-bottom:2px">前年同月</div>
+            <div style="font-size:18px;font-weight:600;color:#94A3B8">10.79%</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:10px;color:var(--gray);margin-bottom:2px">変化</div>
+            <div style="font-size:18px;font-weight:700;color:#EF4444"><span style="color:#94A3B8">−2.59pt</span></div>
+          </div>
+        </div>
+        <div style="margin-top:4px;font-size:10px;color:#92400E">※ 表示回数とアクション率のバランスは引き続き注視しています</div>
+        <div style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray);margin-bottom:4px">
+            <span>目標 15.00% まで</span><span style="font-weight:600;color:#94A3B8">目標まで +6.80pt</span>
+          </div>
+          <div style="height:8px;background:rgba(0,0,0,0.1);border-radius:4px;overflow:hidden">
+            <div style="height:100%;width:54.7%;background:#F59E0B;border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 各アクション内訳 -->
+  <div class="section-title">② 各アクション内訳と目標（表示回数対比）</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr)
+  <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #00A896;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#00A896;margin-bottom:4px;letter-spacing:.5px">💡 ① 全体結果の見解</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">表示回数+25.8%は引き続き好調です。モバイルマップ+74.8%と高水準で、<strong>多くのユーザーにリーチできている</strong>状態が継続しています。</div>
+    </div>
+    <div style="border-left:1px solid #E2E8F0;padding-left:12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px;letter-spacing:.5px">📌 来月（5月）の動き</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">GWによる閲覧増加後の5月推移を確認します。表示増加がアクション率にも反映されるよう、GBPコンテンツ整備を続けます。</div>
+    </div>
+  </div>
+;gap:12px;margin-bottom:20px">
+
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#3B82F6"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:10px">🌐 WEBサイト訪問</div>
+      <div style="font-size:26px;font-weight:700;color:var(--navy);margin-bottom:2px">2,498<span style="font-size:12px;font-weight:400;color:var(--gray)"> 件</span></div>
+      <div style="font-size:11px;color:#64748B;margin-bottom:10px">前年 2,777件（−10.0%）</div>
+      <div style="background:#EFF6FF;border-radius:6px;padding:8px">
+        <div style="font-size:10px;color:var(--gray)">表示対比 アクション率</div>
+        <div style="font-size:18px;font-weight:700;color:#3B82F6;margin-top:2px">4.67%</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:1px">前年 6.53%（−1.86pt）</div>
+      </div>
+    </div>
+
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#10B981"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:10px">📍 経路案内</div>
+      <div style="font-size:26px;font-weight:700;color:var(--navy);margin-bottom:2px">1,211<span style="font-size:12px;font-weight:400;color:var(--gray)"> 件</span></div>
+      <div style="font-size:11px;color:#10B981;font-weight:700;margin-bottom:10px">前年 1,075件（+12.7%）</div>
+      <div style="background:#ECFDF5;border-radius:6px;padding:8px">
+        <div style="font-size:10px;color:var(--gray)">表示対比 アクション率</div>
+        <div style="font-size:18px;font-weight:700;color:#10B981;margin-top:2px">2.26%</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:1px">前年 2.53%（−0.27pt）</div>
+      </div>
+    </div>
+
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#F59E0B"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:10px">📞 電話発信</div>
+      <div style="font-size:26px;font-weight:700;color:var(--navy);margin-bottom:2px">678<span style="font-size:12px;font-weight:400;color:var(--gray)"> 件</span></div>
+      <div style="font-size:11px;color:#64748B;margin-bottom:10px">前年 739件（−8.3%）</div>
+      <div style="background:#FFFBEB;border-radius:6px;padding:8px">
+        <div style="font-size:10px;color:var(--gray)">表示対比 アクション率</div>
+        <div style="font-size:18px;font-weight:700;color:#F59E0B;margin-top:2px">1.27%</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:1px">前年 1.74%（−0.47pt）</div>
+      </div>
+    </div>
+
+    <div style="background:var(--navy);border-radius:10px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#F59E0B"></div>
+      <div style="font-size:11px;font-weight:700;color:#A0AEC0;margin-bottom:10px">🎯 アクション率 目標</div>
+      <div style="text-align:center;margin:8px 0">
+        <div style="font-size:12px;color:#F59E0B;margin-bottom:2px">⚠️ 現在</div>
+        <div style="font-size:34px;font-weight:700;color:var(--white);line-height:1">7.59%</div>
+        <div style="font-size:10px;color:#A0AEC0;margin-top:2px">表示増・アクション率調整中</div>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.15);margin:8px 0"></div>
+      <div style="text-align:center">
+        <div style="font-size:12px;color:var(--teal);font-weight:700;margin-bottom:6px">目標 15.00%</div>
+        <div style="height:10px;background:rgba(255,255,255,0.15);border-radius:5px;overflow:hidden">
+          <div style="height:100%;width:54.7%;background:#F59E0B;border-radius:5px"></div>
+        </div>
+        <div style="font-size:11px;color:#EF4444;font-weight:700;margin-top:6px">あと +7.41pt</div>
+        <div style="font-size:10px;color:#A0AEC0;margin-top:2px">年間平均 9.78%</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #3B82F6;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#3B82F6;margin-bottom:4px;letter-spacing:.5px">💡 ② アクション内訳の見解</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">経路案内は+12.7%と<strong>来店意向の底堅さが継続</strong>しています。WEB訪問（−10.0%）の改善が全体アクション率の向上に直結します。</div>
+    </div>
+    <div style="border-left:1px solid #E2E8F0;padding-left:12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px;letter-spacing:.5px">📌 来月（5月）の動き</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">GBPのWEBサイトリンク・サービス紹介の充実を図ります。引き続き各店舗のGBP整備を進めていきます。</div>
+    </div>
+  </div>
+  <!-- ③ 推移グラフ -->
+  <!-- ③ 推移グラフ -->
+  <div class="section-title">③ 表示数とアクション率の推移（FY24 vs FY25）</div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">
+        月次 表示回数推移
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#CBD5E1"></span>FY24</span>
+          <span><span class="legend-dot" style="background:#00A896"></span>FY25</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="sogo-disp-chart" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">
+        アクション率推移
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#CBD5E1"></span>FY24</span>
+          <span><span class="legend-dot" style="background:#00A896"></span>FY25</span>
+          <span><span class="legend-dot" style="background:#10B981;border:1px dashed #10B981"></span>目標15%</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="sogo-ar-chart" height="200"></canvas></div>
+    </div>
+  </div>
+
+  <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #10B981;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#10B981;margin-bottom:4px">💡 ③ 推移グラフの見解</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">FY25のARはFY24を通年で上回っており、中長期の改善傾向を維持しています。3月(7.59%)→4月(8.20%)と<strong>ARが回復基調</strong>に入っています。</div>
+    </div>
+    <div style="border-left:1px solid #E2E8F0;padding-left:12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 来月（5月）の動き</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">GW後の5月にARが更に回復するか注視します。GBP変更有の2店舗（伊丹昆陽・浜松西）の整備を優先します。</div>
+    </div>
+  </div>
+
+  <!-- STORE TABLE -->
+  <div class="section-title">店舗別 FY24 vs FY25 一覧</div>
+  <div class="table-card">
+    <div class="table-header">
+      <div class="section-title" style="margin:0">15店舗 前年度比</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:160px">店舗名</th>
+            <th>FY24 月均表示</th>
+            <th>FY25 月均表示</th>
+            <th>表示前年比</th>
+            <th>アクション率<br>FY24</th>
+            <th>アクション率<br>FY25</th>
+            <th>アクション率<br>変化</th>
+            <th>上位表示率<br>（4月）</th>
+            <th>クチコミ総数</th>
+            <th>口コミ<br>（4月）</th>
+            <th>平均評価</th>
+          </tr>
+        </thead>
+        <tbody id="sogo-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ④ 見解 -->
+  <div class="section-title">④ 4月結果に対する見解</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:18px">
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="background:var(--teal);color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">データ分析</span>全体評価
+      </div>
+      <div style="font-size:13px;color:var(--darkGray);line-height:1.8">
+        4月はGWを控え、<strong>「新生活の体づくり」から「連休中の継続利用」へと需要が移行する季節</strong>です。表示回数は前年比<strong style="color:#10B981">+25.8%</strong>と引き続き増加し、<strong>モバイルマップ経由が+74.8%と高水準</strong>。アクション率は<strong style="color:var(--teal)">8.20%</strong>で推移しています。経路案内は+12.7%と<strong>来店意向の底堅さは継続</strong>しており、<strong>FY25年間平均AR9.78%はFY24（9.60%）を上回っており</strong>、中長期の改善傾向は維持されています。
+      </div>
+    </div>
+    <div style="background:#FEF9EC;border:1px solid #F59E0B;border-radius:10px;padding:18px">
+      <div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="background:#F59E0B;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">⚠️ Google動向</span>コアアップデートの影響継続（4月）
+      </div>
+      <div style="font-size:13px;color:#78350F;line-height:1.8">
+        3月末実施の<strong>Googleコアアップデートの影響が4月も継続</strong>しています。<br>
+        <strong>①カテゴリ・地域一貫性の評価強化</strong>と<strong>②GBPコンテンツのAI検索反映</strong>が続いており、<strong>3FIT姫路店（上位表示率0%）</strong>をはじめ複数店舗でカテゴリ設定の整備を進めていきます。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ ワースト店舗ピックアップ -->
+  <div class="section-title">⑥ ワースト店舗ピックアップ・課題と対策</div>
+  <div style="font-size:11px;color:var(--gray);background:#F8FAFC;border:1px solid var(--border);border-radius:6px;padding:8px 14px;margin-bottom:12px">
+    ※ ピックアップ条件：<strong>アクション率（表示回数に対するアクション数の割合）</strong>が低い店舗を優先的に選定しています。今月（4月）と先月（3月）を並べて継続状況を確認できます。
+  </div>
+  <div id="worst-cards-sogo" style="margin-bottom:20px"></div>
+
+  <!-- ⑦ 次月全体施策 -->
+  <div class="section-title">⑦ 次月（5月）全体施策</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+    <div style="background:var(--navy);border-radius:10px;padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal)"></div>
+      <div style="font-size:13px;font-weight:700;color:var(--teal);margin-bottom:12px">📸 最新投稿 4回／店舗</div>
+      <div style="font-size:12px;color:#CBD5E1;line-height:1.9">
+        <div style="font-size:10px;color:#94A3B8;margin-bottom:8px;padding:4px 8px;background:rgba(255,255,255,0.06);border-radius:4px">全店舗共通テンプレート投稿 ／ 地域キーワードのみ差し替え</div>
+        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">① 初夏・GW明け需要投稿</span><br>「夏に向けた体づくり」を訴求。本文に地域キーワードを自然に配置</div>
+        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">② 温浴・施設紹介投稿</span><br>上昇傾向の「サウナ・銭湯・温泉」KWを踏まえた温浴設備訴求テンプレート</div>
+        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">③ 夏のスポーツ需要投稿</span><br>プール・水泳など夏季需要を先取りした訴求テンプレートで展開</div>
+        <div><span style="color:var(--teal);font-weight:700">④ Google動向対応投稿</span><br>コアアップデート後の評価傾向を踏まえ、地域名×サービス内容の一貫性を意識したキーワード配置に更新</div>
+      </div>
+    </div>
+    <div style="background:var(--navy);border-radius:10px;padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#3B82F6"></div>
+      <div style="font-size:13px;font-weight:700;color:#93C5FD;margin-bottom:12px">🔗 サイテーション 実施</div>
+      <div style="font-size:12px;color:#CBD5E1;line-height:1.9">
+        <div style="margin-bottom:8px"><span style="color:#93C5FD;font-weight:700">なぜやるか：</span>店舗名・住所・電話番号（NAP情報）が複数のウェブ媒体で一致していると、Googleが店舗情報を正確に認識しやすくなり、MEOの評価スコア底上げにつながります。</div>
+        <div style="color:#A0AEC0;font-size:11px">各種ウェブディレクトリへの登録・情報更新を継続して進めていきます。</div>
+        <div style="color:#F59E0B;font-size:11px;margin-top:8px">※ GBP変更有の2店舗（伊丹昆陽・浜松西）はNAP情報統一を優先して進めます。</div>
+      </div>
+    </div>
+    <div style="background:var(--navy);border-radius:10px;padding:18px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#10B981"></div>
+      <div style="font-size:13px;font-weight:700;color:#6EE7B7;margin-bottom:12px">📋 その他対応事項</div>
+      <div style="font-size:12px;color:#CBD5E1;line-height:1.85">
+        <div style="margin-bottom:8px">
+          <span style="color:#6EE7B7;font-weight:700">GBP変更対応（2店舗）</span><br>
+          伊丹昆陽・3FIT浜松西 → カテゴリ・住所・電話番号の再確認と修正
+        </div>
+        <div style="margin-bottom:8px">
+          <span style="color:#6EE7B7;font-weight:700">他社対応3店舗のデータ監視</span><br>
+          浦和美園・熱田千年・高知は他社対応中。4月も浦和美園AR5.2%と低水準継続。月次推移を監視し改善提案を検討
+        </div>
+        <div>
+          <span style="color:#6EE7B7;font-weight:700">ワースト店舗 競合調査</span><br>
+          伊丹昆陽・3FIT八事・3FIT姫路の上位競合GBPを調査し、カテゴリ・属性・写真数を比較分析
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /view-sogo -->
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+
+const MONTHS_LABEL = ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'];
+
+const TOKKA = {
+  fy24_disp: [20102,36737,50804,62607,50337,40971,40619,36845,46346,38447,42599,42213],
+  fy25_disp: [47671,44725,40670,50939,43105,37106,32890,30998,36955,34100,39111,38870],
+  fy24_act:  [2562, 4182, 4409, 4734, 4658, 4130, 4218, 4203, 4784, 4353, 4820, 4863],
+  fy25_act:  [4775, 5100, 4880, 4985, 4542, 4359, 4081, 4735, 4987, 3782, 4335, 4286],
+  base_disp: 42385, base_ar: 10.21,
+  target10_disp: 46624, target15_disp: 48742,
+  target10_ar: 11.23, target15_ar: 15.00,
+};
+TOKKA.fy24_ar = TOKKA.fy24_disp.map((d,i) => TOKKA.fy24_act[i]/d*100);
+TOKKA.fy25_ar = TOKKA.fy25_disp.map((d,i) => TOKKA.fy25_act[i]/d*100);
+
+const SOGO = {
+  fy24_disp: [21007,39683,56062,62497,49104,37978,36526,36550,45495,39338,41797,42552],
+  fy25_disp: [46401,44901,48561,57934,44128,38503,33566,30737,35057,39406,55567,53516],
+  fy24_act:  [2579, 4180, 4445, 4660, 4532, 3682, 3675, 3742, 4169, 3927, 4656, 4591],
+  fy25_act:  [4973, 4812, 4678, 4874, 4205, 3838, 3866, 4041, 4089, 3668, 4218, 4387],
+  base_disp: 42382, base_ar: 9.60,
+  target10_disp: 46620, target15_disp: 48739,
+  target10_ar: 10.56, target15_ar: 15.00,
+};
+SOGO.fy24_ar = SOGO.fy24_disp.map((d,i) => SOGO.fy24_act[i]/d*100);
+SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);
+
+// 特化型 店舗別データ（32店舗）4月
+const TOKKA_STORES = [
+  {name:'マリンピア店',   d24:1276, d25:1363, ar24:10.4,ar25:4.7,  rank:0.8,  review:{total:5, mar:1, score:3.4}, addr:'千葉市美浜区高洲3-21-1'},
+  {name:'橋本店',      d24:1430, d25:1503, ar24:5.2, ar25:6.7,  rank:2.1,  review:{total:1, mar:0, score:5.0}, addr:'相模原市緑区橋本6-2-1'},
+  {name:'新潟東店',     d24:1068, d25:1332, ar24:15.0,ar25:11.9, rank:43.3, review:{total:5, mar:1, score:3.6}, addr:'新潟市東区大形本町3-1-2'},
+  {name:'葛西店',      d24:1338, d25:1286, ar24:8.2, ar25:5.6,  rank:0.8,  review:{total:2, mar:0, score:4.5}, addr:'江戸川区西葛西3-9-19', gbp:'変更有'},
+  {name:'名古屋茶屋店',   d24:1452, d25:1233, ar24:14.6,ar25:11.0, rank:62.1, review:{total:6, mar:1, score:3.0}, addr:'名古屋市港区西茶屋２丁目１１'},
+  {name:'大利根店',     d24:1005, d25:951,  ar24:28.5,ar25:23.1, rank:75.0, review:{total:7, mar:0, score:2.9}, addr:'加須市北下新井野中95'},
+  {name:'仙台泉大沢店',   d24:1352, d25:1323, ar24:15.3,ar25:13.1, rank:2.1,  review:{total:4, mar:0, score:2.8}, addr:'仙台市泉区大沢1-5-1'},
+  {name:'近江八幡店',    d24:2825, d25:2841, ar24:11.7,ar25:8.9,  rank:53.3, review:{total:4, mar:0, score:3.8}, addr:'近江八幡市鷹飼町南4-1-2'},
+  {name:'水戸南店',     d24:668,  d25:699,  ar24:21.5,ar25:24.4, rank:0.0,  review:{total:1, mar:0, score:1.0}, addr:'茨城町長岡3480-101'},
+  {name:'小山店',      d24:2346, d25:2144, ar24:11.4,ar25:7.2,  rank:12.1, review:{total:9, mar:0, score:3.9}, addr:'小山市中久喜1345-6'},
+  {name:'大須賀店',     d24:322,  d25:313,  ar24:37.7,ar25:46.1, rank:23.8, review:{total:1, mar:0, score:5.0}, addr:'掛川市西大渕3359'},
+  {name:'白根店',      d24:847,  d25:807,  ar24:10.7,ar25:10.7, rank:100.0,review:{total:1, mar:0, score:5.0}, addr:'新潟市南区能登409-2', gbp:'変更有'},
+  {name:'相模原店',     d24:5782, d25:3646, ar24:6.5, ar25:5.4,  rank:31.3, review:{total:11,mar:0, score:3.0}, addr:'相模原市南区古淵2-10-1'},
+  {name:'天王町店',     d24:1221, d25:1270, ar24:15.3,ar25:10.5, rank:0.8,  review:{total:4, mar:1, score:4.8}, addr:'横浜市保土ヶ谷区川辺町3-5'},
+  {name:'十日市場店',    d24:1433, d25:1466, ar24:8.3, ar25:7.9,  rank:61.3, review:{total:3, mar:0, score:3.7}, addr:'横浜市緑区十日市場町818-2'},
+  {name:'岐阜店',      d24:1095, d25:1002, ar24:11.0,ar25:14.3, rank:0.0,  review:{total:3, mar:0, score:4.7}, addr:'岐阜市正木中1-2-1'},
+  {name:'古川橋駅前店',   d24:808,  d25:844,  ar24:17.7,ar25:13.6, rank:37.5, review:{total:1, mar:0, score:4.0}, addr:'門真市末広町41-2', gbp:'変更有'},
+  {name:'東員店',      d24:1072, d25:975,  ar24:17.7,ar25:16.3, rank:17.5, review:{total:7, mar:0, score:3.7}, addr:'員弁郡東員町大字長深字築田510番地1'},
+  {name:'海浜幕張店',    d24:2168, d25:2362, ar24:7.9, ar25:5.7,  rank:4.2,  review:{total:4, mar:0, score:2.2}, addr:'千葉市美浜区ひび野1-3'},
+  {name:'昭島店',      d24:1433, d25:1317, ar24:11.0,ar25:14.1, rank:34.6, review:{total:6, mar:0, score:3.8}, addr:'昭島市宮沢町500-1'},
+  {name:'笠間店',      d24:865,  d25:802,  ar24:13.0,ar25:9.8,  rank:50.4, review:{total:3, mar:0, score:3.7}, addr:'笠間市赤坂８番地'},
+  {name:'大和店',      d24:1150, d25:1128, ar24:11.3,ar25:13.5, rank:47.9, review:{total:7, mar:0, score:3.6}, addr:'大和市渋谷6-6-1'},
+  {name:'新利府店',     d24:1424, d25:1471, ar24:7.1, ar25:8.8,  rank:87.5, review:{total:10,mar:0, score:4.1}, addr:'宮城郡利府町新中道3-1-1'},
+  {name:'中条店',      d24:598,  d25:562,  ar24:21.5,ar25:22.2, rank:100.0,review:{total:2, mar:0, score:2.0}, addr:'胎内市東本町2641'},
+  {name:'戸塚店',      d24:1361, d25:1205, ar24:5.9, ar25:11.1, rank:0.0,  review:{total:2, mar:1, score:3.0}, addr:'横浜市戸塚区吉田町884'},
+  {name:'長浦店',      d24:904,  d25:810,  ar24:13.6,ar25:19.5, rank:100.0,review:{total:1, mar:0, score:4.0}, addr:'袖ケ浦市長浦駅前1-7'},
+  {name:'大安店',      d24:492,  d25:563,  ar24:11.7,ar25:18.9, rank:54.6, review:{total:3, mar:0, score:3.7}, addr:'いなべ市大安町高柳1945'},
+  {name:'上里店',      d24:618,  d25:628,  ar24:16.1,ar25:21.0, rank:50.0, review:{total:5, mar:0, score:2.8}, addr:'児玉郡上里町金久保字蓮山359-1'},
+  {name:'宇多津店',     d24:1083, d25:940,  ar24:10.9,ar25:25.0, rank:36.7, review:{total:3, mar:0, score:3.3}, addr:'綾歌郡宇多津町浜二番丁16', gbp:'変更有'},
+  {name:'福井開発店',    d24:2061, d25:1438, ar24:8.9, ar25:15.6, rank:37.9, review:{total:1, mar:0, score:3.0}, addr:'福井市西開発3-205', gbp:'変更有'},
+  {name:'白山店',      d24:873,  d25:429,  ar24:8.4, ar25:0.0,  rank:0.4,  review:{total:2, mar:0, score:1.0}, addr:'白山市横江町5001', untrans:true},
+  {name:'西台店',      d24:0,    d25:1095, ar24:0,   ar25:11.4, rank:0.0,  review:{total:0, mar:0, score:0},   addr:'板橋区蓮根3-8-12'},
+];
+
+const SOGO_STORES = [
+  {name:'伊丹昆陽店',      d24:2059, d25:2725, ar24:7.9, ar25:4.5,  rank:28.8, review:{total:0, mar:0, score:0},   addr:'伊丹市池尻4-1-1',                        gbp:'変更有'},
+  {name:'3FIT 成田店',    d24:2760, d25:3183, ar24:15.8,ar25:7.1,  rank:25.0, review:{total:9, mar:0, score:2.9}, addr:'千葉県成田市ウィング土屋24',                   gbp:'正常'},
+  {name:'3FIT 倉敷店',    d24:2013, d25:2227, ar24:12.9,ar25:10.5, rank:25.0, review:{total:6, mar:0, score:2.2}, addr:'倉敷市水江1',                              gbp:'正常'},
+  {name:'3FIT 熱田千年店',  d24:2337, d25:2531, ar24:9.6, ar25:10.9, rank:37.5, review:{total:6, mar:1, score:3.2}, addr:'名古屋市熱田区千年1丁目16番30号',              gbp:'正常', other:true},
+  {name:'3FIT 浜松西店',   d24:2952, d25:3165, ar24:11.6,ar25:9.2,  rank:13.3, review:{total:5, mar:0, score:3.0}, addr:'浜松市中央区入野町6353-1',                   gbp:'変更有'},
+  {name:'3FIT 高知店',    d24:3590, d25:3835, ar24:9.6, ar25:9.9,  rank:35.0, review:{total:5, mar:0, score:2.4}, addr:'高知市秦南町1-4-8',                         gbp:'正常', other:true},
+  {name:'おゆみ野店',      d24:2174, d25:2317, ar24:10.4,ar25:13.3, rank:63.3, review:{total:8, mar:0, score:1.9}, addr:'千葉市緑区おゆみ野南5-37-1',                  gbp:'正常'},
+  {name:'3FIT 岡崎店',    d24:4043, d25:4200, ar24:9.0, ar25:6.3,  rank:32.9, review:{total:8, mar:0, score:2.0}, addr:'岡崎市戸崎町字外山38-5',                     gbp:'正常'},
+  {name:'3FIT 栃木店',    d24:2674, d25:2707, ar24:11.1,ar25:8.5,  rank:22.1, review:{total:2, mar:0, score:2.0}, addr:'栃木市箱森町37-9',                          gbp:'正常'},
+  {name:'3FIT 東浦店',    d24:3004, d25:3259, ar24:16.0,ar25:7.5,  rank:77.1, review:{total:3, mar:0, score:2.3}, addr:'知多郡東浦町大字緒川字旭6-2',                  gbp:'正常'},
+  {name:'3FIT 八事店',    d24:3216, d25:3128, ar24:11.2,ar25:7.8,  rank:5.0,  review:{total:18,mar:1, score:3.4}, addr:'名古屋市昭和区広路町字石坂2-1',                gbp:'正常'},
+  {name:'3FIT 姫路店',    d24:3237, d25:3131, ar24:10.0,ar25:8.7,  rank:0.0,  review:{total:7, mar:2, score:3.0}, addr:'姫路市飾磨区細江2560',                       gbp:'変更有'},
+  {name:'浦和美園店',      d24:3512, d25:3568, ar24:7.5, ar25:5.2,  rank:39.2, review:{total:5, mar:0, score:2.2}, addr:'さいたま市緑区美園五丁目50番地1',               gbp:'正常', other:true},
+  {name:'大高店',         d24:2196, d25:1925, ar24:11.3,ar25:11.3, rank:60.0, review:{total:4, mar:1, score:3.5}, addr:'名古屋市緑区南大高2-450',                     gbp:'正常'},
+  {name:'レイクタウン店',    d24:2608, d25:2114, ar24:9.4, ar25:9.5,  rank:0.8,  review:{total:1, mar:0, score:1.0}, addr:'越谷市レイクタウン3-1-1',                     gbp:'正常'},
+];
+
+// MEOキーワード
+// キーワード（4月月間 / 非ブランド）
+const KW_GYM = [
+  {name:'ジム', fy25:3262, yoy:-21},
+  {name:'プール', fy25:277, yoy:62},
+  {name:'スポーツジム', fy25:320, yoy:-58},
+  {name:'スポーツクラブ', fy25:45, yoy:-35},
+  {name:'スポーツ', fy25:108, yoy:null},
+  {name:'スイミングスクール', fy25:57, yoy:10},
+];
+const KW_POOL = [
+  {name:'サウナ', fy25:156, yoy:-2},
+  {name:'銭湯', fy25:61, yoy:118},
+  {name:'お風呂・風呂', fy25:120, yoy:-43},
+  {name:'そよら', fy25:111, yoy:73},
+  {name:'チョコザップ', fy25:155, yoy:46},
+];
+const KW_BRAND = [
+  {name:'マリンピア（地名）', fy25:294, yoy:null},
+  {name:'朝日スポーツクラブ', fy25:63, yoy:null},
+  {name:'フィット365', fy25:85, yoy:null},
+  {name:'横浜市戸塚区 スパ', fy25:48, yoy:null},
+  {name:'昭島 ジム', fy25:52, yoy:16},
+];
+
+// ─── WORST STORES ──────────────────────────────────────────────────────────
+
+const WORST_STORES = {
+  apr: [
+    {
+      rank:1, name:'マリンピア店', tag:'アクション率 4.7%',
+      disp_yoy:22.7, ar:4.7, rank_rate:0.8, score:3.4, review_mar:1,
+      issue:'表示回数は+22.7%と増加しているにもかかわらず、アクション率が4.7%と全店最低水準です。上位表示率も0.8%と低く、GBPコンテンツと検索意図のマッチングに改善余地があります。',
+      action:'競合（ゴールドジム幕張・エニタイム）のカテゴリ・写真構成を調査分析し、来店意向につながるGBPコンテンツを整備していきます。',
+      competitors:[
+        {name:'ゴールドジム 幕張', cat:'本格ジム', note:'海浜幕張駅徒歩3分。ブランド認知が高く筋トレ系検索を牽引。'},
+        {name:'エニタイムフィットネス 海浜幕張', cat:'24時間ジム', note:'海浜幕張エリア。24時間・低価格で広域から集客。'},
+        {name:'ティップネス 幕張本郷', cat:'総合スポーツクラブ', note:'プール・スタジオ完備。ファミリー層・社会人層に対応。'},
+      ]
+    },
+    {
+      rank:2, name:'相模原店', tag:'アクション率 5.4%',
+      disp_yoy:-5.0, ar:5.4, rank_rate:31.3, score:3.0, review_mar:0,
+      issue:'表示回数が前年比▲5.0%で推移し、アクション率5.4%は改善余地があります。4月の口コミはゼロ件でした。',
+      action:'競合（ホリデイSC・スマートフィット100）のカテゴリ・属性を継続調査し、登録キーワードとGBPコンテンツの整合性を高めていきます。',
+      competitors:[
+        {name:'ホリデイスポーツクラブ 相模原店', cat:'総合スポーツクラブ', note:'古淵駅徒歩5分。プール・スタジオ・サウナ完備。地域最大級の設備。'},
+        {name:'スマートフィット100 古淵店', cat:'24時間ジム', note:'古淵駅徒歩2分。低価格24時間。無料パーソナル付き。'},
+        {name:'メガロス相模大野', cat:'総合スポーツクラブ', note:'相模大野駅徒歩3分。プール・サウナ・音楽演出スタジオで集客。'},
+      ]
+    },
+    {
+      rank:3, name:'葛西店', tag:'アクション率 5.6%・上位表示率 0.8%',
+      disp_yoy:10.6, ar:5.6, rank_rate:0.8, score:4.5, review_mar:0,
+      issue:'表示回数は+10.6%と増加しているものの、アクション率5.6%・上位表示率0.8%と改善余地があります。4月の口コミはゼロ件でした。',
+      action:'江戸川区エリアの競合GBPを調査分析し、上位表示率向上のためのカテゴリ・属性整備を進めます。',
+      competitors:[
+        {name:'エニタイムフィットネス 西葛西', cat:'24時間ジム', note:'西葛西駅周辺。24時間・低価格で若年層需要を獲得。'},
+        {name:'コナミスポーツクラブ 葛西', cat:'総合スポーツクラブ', note:'葛西エリア。プール・スタジオ完備で幅広い層に対応。'},
+        {name:'ルネサンス 葛西', cat:'総合スポーツクラブ', note:'葛西駅周辺。地域認知度が高い老舗クラブ。'},
+      ]
+    },
+  ],
+  mar: [
+    {
+      rank:1, name:'相模原店', tag:'アクション率 6.4%（3月）',
+      disp_yoy:-36.6, ar:6.4, rank_rate:37.9,
+      issue:'3月は表示回数▲36.6%・アクション率6.4%。前月から引き続き要注視の店舗です。',
+      action:'4月も改善継続中。競合調査・カテゴリ整備を優先実施。',
+      competitors:[]
+    },
+    {
+      rank:2, name:'橋本店', tag:'アクション率 6.4%（3月）',
+      disp_yoy:4.7, ar:6.4, rank_rate:10.9,
+      issue:'3月はアクション率6.4%で、表示は増加していたものの来店意向につながりにくい状態でした。',
+      action:'上位表示率の改善とGBPコンテンツ整備を継続。',
+      competitors:[]
+    },
+    {
+      rank:3, name:'海浜幕張店', tag:'アクション率 7.1%（3月）',
+      disp_yoy:13.1, ar:7.1, rank_rate:4.0,
+      issue:'3月はアクション率7.1%・上位表示率4.0%。評価★2.8と利用者評価にも改善余地がありました。',
+      action:'4月も継続してアクション率の改善を注視しています。',
+      competitors:[]
+    },
+  ]
+};
+
+// ─── CHART INIT ────────────────────────────────────────────────────────────
+
+const CHART_DEFAULTS = {
+  plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+  scales: {
+    x: { grid: { color: '#F1F5F9' }, ticks: { font: { size: 10 }, color: '#64748B' } },
+    y: { grid: { color: '#F1F5F9' }, ticks: { font: { size: 10 }, color: '#64748B' } },
+  },
+  animation: { duration: 600 },
+};
+
+let chartsInited = false;
+
+function initCharts() {
+  if (chartsInited) return;
+  chartsInited = true;
+
+  // 特化型 表示回数
+  new Chart(document.getElementById('tokka-disp-chart'), {
+    type: 'line',
+    data: {
+      labels: MONTHS_LABEL,
+      datasets: [
+        { label:'FY24', data: TOKKA.fy24_disp, borderColor:'#CBD5E1', backgroundColor:'rgba(203,213,225,0.1)', tension:0.3, pointRadius:3, borderWidth:2 },
+        { label:'FY25', data: TOKKA.fy25_disp, borderColor:'#00A896', backgroundColor:'rgba(0,168,150,0.08)', tension:0.3, pointRadius:3, borderWidth:2.5, fill:true },
+        { label:'目標+10%', data: Array(12).fill(TOKKA.target10_disp), borderColor:'#EF4444', borderWidth:1, borderDash:[5,4], pointRadius:0 },
+      ]
+    },
+    options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, legend:{ display:true, position:'bottom', labels:{ boxWidth:10, font:{size:10} } } } },
+  });
+
+  // 特化型 アクション率
+  new Chart(document.getElementById('tokka-ar-chart'), {
+    type: 'line',
+    data: {
+      labels: MONTHS_LABEL,
+      datasets: [
+        { label:'FY24', data: TOKKA.fy24_ar.map(v=>+v.toFixed(2)), borderColor:'#CBD5E1', tension:0.3, pointRadius:3, borderWidth:2 },
+        { label:'FY25', data: TOKKA.fy25_ar.map(v=>+v.toFixed(2)), borderColor:'#00A896', backgroundColor:'rgba(0,168,150,0.08)', tension:0.3, pointRadius:3, borderWidth:2.5, fill:true },
+        { label:'目標 15%', data: Array(12).fill(15), borderColor:'#10B981', borderWidth:2, borderDash:[4,4], pointRadius:0 },
+      ]
+    },
+    options: { ...CHART_DEFAULTS, plugins:{ ...CHART_DEFAULTS.plugins, legend:{ display:true, position:'bottom', labels:{ boxWidth:10, font:{size:10} } } }, scales:{ ...CHART_DEFAULTS.scales, y:{ ...CHART_DEFAULTS.scales.y, min:6, max:17 } } },
+  });
+
+  // 総合 表示回数
+  new Chart(document.getElementById('sogo-disp-chart'), {
+    type: 'line',
+    data: {
+      labels: MONTHS_LABEL,
+      datasets: [
+        { label:'FY24', data: SOGO.fy24_disp, borderColor:'#CBD5E1', tension:0.3, pointRadius:3, borderWidth:2 },
+        { label:'FY25', data: SOGO.fy25_disp, borderColor:'#00A896', backgroundColor:'rgba(0,168,150,0.08)', tension:0.3, pointRadius:3, borderWidth:2.5, fill:true },
+        { label:'目標+10%', data: Array(12).fill(SOGO.target10_disp), borderColor:'#EF4444', borderWidth:1, borderDash:[5,4], pointRadius:0 },
+      ]
+    },
+    options: { ...CHART_DEFAULTS, plugins:{ ...CHART_DEFAULTS.plugins, legend:{ display:true, position:'bottom', labels:{ boxWidth:10, font:{size:10} } } } },
+  });
+
+  // 総合 アクション率
+  new Chart(document.getElementById('sogo-ar-chart'), {
+    type: 'line',
+    data: {
+      labels: MONTHS_LABEL,
+      datasets: [
+        { label:'FY24', data: SOGO.fy24_ar.map(v=>+v.toFixed(2)), borderColor:'#CBD5E1', tension:0.3, pointRadius:3, borderWidth:2 },
+        { label:'FY25', data: SOGO.fy25_ar.map(v=>+v.toFixed(2)), borderColor:'#00A896', backgroundColor:'rgba(0,168,150,0.08)', tension:0.3, pointRadius:3, borderWidth:2.5, fill:true },
+        { label:'目標 15%', data: Array(12).fill(15), borderColor:'#10B981', borderWidth:2, borderDash:[4,4], pointRadius:0 },
+      ]
+    },
+    options: { ...CHART_DEFAULTS, plugins:{ ...CHART_DEFAULTS.plugins, legend:{ display:true, position:'bottom', labels:{ boxWidth:10, font:{size:10} } } }, scales:{ ...CHART_DEFAULTS.scales, y:{ ...CHART_DEFAULTS.scales.y, min:6, max:17 } } },
+  });
+}
+
+// ─── TABLE BUILDER ─────────────────────────────────────────────────────────
+
+function buildTable(stores, tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  tbody.innerHTML = '';
+  const sorted = [...stores].sort((a,b) => {
+    const ya = a.d24>0 ? (a.d25-a.d24)/a.d24 : 99;
+    const yb = b.d24>0 ? (b.d25-b.d24)/b.d24 : 99;
+    return yb - ya;
+  });
+  sorted.forEach(s => {
+    const yoy_d = s.d24>0 ? ((s.d25-s.d24)/s.d24*100) : null;
+    const yoy_ar = (s.ar25-s.ar24);
+    const cls = s.other ? 'row-other' : (s.untrans ? 'row-untrans' : '');
+    const badge = s.other ? '<span class="badge badge-other">他社対応</span>' :
+                  (s.untrans ? '<span class="badge badge-untrans">譲渡未完了</span>' : '');
+    const yoyHtml = yoy_d===null ? '<span class="neutral">NEW</span>' :
+      yoy_d>0 ? `<span class="up">+${yoy_d.toFixed(1)}%</span>` :
+                `<span class="down">${yoy_d.toFixed(1)}%</span>`;
+    const arHtml = yoy_ar>0 ? `<span class="up">+${yoy_ar.toFixed(1)}pt</span>` :
+                              `<span class="down">${yoy_ar.toFixed(1)}pt</span>`;
+    const rank = s.rank !== undefined ? s.rank : null;
+    const rankHtml = rank === null ? '−' :
+      rank >= 50 ? `<span style="color:#10B981;font-weight:700">${rank}%</span>` :
+      rank >= 20 ? `<span style="color:#F59E0B;font-weight:600">${rank}%</span>` :
+                   `<span style="color:#EF4444;font-weight:700">${rank}%</span>`;
+    const yr2 = s.review.mar !== undefined ? s.review.mar : (s.review.yr2 || s.review.period || 0);
+    const scoreColor = s.review.score >= 4 ? '#F59E0B' : s.review.score >= 3 ? '#64748B' : '#EF4444';
+    tbody.innerHTML += `
+      <tr class="${cls}" title="${s.addr||''}">
+        <td>${s.name}${badge}</td>
+        <td>${s.d24.toLocaleString()}</td>
+        <td>${s.d25.toLocaleString()}</td>
+        <td>${yoyHtml}</td>
+        <td>${s.ar24.toFixed(1)}%</td>
+        <td>${s.ar25.toFixed(1)}%</td>
+        <td>${arHtml}</td>
+        <td>${rankHtml}</td>
+        <td>${s.review.total}<span style="font-size:9px;color:#94A3B8">（2年）</span></td>
+        <td style="font-weight:${yr2>0?'700':'400'};color:${yr2>0?'var(--navy)':'#94A3B8'}">${yr2}</td>
+        <td style="color:${scoreColor}">${s.review.score>0?s.review.score.toFixed(1):'−'}</td>
+      </tr>`;
+  });
+}
+
+// ─── WORST STORES ──────────────────────────────────────────────────────────
+
+function buildWorstCards() {
+  const container = document.getElementById('worst-cards');
+  if (!container) return;
+  const renderCard = (s, isApr) => `
+    <div style="background:var(--white);border-radius:10px;border:1px solid ${isApr?'#FCA5A5':'#E2E8F0'};margin-bottom:10px;overflow:hidden">
+      <div style="background:${isApr?'#3B0A0A':'#2D3748'};padding:10px 16px;display:flex;align-items:center;gap:10px">
+        <div style="background:${isApr?'#EF4444':'#718096'};color:#fff;font-weight:700;font-size:13px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">${s.rank}</div>
+        <div style="font-size:15px;font-weight:700;color:#fff">${s.name}</div>
+        <div style="background:${isApr?'#7F1D1D':'#4A5568'};color:${isApr?'#FCA5A5':'#CBD5E1'};font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px">${s.tag}</div>
+        <div style="margin-left:auto;display:flex;gap:14px">
+          <div style="text-align:center"><div style="font-size:9px;color:#94A3B8">表示前年比</div><div style="font-size:13px;font-weight:700;color:${s.disp_yoy<0?'#94A3B8':'#6EE7B7'}">${s.disp_yoy>0?'+':''}${s.disp_yoy}%</div></div>
+          <div style="text-align:center"><div style="font-size:9px;color:#94A3B8">アクション率</div><div style="font-size:13px;font-weight:700;color:#F59E0B">${s.ar}%</div></div>
+          <div style="text-align:center"><div style="font-size:9px;color:#94A3B8">上位表示率</div><div style="font-size:13px;font-weight:700;color:${s.rank_rate>=20?'#6EE7B7':'#94A3B8'}">${s.rank_rate}%</div></div>
+        </div>
+      </div>
+      ${isApr && s.competitors.length > 0 ? `
+      <div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:0">
+        <div style="padding:12px 16px;border-right:1px solid #FEE2E2">
+          <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:5px">課題</div>
+          <div style="font-size:11px;color:var(--darkGray);line-height:1.7">${s.issue}</div>
+        </div>
+        <div style="padding:12px 16px;border-right:1px solid #FEE2E2;background:#FFFBEB">
+          <div style="font-size:10px;font-weight:700;color:#92400E;margin-bottom:5px">📌 対策</div>
+          <div style="font-size:11px;color:var(--darkGray);line-height:1.7">${s.action}</div>
+        </div>
+        <div style="padding:12px 16px">
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:6px">🔍 周辺競合</div>
+          ${s.competitors.map(c=>`<div style="margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #F1F5F9"><div style="font-size:11px;font-weight:700;color:var(--navy)">${c.name}</div><div style="font-size:10px;color:var(--teal)">${c.cat}</div><div style="font-size:10px;color:var(--gray)">${c.note}</div></div>`).join('')}
+        </div>
+      </div>` : `
+      <div style="padding:10px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><div style="font-size:10px;color:#64748B;margin-bottom:3px">課題</div><div style="font-size:11px;color:var(--darkGray);line-height:1.6">${s.issue}</div></div>
+        <div style="background:#FFFBEB;border-radius:6px;padding:8px"><div style="font-size:10px;color:#92400E;margin-bottom:3px">📌 対策</div><div style="font-size:11px;color:var(--darkGray);line-height:1.6">${s.action}</div></div>
+      </div>`}
+    </div>`;
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--navy);background:#FEF2F2;border:1px solid #FCA5A5;border-radius:6px;padding:6px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="background:#EF4444;color:#fff;font-size:9px;padding:1px 7px;border-radius:8px;font-weight:700">今月</span> 4月 アクション率ワースト3
+        </div>
+        ${WORST_STORES.apr.map(s=>renderCard(s,true)).join('')}
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--navy);background:#F1F5F9;border:1px solid #CBD5E1;border-radius:6px;padding:6px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="background:#718096;color:#fff;font-size:9px;padding:1px 7px;border-radius:8px;font-weight:700">先月</span> 3月 アクション率ワースト3
+        </div>
+        ${WORST_STORES.mar.map(s=>renderCard(s,false)).join('')}
+      </div>
+    </div>`;
+}
+
+const SOGO_WORST_STORES = {
+  apr: [
+    {
+      rank:1, name:'伊丹昆陽店', tag:'アクション率 4.5%',
+      disp_yoy:78.9, ar:4.5, rank_rate:28.8, score:0, review_mar:0,
+      issue:'表示回数は+78.9%と大幅増加しているにもかかわらず、アクション率が4.5%と全店最低水準です。4月の口コミはゼロ件で、表示の増加が来店意向につながりにくい状態と考えられます。',
+      action:'競合（コナミスポーツ・エニタイム伊丹）のカテゴリ・属性・写真構成を調査分析し、GBPコンテンツの改善方針を検討します。',
+      competitors:[
+        {name:'コナミスポーツクラブ 伊丹', cat:'総合スポーツクラブ', note:'伊丹市内。プール・スタジオ・サウナ完備で幅広い層に対応。'},
+        {name:'エニタイムフィットネス 伊丹', cat:'24時間ジム', note:'伊丹市内。24時間・低価格で幅広い年齢層から集客。'},
+        {name:'カーブス（伊丹市内複数）', cat:'女性専用30分ジム', note:'伊丹市内に複数展開。地域女性シニア層への認知度が高い。'},
+      ]
+    },
+    {
+      rank:2, name:'浦和美園店', tag:'アクション率 5.2%（他社対応中）',
+      disp_yoy:9.9, ar:5.2, rank_rate:39.2, score:2.2, review_mar:0,
+      issue:'他社MEO対策実施中で、アクション率5.2%と改善余地があります。4月の口コミはゼロ件でした。上位表示率39.2%は確保できています。',
+      action:'他社対策の月次推移を継続監視。アクション率の改善が見られない場合は改善提案を実施します。',
+      competitors:[
+        {name:'エニタイムフィットネス 浦和美園', cat:'24時間ジム', note:'浦和美園駅周辺。24時間営業で駅近の立地が強み。'},
+        {name:'コナミスポーツクラブ 浦和美園', cat:'総合スポーツクラブ', note:'イオン内に近接。スイミングスクールで家族層の来館が多い。'},
+      ]
+    },
+    {
+      rank:3, name:'3FIT 八事店', tag:'アクション率 7.8%・上位表示率 5%',
+      disp_yoy:32.1, ar:7.8, rank_rate:5.0, score:3.4, review_mar:1,
+      issue:'表示+32.1%と増加していますが、アクション率7.8%・上位表示率5%と改善余地があります。4月口コミ1件で評価★1.0でした。',
+      action:'名古屋市昭和区・八事エリアの競合GBPを調査分析し、カテゴリ・属性・写真構成の差分を特定します。',
+      competitors:[
+        {name:'コナミスポーツクラブ 八事', cat:'総合スポーツクラブ', note:'八事エリア。プール・スタジオ・サウナ完備。'},
+        {name:'エニタイムフィットネス 八事', cat:'24時間ジム', note:'八事日赤駅周辺。24時間営業で学生・社会人層に浸透。'},
+        {name:'ルネサンス 名古屋八事', cat:'総合スポーツクラブ', note:'八事エリア。プール・サウナ・スタジオで幅広い層に対応。'},
+      ]
+    },
+  ],
+  mar: [
+    {
+      rank:1, name:'浦和美園店', tag:'アクション率 7.3%（3月）',
+      disp_yoy:-10.9, ar:7.3, rank_rate:44.8,
+      issue:'3月はアクション率7.3%・表示▲10.9%。他社対応中の店舗で継続して注視しています。',
+      action:'月次推移を監視し改善傾向が見られない場合は改善提案を実施。',
+      competitors:[]
+    },
+    {
+      rank:2, name:'伊丹昆陽店', tag:'アクション率 7.9%（3月）',
+      disp_yoy:78.9, ar:7.9, rank_rate:25.8,
+      issue:'3月はアクション率7.9%。4月も引き続きアクション率が低水準のため、継続課題として対応中です。',
+      action:'4月も継続してGBPコンテンツの整備・競合調査を進めています。',
+      competitors:[]
+    },
+    {
+      rank:3, name:'3FIT 姫路店', tag:'アクション率 9.2%・上位表示率 0%（3月）',
+      disp_yoy:-5.4, ar:9.2, rank_rate:0.0,
+      issue:'3月は上位表示率0%・アクション率9.2%。GBP変更有の店舗として整備を進めています。',
+      action:'GBP整備を継続し、上位表示率の改善を図っています。',
+      competitors:[]
+    },
+  ]
+};
+
+
+function buildWorstCardsSogo() {
+  const container = document.getElementById('worst-cards-sogo');
+  if (!container) return;
+  const renderCard = (s, isApr) => `
+    <div style="background:var(--white);border-radius:10px;border:1px solid ${isApr?'#FCA5A5':'#E2E8F0'};margin-bottom:10px;overflow:hidden">
+      <div style="background:${isApr?'#3B0A0A':'#2D3748'};padding:10px 16px;display:flex;align-items:center;gap:10px">
+        <div style="background:${isApr?'#EF4444':'#718096'};color:#fff;font-weight:700;font-size:13px;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">${s.rank}</div>
+        <div style="font-size:15px;font-weight:700;color:#fff">${s.name}</div>
+        <div style="background:${isApr?'#7F1D1D':'#4A5568'};color:${isApr?'#FCA5A5':'#CBD5E1'};font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px">${s.tag}</div>
+        <div style="margin-left:auto;display:flex;gap:14px">
+          <div style="text-align:center"><div style="font-size:9px;color:#94A3B8">表示前年比</div><div style="font-size:13px;font-weight:700;color:${s.disp_yoy<0?'#94A3B8':'#6EE7B7'}">${s.disp_yoy>0?'+':''}${s.disp_yoy}%</div></div>
+          <div style="text-align:center"><div style="font-size:9px;color:#94A3B8">アクション率</div><div style="font-size:13px;font-weight:700;color:#F59E0B">${s.ar}%</div></div>
+          <div style="text-align:center"><div style="font-size:9px;color:#94A3B8">上位表示率</div><div style="font-size:13px;font-weight:700;color:${s.rank_rate>=20?'#6EE7B7':'#94A3B8'}">${s.rank_rate}%</div></div>
+        </div>
+      </div>
+      ${isApr && s.competitors.length > 0 ? `
+      <div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:0">
+        <div style="padding:12px 16px;border-right:1px solid #FEE2E2">
+          <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:5px">課題</div>
+          <div style="font-size:11px;color:var(--darkGray);line-height:1.7">${s.issue}</div>
+        </div>
+        <div style="padding:12px 16px;border-right:1px solid #FEE2E2;background:#FFFBEB">
+          <div style="font-size:10px;font-weight:700;color:#92400E;margin-bottom:5px">📌 対策</div>
+          <div style="font-size:11px;color:var(--darkGray);line-height:1.7">${s.action}</div>
+        </div>
+        <div style="padding:12px 16px">
+          <div style="font-size:10px;font-weight:700;color:var(--navy);margin-bottom:6px">🔍 周辺競合</div>
+          ${s.competitors.map(c=>`<div style="margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #F1F5F9"><div style="font-size:11px;font-weight:700;color:var(--navy)">${c.name}</div><div style="font-size:10px;color:var(--teal)">${c.cat}</div><div style="font-size:10px;color:var(--gray)">${c.note}</div></div>`).join('')}
+        </div>
+      </div>` : `
+      <div style="padding:10px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><div style="font-size:10px;color:#64748B;margin-bottom:3px">課題</div><div style="font-size:11px;color:var(--darkGray);line-height:1.6">${s.issue}</div></div>
+        <div style="background:#FFFBEB;border-radius:6px;padding:8px"><div style="font-size:10px;color:#92400E;margin-bottom:3px">📌 対策</div><div style="font-size:11px;color:var(--darkGray);line-height:1.6">${s.action}</div></div>
+      </div>`}
+    </div>`;
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--navy);background:#FEF2F2;border:1px solid #FCA5A5;border-radius:6px;padding:6px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="background:#EF4444;color:#fff;font-size:9px;padding:1px 7px;border-radius:8px;font-weight:700">今月</span> 4月 アクション率ワースト3
+        </div>
+        ${SOGO_WORST_STORES.apr.map(s=>renderCard(s,true)).join('')}
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--navy);background:#F1F5F9;border:1px solid #CBD5E1;border-radius:6px;padding:6px 12px;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="background:#718096;color:#fff;font-size:9px;padding:1px 7px;border-radius:8px;font-weight:700">先月</span> 3月 アクション率ワースト3
+        </div>
+        ${SOGO_WORST_STORES.mar.map(s=>renderCard(s,false)).join('')}
+      </div>
+    </div>`;
+}
+
+function buildKw(kwList, containerId) {
+  const maxV = Math.max(...kwList.map(k=>k.fy25));
+  const el = document.getElementById(containerId);
+  el.innerHTML = kwList.map(k => {
+    const pct = Math.round(k.fy25/maxV*100);
+    const yoyHtml = k.yoy === null || k.yoy === undefined ? '<div class="kw-yoy neutral">−</div>' :
+                   k.yoy > 0 ? `<div class="kw-yoy up">+${k.yoy.toFixed(0)}%</div>` :
+                   k.yoy === 0 ? `<div class="kw-yoy neutral">±0%</div>` :
+                                 `<div class="kw-yoy down">${k.yoy.toFixed(0)}%</div>`;
+    return `<div class="kw-item">
+      <div>
+        <div class="kw-name">${k.name}</div>
+        <div class="kw-bar-wrap"><div class="kw-bar" style="width:${pct}%"></div></div>
+      </div>
+      <div class="kw-right">
+        <div class="kw-count">${k.fy25.toLocaleString()}</div>
+        ${yoyHtml}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── MONTH CONFIG ──────────────────────────────────────────────────────────
+
+const MONTHS_CONFIG = [
+  { key:'2026-04', label:'2026年4月', period:'2024年5月〜2026年4月', active:true  },
+  { key:'2026-05', label:'2026年5月', period:'2024年6月〜2026年5月', active:false },
+  { key:'2026-06', label:'2026年6月', period:'2024年7月〜2026年6月', active:false },
+];
+let currentMonth = '2026-04';
+
+function buildMonthButtons() {
+  const container = document.getElementById('month-btns');
+  if (!container) return;
+  container.innerHTML = MONTHS_CONFIG.map(m => `
+    <button onclick="selectMonth('${m.key}')" id="mbtn-${m.key}"
+      style="padding:5px 16px;border-radius:20px;border:1px solid ${m.key===currentMonth?'var(--teal)':'rgba(255,255,255,0.15)'};
+             background:${m.key===currentMonth?'var(--teal)':'transparent'};
+             color:${m.key===currentMonth?'#fff':m.active?'#CBD5E1':'#4A5568'};
+             font-family:inherit;font-size:12px;font-weight:${m.key===currentMonth?'700':'500'};
+             cursor:${m.active?'pointer':'default'};white-space:nowrap;position:relative">
+      ${m.label}
+      ${!m.active ? '<span style="position:absolute;top:-6px;right:-4px;background:#4A5568;color:#94A3B8;font-size:8px;padding:1px 5px;border-radius:6px">準備中</span>' : ''}
+    </button>`).join('');
+}
+
+function selectMonth(key) {
+  const cfg = MONTHS_CONFIG.find(m => m.key === key);
+  if (!cfg || !cfg.active) return;
+  currentMonth = key;
+  buildMonthButtons();
+  const badge = document.getElementById('cover-month-badge');
+  const period = document.getElementById('cover-period');
+  const headerPeriod = document.getElementById('header-period');
+  if (badge) badge.textContent = cfg.label + '度';
+  if (period) period.textContent = '集計期間：' + cfg.period;
+  if (headerPeriod) headerPeriod.textContent = 'MEO Dashboard ／ 集計期間：' + cfg.period;
+  // 将来：月データ切り替え処理をここに追加
+  // reloadMonthData(key);
+}
+
+// ─── TAB SWITCH ────────────────────────────────────────────────────────────
+
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-cover').style.display = 'none';
+  document.getElementById('month-bar').style.display = 'flex';
+  document.querySelector('.tab-bar').style.display = 'flex';
+  document.querySelector('.main').style.display = 'block';
+  document.getElementById('view-' + view).classList.add('active');
+  document.getElementById('tab-' + view).classList.add('active');
+  setTimeout(initCharts, 50);
+}
+
+function showCover() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-cover').style.display = 'block';
+  document.getElementById('month-bar').style.display = 'none';
+  document.querySelector('.tab-bar').style.display = 'none';
+  document.querySelector('.main').style.display = 'none';
+}
+
+function closeCover() {
+  document.getElementById('view-cover').style.display = 'none';
+  document.getElementById('month-bar').style.display = 'flex';
+  document.querySelector('.tab-bar').style.display = 'flex';
+  document.querySelector('.main').style.display = 'block';
+  switchView('tokka');
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 表紙を最初に表示
+  showCover();
+  buildMonthButtons();
+  buildTable(TOKKA_STORES, 'tokka-tbody');
+  buildTable(SOGO_STORES,  'sogo-tbody');
+  buildKw(KW_GYM,   'kw-gym');
+  buildKw(KW_POOL,  'kw-pool');
+  buildKw(KW_BRAND, 'kw-brand');
+  buildWorstCards();
+  buildWorstCardsSogo();
+});
+</script>
+</body>
+</html>
