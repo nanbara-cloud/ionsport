@@ -1434,11 +1434,7 @@ function initCharts() {
 function buildTable(stores, tbodyId) {
   const tbody = document.getElementById(tbodyId);
   if (!tbody) return;
-  const sorted = [...stores].sort((a,b) => {
-    const ya = a.d24>0 ? (a.d25-a.d24)/a.d24 : 99;
-    const yb = b.d24>0 ? (b.d25-b.d24)/b.d24 : 99;
-    return yb - ya;
-  });
+  const sorted = [...stores].sort((a,b) => b.ar25 - a.ar25);
   sorted.forEach(s => {
     const yoy_d = s.d24>0 ? ((s.d25-s.d24)/s.d24*100) : null;
     const yoy_ar = (s.ar25-s.ar24);
