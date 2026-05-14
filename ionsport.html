@@ -396,7 +396,13 @@
 <!-- ======================================================= -->
 <!-- VIEW: 特化型 -->
 <!-- ======================================================= -->
-<div id="view-tokka" class="view active">
+<div id="tab-content"></div>
+
+<script>
+
+// ─── TAB HTML ────────────────────────────────────────────────────────────────
+const TAB_HTML = {
+  tokka: `<div id="view-tokka" class="view active" style="display:block">
 
 
   <div class="untrans-note">
@@ -512,7 +518,7 @@
     </div>
   </div>
   <div class="section-title">② 各アクション内訳と目標（表示回数対比）</div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
 
     <!-- WEB訪問 -->
     <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px;position:relative;overflow:hidden">
@@ -574,6 +580,162 @@
   </div>
 
 
+
+
+  <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #3B82F6;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#3B82F6;margin-bottom:4px">💡 ② アクション内訳の見解</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">経路案内は前年比−0.8%とほぼ横ばいを維持しており、<strong>来店意向は安定</strong>しています。WEB訪問（−16.3%）・電話（−24.8%）の改善がアクション率15%目標へのポイントです。</div>
+    </div>
+    <div style="border-left:1px solid #E2E8F0;padding-left:12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 来月（5月）の動き</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">GBPのWEBサイトリンク先の内容確認と、電話番号表示の最適化を点検していきます。</div>
+    </div>
+  </div>
+
+  <!-- ③ 表示数とアクション率の推移 -->
+  <div class="section-title">③ 表示数とアクション率の推移（FY24 vs FY25）</div>
+  <!-- CHARTS -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">
+        月次 表示回数推移
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#CBD5E1"></span>FY24</span>
+          <span><span class="legend-dot" style="background:#00A896"></span>FY25</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="tokka-disp-chart" height="200"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">
+        アクション率推移
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#CBD5E1"></span>FY24</span>
+          <span><span class="legend-dot" style="background:#00A896"></span>FY25</span>
+          <span><span class="legend-dot" style="background:#10B981;border:1px dashed #10B981"></span>目標15%</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="tokka-ar-chart" height="200"></canvas></div>
+    </div>
+  </div>
+
+  <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #10B981;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div style="font-size:10px;font-weight:700;color:#10B981;margin-bottom:4px">💡 ③ 推移グラフの見解</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">FY25のアクション率はFY24を全月で上回る水準を維持しており、<strong>対策の継続効果が数値に表れています</strong>。表示回数はFY25後半から安定しており、5月以降の季節需要増加に伴う回復が期待されます。</div>
+    </div>
+    <div style="border-left:1px solid #E2E8F0;padding-left:12px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 来月（5月）の動き</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">初夏・GW後の需要を見据えた投稿テンプレートを展開します。表示数の月次推移を確認しながらGBP整備の優先度を判断していきます。</div>
+    </div>
+  </div>
+
+  <!-- STORE TABLE -->
+  <div class="section-title">店舗別 FY24 vs FY25 一覧</div>
+  <div class="table-card">
+    <div class="table-header">
+      <div class="section-title" style="margin:0">32店舗 前年度比</div>
+      <div style="font-size:10px;color:var(--gray)">
+        <span style="background:#FEF3C7;padding:2px 6px;border-radius:4px;margin-right:6px">🟡 他社対応</span>
+        <span style="background:#F1F5F9;padding:2px 6px;border-radius:4px">⚪ 譲渡未完了</span>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:130px">店舗名</th>
+            <th>FY24 月均表示</th>
+            <th>FY25 月均表示</th>
+            <th>表示前年比</th>
+            <th>アクション率<br>FY24</th>
+            <th>アクション率<br>FY25</th>
+            <th>アクション率<br>変化</th>
+            <th>上位表示率<br>（4月）</th>
+            <th>クチコミ総数</th>
+            <th>口コミ<br>（4月）</th>
+            <th>平均評価</th>
+          </tr>
+        </thead>
+        <tbody id="tokka-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ④ 見解 -->
+  <div class="section-title">④ 4月結果に対する見解</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:18px">
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="background:var(--teal);color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">データ分析</span>全体評価
+      </div>
+      <div style="font-size:13px;color:var(--darkGray);line-height:1.8">
+        4月はGWシーズンで新生活の体づくり需要が続く一方、<strong>連休前後の来館パターンの変化が出やすい時期</strong>です。表示回数は前年比<strong style="color:#E05050">−7.9%</strong>で推移していますが、アクション率は<strong style="color:var(--teal)">11.03%</strong>（前年11.52%）と<strong>目標15%に向けて一定水準を維持</strong>。経路案内は前年比−0.8%とほぼ横ばいで<strong>来店意向は底堅い</strong>一方、WEB訪問（−16.3%）・電話（−24.8%）の回復が課題です。<strong>FY25年間平均アクション率11.49%はFY24（10.21%）を大きく上回っており</strong>、中長期の改善傾向は継続しています。
+      </div>
+    </div>
+    <div style="background:#FEF9EC;border:1px solid #F59E0B;border-radius:10px;padding:18px">
+      <div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="background:#F59E0B;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">⚠️ Google動向</span>コアアップデートの影響継続（4月）
+      </div>
+      <div style="font-size:13px;color:#78350F;line-height:1.8">
+        3月末に実施された<strong>Googleコアアップデートの影響が4月も継続</strong>しています。<strong>①カテゴリ・地域一貫性の評価強化</strong>と<strong>②GBPコンテンツのAI検索反映</strong>が続いており、複数店舗でカテゴリ設定の整備を進めていきます。
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ キーワード -->
+  <div class="section-title">⑤ ブランド検索以外の流入キーワード TOP（2026年4月）</div>
+  <div class="kw-grid">
+    <div class="kw-card">
+      <div class="kw-title">🏋️ ジム・施設系（4月）</div>
+      <div id="kw-gym"></div>
+    </div>
+    <div class="kw-card">
+      <div class="kw-title">🛁 温浴・癒し系（4月）</div>
+      <div id="kw-pool"></div>
+    </div>
+    <div class="kw-card">
+      <div class="kw-title">🏷️ 競合ブランド流入（4月）</div>
+      <div id="kw-brand"></div>
+    </div>
+  </div>
+
+  <!-- 2年間ARトレンド -->
+  <div class="section-title" style="margin-top:4px">📉 アクション率 2年間推移（2024年5月〜2026年4月）</div>
+  <div class="chart-card" style="margin-bottom:20px">
+    <div class="chart-title" style="justify-content:space-between">
+      <span>全24ヶ月 月別アクション率（特化型）</span>
+      <div class="chart-legend">
+        <span><span class="legend-dot" style="background:#00A896"></span>アクション率</span>
+        <span><span class="legend-dot" style="background:#EF4444;opacity:0.6"></span>目標15%</span>
+      </div>
+    </div>
+    <div class="chart-wrap"><canvas id="tokka-ar-2y-chart" height="160"></canvas></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+      <div style="text-align:center">
+        <div style="font-size:10px;color:var(--gray);margin-bottom:3px">2年間平均 アクション率</div>
+        <div style="font-size:20px;font-weight:700;color:var(--teal)">10.83%</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:10px;color:var(--gray);margin-bottom:3px">目標15%まであと</div>
+        <div style="font-size:20px;font-weight:700;color:#94A3B8">+4.17pt</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:10px;color:var(--gray);margin-bottom:3px">最高月（2025年12月）</div>
+        <div style="font-size:20px;font-weight:700;color:var(--teal)">15.28%</div>
+        <div style="font-size:10px;color:var(--green)">✓ 目標達成</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ ワースト -->
+  <div class="section-title">⑥ ワースト店舗ピックアップ・課題と対策</div>
+  <div style="font-size:11px;color:var(--gray);background:#F8FAFC;border:1px solid var(--border);border-radius:6px;padding:8px 14px;margin-bottom:12px">
+    ※ ピックアップ条件：<strong>アクション率（表示回数に対するアクション数の割合）</strong>が低い店舗を優先的に選定しています。今月（4月）と先月（3月）を並べて継続状況を確認できます。
+  </div>
+  <div id="worst-cards" style="margin-bottom:20px"></div>
+
   <!-- ⑦ 次月全体施策 -->
   <div class="section-title">⑦ 次月（5月）全体施策</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
@@ -617,13 +779,8 @@
     </div>
   </div>
 
-</div><!-- /view-tokka -->
-
-
-<!-- ======================================================= -->
-<!-- VIEW: 総合 -->
-<!-- ======================================================= -->
-<div id="view-sogo" class="view">
+</div><!-- /view-tokka -->`,
+  sogo:  `<div id="view-sogo" class="view" style="display:none">
 
   <div class="other-co-note">
     ⚠️ <strong>他社対応：浦和美園店・3FIT熱田千年店・3FIT高知店</strong>は現在他社がMEO対策を実施中。データが低調な場合は詳細な分析・改善提案を行います。
@@ -723,20 +880,21 @@
     </div>
   </div>
 
-  <!-- ② 各アクション内訳 -->
-  <div class="section-title">② 各アクション内訳と目標（表示回数対比）</div>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr)
+
   <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #00A896;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
     <div>
-      <div style="font-size:10px;font-weight:700;color:#00A896;margin-bottom:4px;letter-spacing:.5px">💡 ① 全体結果の見解</div>
+      <div style="font-size:10px;font-weight:700;color:#00A896;margin-bottom:4px">💡 ① 全体結果の見解</div>
       <div style="font-size:12px;color:#334155;line-height:1.75">表示回数+25.8%は引き続き好調です。モバイルマップ+74.8%と高水準で、<strong>多くのユーザーにリーチできている</strong>状態が継続しています。</div>
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
-      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px;letter-spacing:.5px">📌 来月（5月）の動き</div>
+      <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 来月（5月）の動き</div>
       <div style="font-size:12px;color:#334155;line-height:1.75">GWによる閲覧増加後の5月推移を確認します。表示増加がアクション率にも反映されるよう、GBPコンテンツ整備を続けます。</div>
     </div>
   </div>
-;gap:12px;margin-bottom:20px">
+
+  <!-- ② 各アクション内訳 -->
+  <div class="section-title">② 各アクション内訳と目標（表示回数対比）</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
 
     <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:16px;position:relative;overflow:hidden">
       <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#3B82F6"></div>
@@ -871,6 +1029,28 @@
     </div>
   </div>
 
+  <!-- ④ 見解 -->
+  <div class="section-title">④ 4月結果に対する見解</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:18px">
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="background:var(--teal);color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">データ分析</span>全体評価
+      </div>
+      <div style="font-size:13px;color:var(--darkGray);line-height:1.8">
+        4月はGWを控え、<strong>新生活の体づくりから連休中の継続利用へと需要が移行する季節</strong>です。表示回数は前年比<strong style="color:#10B981">+25.8%</strong>と引き続き増加し、<strong>モバイルマップ経由が+74.8%と高水準</strong>。アクション率は<strong style="color:var(--teal)">8.20%</strong>で推移しています。経路案内は+12.7%と<strong>来店意向の底堅さは継続</strong>しており、<strong>FY25年間平均AR9.78%はFY24（9.60%）を上回っており</strong>、中長期の改善傾向は維持されています。
+      </div>
+    </div>
+    <div style="background:#FEF9EC;border:1px solid #F59E0B;border-radius:10px;padding:18px">
+      <div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+        <span style="background:#F59E0B;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">⚠️ Google動向</span>コアアップデートの影響継続（4月）
+      </div>
+      <div style="font-size:13px;color:#78350F;line-height:1.8">
+        3月末実施の<strong>Googleコアアップデートの影響が4月も継続</strong>しています。<br>
+        <strong>①カテゴリ・地域一貫性の評価強化</strong>と<strong>②GBPコンテンツのAI検索反映</strong>が続いており、<strong>3FIT姫路店（上位表示率0%）</strong>をはじめ複数店舗でカテゴリ設定の整備を進めていきます。
+      </div>
+    </div>
+  </div>
+
   <!-- ⑤ キーワード（総合） -->
   <div class="section-title">⑤ ブランド検索以外の流入キーワード TOP（2026年4月）</div>
   <div class="kw-grid">
@@ -912,28 +1092,6 @@
         <div style="font-size:10px;color:var(--gray);margin-bottom:3px">最高月（2025年12月）</div>
         <div style="font-size:20px;font-weight:700;color:#3B82F6">13.15%</div>
         <div style="font-size:10px;color:#94A3B8">目標まで +1.85pt</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ④ 見解 -->
-  <div class="section-title">④ 4月結果に対する見解</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
-    <div style="background:var(--white);border-radius:10px;border:1px solid var(--border);padding:18px">
-      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-        <span style="background:var(--teal);color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">データ分析</span>全体評価
-      </div>
-      <div style="font-size:13px;color:var(--darkGray);line-height:1.8">
-        4月はGWを控え、<strong>新生活の体づくりから連休中の継続利用へと需要が移行する季節</strong>です。表示回数は前年比<strong style="color:#10B981">+25.8%</strong>と引き続き増加し、<strong>モバイルマップ経由が+74.8%と高水準</strong>。アクション率は<strong style="color:var(--teal)">8.20%</strong>で推移しています。経路案内は+12.7%と<strong>来店意向の底堅さは継続</strong>しており、<strong>FY25年間平均AR9.78%はFY24（9.60%）を上回っており</strong>、中長期の改善傾向は維持されています。
-      </div>
-    </div>
-    <div style="background:#FEF9EC;border:1px solid #F59E0B;border-radius:10px;padding:18px">
-      <div style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:10px;display:flex;align-items:center;gap:6px">
-        <span style="background:#F59E0B;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">⚠️ Google動向</span>コアアップデートの影響継続（4月）
-      </div>
-      <div style="font-size:13px;color:#78350F;line-height:1.8">
-        3月末実施の<strong>Googleコアアップデートの影響が4月も継続</strong>しています。<br>
-        <strong>①カテゴリ・地域一貫性の評価強化</strong>と<strong>②GBPコンテンツのAI検索反映</strong>が続いており、<strong>3FIT姫路店（上位表示率0%）</strong>をはじめ複数店舗でカテゴリ設定の整備を進めていきます。
       </div>
     </div>
   </div>
@@ -988,9 +1146,9 @@
     </div>
   </div>
 
-</div><!-- /view-sogo -->
+</div><!-- /view-sogo -->`
+};
 
-<script>
 // ─── DATA ──────────────────────────────────────────────────────────────────
 
 const MONTHS_LABEL = ['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'];
@@ -1178,9 +1336,13 @@ function initCharts() {
   if (chartsInited) return;
   chartsInited = true;
 
+  const _td = document.getElementById('tokka-disp-chart');
+  const _ta = document.getElementById('tokka-ar-chart');
+  const _sd = document.getElementById('sogo-disp-chart');
+  const _sa = document.getElementById('sogo-ar-chart');
+
   // 特化型 表示回数
-  const _tdEl = document.getElementById('tokka-disp-chart');
-  if (_tdEl) new Chart(_tdEl, {
+  if (_td) new Chart(_td, {
     type: 'line',
     data: {
       labels: MONTHS_LABEL,
@@ -1194,8 +1356,7 @@ function initCharts() {
   });
 
   // 特化型 アクション率
-  const _taEl = document.getElementById('tokka-ar-chart');
-  if (_taEl) new Chart(_taEl, {
+  if (_ta) new Chart(_ta, {
     type: 'line',
     data: {
       labels: MONTHS_LABEL,
@@ -1209,7 +1370,7 @@ function initCharts() {
   });
 
   // 総合 表示回数
-  new Chart(document.getElementById('sogo-disp-chart'), {
+  if (_sd) new Chart(_sd, {
     type: 'line',
     data: {
       labels: MONTHS_LABEL,
@@ -1223,7 +1384,7 @@ function initCharts() {
   });
 
   // 総合 アクション率
-  new Chart(document.getElementById('sogo-ar-chart'), {
+  if (_sa) new Chart(_sa, {
     type: 'line',
     data: {
       labels: MONTHS_LABEL,
@@ -1272,7 +1433,7 @@ function initCharts() {
 
 function buildTable(stores, tbodyId) {
   const tbody = document.getElementById(tbodyId);
-  tbody.innerHTML = '';
+  if (!tbody) return;
   const sorted = [...stores].sort((a,b) => {
     const ya = a.d24>0 ? (a.d25-a.d24)/a.d24 : 99;
     const yb = b.d24>0 ? (b.d25-b.d24)/b.d24 : 99;
@@ -1546,15 +1707,43 @@ function selectMonth(key) {
 // ─── TAB SWITCH ────────────────────────────────────────────────────────────
 
 function switchView(view) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  // tab-contentにHTMLを差し込む（確実に一方のみ表示）
+  const container = document.getElementById('tab-content');
+  if (!container || !TAB_HTML[view]) return;
+  container.innerHTML = TAB_HTML[view];
+  // 注入した外側divのdisplay:noneを解除
+  const injected = container.firstElementChild;
+  if (injected) injected.style.display = 'block';
+
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('view-cover').style.display = 'none';
-  document.getElementById('month-bar').style.display = 'flex';
-  document.querySelector('.tab-bar').style.display = 'flex';
-  document.querySelector('.main').style.display = 'block';
-  document.getElementById('view-' + view).classList.add('active');
-  document.getElementById('tab-' + view).classList.add('active');
-  setTimeout(initCharts, 50);
+  const cover = document.getElementById('view-cover');
+  const mbar  = document.getElementById('month-bar');
+  const tbar  = document.querySelector('.tab-bar');
+  const main  = document.querySelector('.main');
+  if (cover) cover.style.display = 'none';
+  if (mbar)  mbar.style.display  = 'flex';
+  if (tbar)  tbar.style.display  = 'flex';
+  if (main)  main.style.display  = 'block';
+  const tabBtn = document.getElementById('tab-' + view);
+  if (tabBtn) tabBtn.classList.add('active');
+
+  // chartsInited をリセット（innerHTML置き換えでcanvas再生成のため）
+  chartsInited = false;
+  // テーブル・KW・ワーストを再構築
+  if (view === 'tokka') {
+    buildTable(TOKKA_STORES, 'tokka-tbody');
+    buildKw(KW_GYM,   'kw-gym');
+    buildKw(KW_POOL,  'kw-pool');
+    buildKw(KW_BRAND, 'kw-brand');
+    buildWorstCards();
+  } else {
+    buildTable(SOGO_STORES,  'sogo-tbody');
+    buildKw(KW_GYM,   'kw-gym-sogo');
+    buildKw(KW_POOL,  'kw-pool-sogo');
+    buildKw(KW_BRAND, 'kw-brand-sogo');
+    buildWorstCardsSogo();
+  }
+  setTimeout(initCharts, 80);
 }
 
 function showCover() {
@@ -1568,23 +1757,15 @@ function showCover() {
 
 function closeCover() {
   document.getElementById('view-cover').style.display = 'none';
-  document.getElementById('month-bar').style.display = 'flex';
-  document.querySelector('.tab-bar').style.display = 'flex';
-  document.querySelector('.main').style.display = 'block';
   switchView('tokka');
 }
 
 // ─── INIT ──────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 表紙を最初に表示
   showCover();
   buildMonthButtons();
-  buildTable(SOGO_STORES,  'sogo-tbody');
-  buildKw(KW_GYM,   'kw-gym-sogo');
-  buildKw(KW_POOL,  'kw-pool-sogo');
-  buildKw(KW_BRAND, 'kw-brand-sogo');
-  buildWorstCardsSogo();
+  // switchViewが各タブのHTML・テーブル・KW・ワーストを生成するため、ここでの個別呼び出し不要
 });
 </script>
 </body>
