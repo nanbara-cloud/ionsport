@@ -1256,6 +1256,31 @@ const KW_BRAND = [
   {name:'昭島 ジム', fy25:52, yoy:16},
 ];
 
+// 総合専用キーワード（実データ 2026年4月）
+const KW_GYM_SOGO_DATA = [
+  {name:'ジム', fy25:2245, yoy:-36},
+  {name:'プール', fy25:757, yoy:42},
+  {name:'スポーツジム', fy25:334, yoy:-52},
+  {name:'スポーツ', fy25:323, yoy:-43},
+  {name:'スイミングスクール', fy25:121, yoy:-44},
+  {name:'スポーツクラブ', fy25:44, yoy:0},
+];
+const KW_POOL_SOGO_DATA = [
+  {name:'サウナ', fy25:525, yoy:42},
+  {name:'銭湯', fy25:308, yoy:431},
+  {name:'温泉', fy25:246, yoy:1347},
+  {name:'お風呂', fy25:244, yoy:-4},
+  {name:'スーパー銭湯', fy25:113, yoy:565},
+];
+const KW_BRAND_SOGO_DATA = [
+  {name:'ルネサンス', fy25:210, yoy:-13},
+  {name:'チョコザップ', fy25:133, yoy:-56},
+  {name:'エニタイムフィットネス', fy25:103, yoy:-81},
+  {name:'高知 ジム', fy25:61, yoy:30},
+  {name:'成田 ジム', fy25:51, yoy:38},
+  {name:'コナミスポーツ', fy25:39, yoy:-47},
+];
+
 // ─── WORST STORES ──────────────────────────────────────────────────────────
 
 const WORST_STORES = {
@@ -1734,9 +1759,9 @@ function switchView(view) {
     buildWorstCards();
   } else {
     buildTable(SOGO_STORES,  'sogo-tbody');
-    buildKw(KW_GYM,   'kw-gym-sogo');
-    buildKw(KW_POOL,  'kw-pool-sogo');
-    buildKw(KW_BRAND, 'kw-brand-sogo');
+    buildKw(KW_GYM_SOGO_DATA,   'kw-gym-sogo');
+    buildKw(KW_POOL_SOGO_DATA,  'kw-pool-sogo');
+    buildKw(KW_BRAND_SOGO_DATA, 'kw-brand-sogo');
     buildWorstCardsSogo();
   }
   setTimeout(initCharts, 80);
