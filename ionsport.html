@@ -1691,22 +1691,14 @@ const MONTHLY_TOKKA = {
       disp_yoy:22.7, ar:4.7, rank_rate:0.8, score:3.8, review_mar:1,
       issue:'表示回数は+22.7%と増加しているにもかかわらず、アクション率が4.7%と全店最低水準です。上位表示率も0.8%と低く、GBPコンテンツと検索意図のマッチングに改善余地があります。',
       action:'競合（chocoZAP・エニタイムフィットネス・セントラルフィットネスクラブ）のカテゴリ・写真構成を調査分析し、来店意向につながるGBPコンテンツを整備していきます。',
-      competitors:[
-        {name:'chocoZAP 稲毛海岸', cat:'低価格コンビニジム', note:'稲毛海岸エリア。低価格・無人運営で若年層・初心者を広く獲得。'},
-        {name:'エニタイムフィットネス 稲毛海岸駅前店', cat:'24時間ジム', note:'稲毛海岸駅前。24時間・好立地で広域から集客。'},
-        {name:'セントラルフィットネスクラブ 稲毛海岸', cat:'総合スポーツクラブ', note:'プール・スタジオ完備。ファミリー・社会人層に対応。'},
-      ]
+      competitors:[{name:'エニタイムフィットネス 稲毛海岸店', cat:'24時間ジム', note:'駅周辺　24時間　マシンジム'},{name:'chocoZAP稲毛海岸', cat:'24時間ジム', note:'駅周辺　24時間　低価格　マシンジム'},{name:'BLUE FITNESS24＋studio 稲毛海岸', cat:'24時間ジム', note:'駅周辺　24時間＋スタジオレッスン＋パーソナル'}]
     },
     {
       rank:2, name:'相模原店', tag:'アクション率 5.4%',
       disp_yoy:-5.0, ar:5.4, rank_rate:31.3, score:3.0, review_mar:0,
       issue:'表示回数が前年比▲5.0%で推移し、アクション率5.4%は改善余地があります。4月の口コミはゼロ件でした。',
       action:'競合（FIT PLACE24・スマートフィット100・エニタイムフィットネス）のカテゴリ・属性を継続調査し、登録キーワードとGBPコンテンツの整合性を高めていきます。',
-      competitors:[
-        {name:'FIT PLACE24 古淵店', cat:'24時間ジム', note:'古淵エリア。24時間・低価格で幅広い層を獲得。'},
-        {name:'スマートフィット100 古淵店', cat:'24時間ジム', note:'古淵駅周辺。低価格24時間。無料パーソナル付き。'},
-        {name:'エニタイムフィットネス 古淵店', cat:'24時間ジム', note:'古淵エリア。24時間・好立地で広域から集客。'},
-      ]
+      competitors:[{name:'FIT PLACE24 古淵店', cat:'24時間ジム', note:'近隣店舗　低価格帯'},{name:'エニタイムフィットネス 古淵店', cat:'24時間ジム', note:'駅前　近隣店舗'},{name:'スマートフィット100 相模原', cat:'24時間ジム', note:'近隣店舗　低価格帯　パーソナル無料'}]
     },
     {
       rank:3, name:'葛西店', tag:'アクション率 5.6%・上位表示率 0.8%',
@@ -1726,14 +1718,14 @@ const MONTHLY_TOKKA = {
       disp_yoy:-36.6, ar:6.4, rank_rate:37.9,
       issue:'3月は表示回数▲36.6%・アクション率6.4%。前月から引き続き要注視の店舗です。',
       action:'4月も改善継続中。競合調査・カテゴリ整備を優先実施。',
-      competitors:[]
+      competitors:[{name:'FIT PLACE24 古淵店', cat:'24時間ジム', note:'近隣店舗　低価格帯'},{name:'エニタイムフィットネス 古淵店', cat:'24時間ジム', note:'駅前　近隣店舗'},{name:'スマートフィット100 相模原', cat:'24時間ジム', note:'近隣店舗　低価格帯　パーソナル無料'}]
     },
     {
       rank:2, name:'橋本店', tag:'アクション率 6.4%（3月）',
       disp_yoy:4.7, ar:6.4, rank_rate:10.9,
       issue:'3月はアクション率6.4%で、表示は増加していたものの来店意向につながりにくい状態でした。',
       action:'上位表示率の改善とGBPコンテンツ整備を継続。',
-      competitors:[]
+      competitors:[{name:'エニタイムフィットネス 橋本', cat:'24時間ジム', note:'橋本駅周辺。主要競合'},{name:'chocoZAP橋本三丁目', cat:'24時間ジム', note:'近隣　24時間　マシンジム　低価格'},{name:'ルネサンス 橋本24', cat:'総合スポーツクラブ', note:'近隣店舗　キッズスクールあり'}]
     },
     {
       rank:3, name:'海浜幕張店', tag:'アクション率 7.1%（3月）',
@@ -2244,21 +2236,21 @@ TOKKA.fy25_ar = TOKKA.fy25_disp.map((d,i) => d>0 ? TOKKA.fy25_act[i]/d*100 : 0);
       disp_yoy:-0.8, ar:4.48, rank_rate:4.0,
       reviews:3, score:3.0,
       issue:'AR4.48%と低水準。表示は1,851回（-0.8%）と多めだが上位表示率4.0%でアクションにつながりにくい。',
-      competitors:[{name:'エニタイムフィットネス 橋本', cat:'24時間ジム', note:'橋本駅周辺の主要競合'},{name:'ゴールドジム 橋本店', cat:'本格トレーニング', note:'筋トレ層に強い'},{name:'カーブス（相模原緑区）', cat:'女性専用30分', note:'地域女性層に強い'}]
+      competitors:[{name:'エニタイムフィットネス 橋本', cat:'24時間ジム', note:'橋本駅周辺。主要競合'},{name:'chocoZAP橋本三丁目', cat:'24時間ジム', note:'近隣　24時間　マシンジム　低価格'},{name:'ルネサンス 橋本24', cat:'総合スポーツクラブ', note:'近隣店舗　キッズスクールあり'}]
     },
     {
       rank:2, name:'相模原店', tag:'AR 6.28%（5月）',
       disp_yoy:9.7, ar:6.28, rank_rate:33.9,
       reviews:80, score:3.2,
       issue:'AR6.28%と低水準。表示は4,618回（+9.7%）と多めだが上位表示率33.9%でアクションにつながりにくい。',
-      competitors:[{name:'FIT PLACE24 古淵店', cat:'24時間ジム', note:'低価格24時間'},{name:'スマートフィット100 古淵店', cat:'24時間ジム', note:'低価格24時間'},{name:'エニタイムフィットネス 古淵店', cat:'24時間ジム', note:'好立地'}]
+      competitors:[{name:'FIT PLACE24 古淵店', cat:'24時間ジム', note:'近隣店舗　低価格帯'},{name:'エニタイムフィットネス 古淵店', cat:'24時間ジム', note:'駅前　近隣店舗'},{name:'スマートフィット100 相模原', cat:'24時間ジム', note:'近隣店舗　低価格帯　パーソナル無料'}]
     },
     {
       rank:3, name:'マリンピア店', tag:'AR 7.21%（5月）',
       disp_yoy:13.4, ar:7.21, rank_rate:4.4,
       reviews:12, score:3.75,
       issue:'AR7.21%と低水準。表示は1,679回（+13.4%）と多めだが上位表示率4.4%でアクションにつながりにくい。',
-      competitors:[{name:'chocoZAP 稲毛海岸', cat:'低価格無人ジム', note:'若年層を獲得'},{name:'エニタイムフィットネス 稲毛海岸駅前', cat:'24時間ジム', note:'駅前好立地'},{name:'セントラルフィットネス 稲毛海岸', cat:'総合スポーツ', note:'プール完備'}]
+      competitors:[{name:'エニタイムフィットネス 稲毛海岸店', cat:'24時間ジム', note:'駅周辺　24時間　マシンジム'},{name:'chocoZAP稲毛海岸', cat:'24時間ジム', note:'駅周辺　24時間　低価格　マシンジム'},{name:'BLUE FITNESS24＋studio 稲毛海岸', cat:'24時間ジム', note:'駅周辺　24時間＋スタジオレッスン＋パーソナル'}]
     }
   ]
 };`,
@@ -2269,21 +2261,21 @@ TOKKA.fy25_ar = TOKKA.fy25_disp.map((d,i) => d>0 ? TOKKA.fy25_act[i]/d*100 : 0);
       disp_yoy:-30.2, ar:35.37, rank_rate:25.4,
       reviews:1, score:5.0,
       issue:'AR35.37%と高水準。表示は294回（-30.2%）と少なめでも、上位表示率25.4%で確実にアクションに変換。',
-      competitors:[{name:'カーブス（掛川市内）', cat:'女性専用30分', note:'地域シニア層'}]
+      competitors:[{name:'スマイルジム 24時間 掛川店', cat:'24時間ジム', note:'地域最安の月会費　家族会員あり'},{name:'Studio Shell', cat:'ピラティス・ヨガ', note:'近隣競合　女性向け　予約制'},{name:'フィットイージー 袋井店', cat:'低価格ジム', note:''}]
     },
     {
       rank:2, name:'大利根店', tag:'AR 24.14%（5月）',
       disp_yoy:-4.5, ar:24.14, rank_rate:76.2,
       reviews:12, score:3.75,
       issue:'AR24.14%と高水準。表示は1,073回（-4.5%）と少なめでも、上位表示率76.2%で確実にアクションに変換。',
-      competitors:[{name:'エニタイムフィットネス 加須', cat:'24時間ジム', note:'加須エリア競合'}]
+      competitors:[{name:'LifeFit 花崎駅前店', cat:'24時間ジム', note:'低価格　24時間　無人店舗'},{name:'スマートフィット100加須店', cat:'24時間ジム', note:'マシンジム　スタッフサポートあり'},{name:'エニタイムフィットネス 加須諏訪店', cat:'24時間ジム', note:'加須駅近く　マシンジム'}]
     },
     {
       rank:3, name:'上里店', tag:'AR 21.80%（5月）',
       disp_yoy:-46.4, ar:21.80, rank_rate:50.0,
       reviews:5, score:2.8,
       issue:'AR21.80%と高水準。表示は523回（-46.4%）と少なめでも、上位表示率50.0%で確実にアクションに変換。',
-      competitors:[{name:'スマートフィット100（児玉郡内）', cat:'24時間ジム', note:'地域競合少なめ'}]
+      competitors:[{name:'エニタイムフィットネス 本庄店', cat:'24時間ジム', note:'本庄市内。24時間・低価格'},{name:'ドゥ・スポーツプラザ上里24', cat:'総合スポーツクラブ', note:'駅からバスで12分'},{name:'chocoZAP 本庄南口', cat:'24時間ジム', note:'駅周辺　24時間　低価格'}]
     }
   ]
 };`,
@@ -2744,11 +2736,7 @@ const MONTHLY_SOGO = {
       disp_yoy:78.9, ar:4.5, rank_rate:28.8, score:0, review_mar:0,
       issue:'表示回数は+78.9%と大幅増加しているにもかかわらず、アクション率が4.5%と全店最低水準です。4月の口コミはゼロ件で、表示の増加が来店意向につながりにくい状態と考えられます。',
       action:'競合（エニタイムフィットネス・FITBASE24・ルネサンス）のカテゴリ・属性・写真構成を調査分析し、GBPコンテンツの改善方針を検討します。',
-      competitors:[
-        {name:'エニタイムフィットネス 伊丹', cat:'24時間ジム', note:'伊丹市内。24時間・低価格で幅広い年齢層から集客。'},
-        {name:'FITBASE24 伊丹昆陽', cat:'24時間ジム', note:'伊丹昆陽エリア。24時間・好立地で近隣需要を獲得。'},
-        {name:'スポーツクラブ＆サウナスパ ルネサンス 伊丹24', cat:'総合スポーツクラブ', note:'プール・サウナスパ・24時間ジム併設で幅広い層に対応。'},
-      ]
+      competitors:[{name:'スポーツクラブ＆サウナスパ ルネサンス 伊丹24', cat:'総合スポーツクラブ', note:'JR伊丹駅周辺。温浴・サウナ施設充実。ジムエリアは24時間営業'},{name:'エニタイムフィットネス 伊丹昆陽', cat:'24時間ジム', note:'伊丹市昆陽エリア。24時間ジム。'},{name:'FITBASE24 伊丹昆陽', cat:'24時間ジム', note:'伊丹市昆陽エリア。24時間・低価格。'}]
     },
     {
       rank:2, name:'浦和美園店', tag:'アクション率 5.2%（他社対応中）',
@@ -2785,7 +2773,7 @@ const MONTHLY_SOGO = {
       disp_yoy:78.9, ar:7.9, rank_rate:25.8,
       issue:'3月はアクション率7.9%。4月も引き続きアクション率が低水準のため、継続課題として対応中です。',
       action:'4月も継続してGBPコンテンツの整備・競合調査を進めています。',
-      competitors:[]
+      competitors:[{name:'スポーツクラブ＆サウナスパ ルネサンス 伊丹24', cat:'総合スポーツクラブ', note:'JR伊丹駅周辺。温浴・サウナ施設充実。ジムエリアは24時間営業'},{name:'エニタイムフィットネス 伊丹昆陽', cat:'24時間ジム', note:'伊丹市昆陽エリア。24時間ジム。'},{name:'FITBASE24 伊丹昆陽', cat:'24時間ジム', note:'伊丹市昆陽エリア。24時間・低価格。'}]
     },
     {
       rank:3, name:'3FIT 姫路店', tag:'アクション率 9.2%・上位表示率 0%（3月）',
@@ -2936,7 +2924,7 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
   <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #00A896;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
     <div>
       <div style="font-size:10px;font-weight:700;color:#00A896;margin-bottom:4px">💡 ① 全体結果の見解</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">表示回数+25.8%は引き続き好調です。モバイルマップ+74.8%と高水準で、<strong>多くのユーザーにリーチできている</strong>状態が継続しています。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">表示回数<strong style="text-decoration:underline">+29.1%</strong>と大幅増。<strong style="text-decoration:underline">モバイルマップ+94.8%</strong>が牽引し、<strong>検索ニーズが急増</strong>している状態。表示増を来店意向に変換する次のフェーズへ。</div>
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 来月（5月）の動き</div>
@@ -3034,7 +3022,7 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
   <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #3B82F6;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
     <div>
       <div style="font-size:10px;font-weight:700;color:#3B82F6;margin-bottom:4px;letter-spacing:.5px">💡 ② アクション内訳の見解</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">経路案内は+12.7%と<strong>来店意向の底堅さが継続</strong>しています。WEB訪問（<strong style="color:#EF4444;text-decoration:underline">−19.6%</strong>）の改善が全体アクション率の向上に直結します。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">経路案内は+1.5%とほぼ横ばい。WEB訪問<strong style="color:#EF4444;text-decoration:underline">−19.6%</strong>・電話<strong style="color:#EF4444">−19.8%</strong>と大幅減で、表示増を来店意向に変換することが課題。<span style="display:none">WEB訪問（<strong style="color:#EF4444;text-decoration:underline">−19.6%</strong>）の改善が全体アクション率の向上に直結します。</div>
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px;letter-spacing:.5px">📌 来月（5月）の動き</div>
@@ -3071,7 +3059,7 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
   <div style="background:#FAFBFF;border:1px solid #E2E8F0;border-left:3px solid #10B981;border-radius:6px;padding:12px 16px;margin:-4px 0 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
     <div>
       <div style="font-size:10px;font-weight:700;color:#10B981;margin-bottom:4px">💡 ③ 推移グラフの見解</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">FY25のARはFY24を通年で上回っており、中長期の改善傾向を維持しています。3月(7.59%)→4月(8.20%)と<strong>ARが回復基調</strong>に入っています。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">FY25のARはFY24を上回る傾向で推移していましたが、5月は<strong style="color:#EF4444">7.10%（前年比−3.62pt）</strong>と一時的に悪化。表示急増分を来店意向に変換するためのGBP整備を強化していきます。</div>
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 来月（5月）の動き</div>
@@ -3115,7 +3103,7 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
         <span style="background:var(--teal);color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">データ分析</span>全体評価
       </div>
       <div style="font-size:13px;color:var(--darkGray);line-height:1.8">
-        4月はGWを控え、<strong>新生活の体づくりから連休中の継続利用へと需要が移行する季節</strong>です。表示回数は前年比<strong style="color:#10B981">+25.8%</strong>と引き続き増加し、<strong>モバイルマップ経由が+74.8%と高水準</strong>。アクション率は<strong style="color:var(--teal)">8.20%</strong>で推移しています。経路案内は+12.7%と<strong>来店意向の底堅さは継続</strong>しており、<strong>FY25年間平均AR9.78%はFY24（9.60%）を上回っており</strong>、中長期の改善傾向は維持されています。
+        5月はGW明けで<strong>夏前の体づくり・プール需要が立ち上がる時期</strong>です。表示回数は前年比<strong style="color:#10B981;text-decoration:underline">+29.1%</strong>と大幅増、<strong style="text-decoration:underline">モバイルマップ+94.8%</strong>が牽引。一方アクション率は<strong style="color:#EF4444;text-decoration:underline">7.10%（前年比−3.62pt）</strong>と大幅悪化しており、<strong>表示増を来店意向に変換することが課題</strong>。<strong>プール+71%・スイミング+210%・サウナ+42%</strong>の追い風キーワードに合わせたGBP整備で方向性を調整していきます。
       </div>
     </div>
     <div style="background:#FEF9EC;border:1px solid #F59E0B;border-radius:10px;padding:18px">
@@ -3123,8 +3111,8 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
         <span style="background:#F59E0B;color:#fff;border-radius:4px;padding:1px 8px;font-size:10px">⚠️ Google動向</span>コアアップデートの影響継続（<strong style="text-decoration:underline">5月</strong>）
       </div>
       <div style="font-size:13px;color:#78350F;line-height:1.8">
-        3月末実施の<strong>Googleコアアップデートの影響が4月も継続</strong>しています。<br>
-        <strong>①カテゴリ・地域一貫性の評価強化</strong>と<strong>②GBPコンテンツのAI検索反映</strong>が続いており、<strong>3FIT姫路店（上位表示率0%）</strong>をはじめ複数店舗でカテゴリ設定の整備を進めていきます。
+        <strong>Googleコアアップデートの影響が5月も継続・加速</strong>しています。<br>
+        総合店舗は<strong style="text-decoration:underline">モバイルマップ+94.8%</strong>と大幅増。一方<strong style="color:#EF4444">AR−3.62pt悪化</strong>。<strong>①カテゴリ・地域一貫性の評価強化</strong>と<strong>②GBPコンテンツのAI検索反映</strong>が続いており、表示増を来店意向に繋げるためのGBP写真・属性整備を強化していきます。
       </div>
     </div>
   </div>
@@ -3267,21 +3255,21 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
       disp_yoy:66.1, ar:3.47, rank_rate:33.1,
       reviews:73, score:3.32,
       issue:'AR3.47%と低水準。表示は4,497回（+66.1%）と多めだが上位表示率33.1%でアクションにつながりにくい。',
-      competitors:[{name:'エニタイムフィットネス 伊丹', cat:'24時間ジム', note:'24時間競合'},{name:'FITBASE24 伊丹昆陽', cat:'24時間ジム', note:'好立地'},{name:'ルネサンス 伊丹24', cat:'総合+サウナスパ', note:'プール・サウナ強み'}]
+      competitors:[{name:'スポーツクラブ＆サウナスパ ルネサンス 伊丹24', cat:'総合スポーツクラブ', note:'JR伊丹駅周辺。温浴・サウナ施設充実。ジムエリアは24時間営業'},{name:'エニタイムフィットネス 伊丹昆陽', cat:'24時間ジム', note:'伊丹市昆陽エリア。24時間ジム。'},{name:'FITBASE24 伊丹昆陽', cat:'24時間ジム', note:'伊丹市昆陽エリア。24時間・低価格。'}]
     },
     {
       rank:2, name:'3FIT岡崎店', tag:'AR 5.39%（5月）',
       disp_yoy:31.1, ar:5.39, rank_rate:28.6,
       reviews:97, score:3.24,
       issue:'AR5.39%と低水準。表示は5,992回（+31.1%）と多めだが上位表示率28.6%でアクションにつながりにくい。',
-      competitors:[{name:'エニタイムフィットネス 岡崎', cat:'24時間ジム', note:'岡崎エリア'},{name:'カーブス（岡崎市内）', cat:'女性専用30分', note:'地域女性層'}]
+      competitors:[{name:'ホリデイ スポーツクラブ 岡崎', cat:'総合スポーツクラブ', note:'岡崎エリア。初心者や未経験者がターゲット。プールや温浴施設が充実。'},{name:'ヨガ＆ジム アイレクス・ライト+24 岡崎戸崎', cat:'24時間ジム', note:'岡崎戸崎エリア。本格的なヨガスタジオと24時間ジムが融合した施設。'}]
     },
     {
       rank:3, name:'3FIT東浦店', tag:'AR 5.69%（5月）',
       disp_yoy:103.8, ar:5.69, rank_rate:77.8,
       reviews:47, score:3.26,
       issue:'AR5.69%と低水準。表示は6,216回（+103.8%）と多めだが上位表示率77.8%でアクションにつながりにくい。',
-      competitors:[{name:'エニタイムフィットネス 東浦', cat:'24時間ジム', note:'24時間競合'},{name:'コ・ス・パ 東浦', cat:'総合スポーツ', note:'プール・スタジオ'}]
+      competitors:[{name:'スポーツクラブ アクトス 刈谷', cat:'総合スポーツクラブ', note:'刈谷市エリア。プール・スタジオ完備の総合型。'},{name:'コナミスポーツクラブ 刈谷', cat:'総合スポーツクラブ', note:'刈谷駅周辺。プール・スタジオ完備の大手総合型。'},{name:'FIT PLACE24 大府店', cat:'24時間ジム', note:'大府エリア。低価格帯の24時間ジム。'}]
     }
   ]
 };`,
@@ -3292,21 +3280,21 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
       disp_yoy:-28.3, ar:11.05, rank_rate:64.5,
       reviews:20, score:3.55,
       issue:'AR11.05%と安定。表示1,720回（-28.3%）、上位表示率64.5%。',
-      competitors:[{name:'コナミ・コ・ス・パ大高', cat:'総合スポーツ', note:'プール・スタジオあり'}]
+      competitors:[{name:'スポーツクラブNAS大高', cat:'総合スポーツクラブ', note:'大高エリア。大型プール、スタジオ、スパ施設を備える総合型。'},{name:'フィットネスクラブwish', cat:'総合スポーツクラブ', note:'大高エリア。病院内にあるフィットネスジム。「運動と医療のノウハウ」が特徴。'}]
     },
     {
       rank:2, name:'3FIT熱田千年店', tag:'AR 10.48%（5月）',
       disp_yoy:-6.6, ar:10.48, rank_rate:37.5,
       reviews:37, score:3.54,
       issue:'AR10.48%と安定。表示2,730回（-6.6%）、上位表示率37.5%。',
-      competitors:[{name:'コ・ス・パ熱田千年', cat:'総合スポーツ', note:'隣接競合'}]
+      competitors:[{name:'スポーツクラブ＆サウナスパ ルネサンス 名古屋熱田24', cat:'総合スポーツクラブ', note:'熱田区エリア。スパ施設充実。プール・スタジオ完備でジムは24時間営業。'},{name:'エニタイムフィットネス 熱田六番南店', cat:'24時間ジム', note:'六番町駅周辺。24時間ジム。'}]
     },
     {
       rank:3, name:'レイクタウン店', tag:'AR 9.38%（5月）',
       disp_yoy:-6.3, ar:9.38, rank_rate:0.0,
       reviews:55, score:3.2,
       issue:'AR9.38%と低水準。表示は2,517回（-6.3%）と多めだが上位表示率0.0%でアクションにつながりにくい。',
-      competitors:[{name:'カーブス越谷市内', cat:'女性専用30分', note:'広域競合分散'}]
+      competitors:[{name:'セントラルフィットネスクラブ24越谷レイクタウン', cat:'総合スポーツクラブ', note:'越谷レイクタウン駅周辺。プール・温浴施設完備。ジムエリアは24時間利用可能。'},{name:'エニタイムフィットネス 越谷レイクタウン駅前店', cat:'24時間ジム', note:'越谷レイクタウン駅前。24時間ジム。'}]
     }
   ]
 };`,
@@ -3533,33 +3521,21 @@ let WORST_STORES = {
       disp_yoy:-0.8, ar:4.48, rank_rate:4.0, score:5.0, review_mar:0,
       issue:'5月もアクション率4.48%と全店最低水準。表示は前年並みを維持していますが、来店意向につながりにくい状態が継続しています。上位表示率も4.0%と低水準。',
       action:'競合（FIT PLACE24・スマートフィット100・エニタイムフィットネス古淵店）のカテゴリ・写真構成を継続調査し、橋本駅周辺の検索意図に合致したGBPコンテンツ整備を進めます。',
-      competitors:[
-        {name:'エニタイムフィットネス 橋本（複数）', cat:'24時間ジム', note:'橋本駅周辺。主要競合。'},
-        {name:'ゴールドジム 橋本店', cat:'本格トレーニング', note:'橋本駅付近。筋トレ層に強い。'},
-        {name:'カーブス（相模原緑区内）', cat:'女性専用30分ジム', note:'地域女性層に強い。'},
-      ]
+      competitors:[{name:'エニタイムフィットネス 橋本', cat:'24時間ジム', note:'橋本駅周辺。主要競合'},{name:'chocoZAP橋本三丁目', cat:'24時間ジム', note:'近隣　24時間　マシンジム　低価格'},{name:'ルネサンス 橋本24', cat:'総合スポーツクラブ', note:'近隣店舗　キッズスクールあり'}]
     },
     {
       rank:2, name:'相模原店', tag:'アクション率 6.28%（5月）',
       disp_yoy:9.7, ar:6.28, rank_rate:33.9, score:3.0, review_mar:0,
       issue:'表示は前年比+9.7%と回復しましたが、アクション率6.28%と前年同月（6.79%）から微減。上位表示率33.9%は確保。',
       action:'競合（FIT PLACE24・スマートフィット100・エニタイムフィットネス）のカテゴリ・属性を継続調査し、登録キーワードとGBPコンテンツの整合性を高めていきます。',
-      competitors:[
-        {name:'FIT PLACE24 古淵店', cat:'24時間ジム', note:'古淵エリア。24時間・低価格で幅広い層を獲得。'},
-        {name:'スマートフィット100 古淵店', cat:'24時間ジム', note:'古淵駅周辺。低価格24時間。'},
-        {name:'エニタイムフィットネス 古淵店', cat:'24時間ジム', note:'古淵エリア。24時間・好立地。'},
-      ]
+      competitors:[{name:'FIT PLACE24 古淵店', cat:'24時間ジム', note:'近隣店舗　低価格帯'},{name:'エニタイムフィットネス 古淵店', cat:'24時間ジム', note:'駅前　近隣店舗'},{name:'スマートフィット100 相模原', cat:'24時間ジム', note:'近隣店舗　低価格帯　パーソナル無料'}]
     },
     {
       rank:3, name:'マリンピア店', tag:'アクション率 7.21%（5月）',
       disp_yoy:13.4, ar:7.21, rank_rate:4.4, score:3.8, review_mar:0,
       issue:'表示+13.4%と回復傾向ですが、アクション率は前年同月9.32%から7.21%へ低下（−2.12pt）。上位表示率4.4%と低水準が継続。',
       action:'競合（chocoZAP・エニタイムフィットネス稲毛海岸駅前店・セントラルフィットネスクラブ稲毛海岸）のGBP整備状況を分析し、稲毛海岸エリアでの上位表示強化を進めます。',
-      competitors:[
-        {name:'chocoZAP 稲毛海岸', cat:'低価格コンビニジム', note:'稲毛海岸エリア。低価格・無人運営。'},
-        {name:'エニタイムフィットネス 稲毛海岸駅前店', cat:'24時間ジム', note:'稲毛海岸駅前。24時間・好立地。'},
-        {name:'セントラルフィットネスクラブ 稲毛海岸', cat:'総合スポーツクラブ', note:'プール・スタジオ完備。'},
-      ]
+      competitors:[{name:'エニタイムフィットネス 稲毛海岸店', cat:'24時間ジム', note:'駅周辺　24時間　マシンジム'},{name:'chocoZAP稲毛海岸', cat:'24時間ジム', note:'駅周辺　24時間　低価格　マシンジム'},{name:'BLUE FITNESS24＋studio 稲毛海岸', cat:'24時間ジム', note:'駅周辺　24時間＋スタジオレッスン＋パーソナル'}]
     },
   ],
   mar: [
@@ -3568,14 +3544,14 @@ let WORST_STORES = {
       disp_yoy:13.4, ar:7.21, rank_rate:4.4,
       issue:'4月のアクション率4.7%から5月は7.21%へ改善傾向。継続して注視。',
       action:'稲毛海岸エリアの競合GBP分析・カテゴリ整備を継続。',
-      competitors:[]
+      competitors:[{name:'エニタイムフィットネス 稲毛海岸店', cat:'24時間ジム', note:'駅周辺　24時間　マシンジム'},{name:'chocoZAP稲毛海岸', cat:'24時間ジム', note:'駅周辺　24時間　低価格　マシンジム'},{name:'BLUE FITNESS24＋studio 稲毛海岸', cat:'24時間ジム', note:'駅周辺　24時間＋スタジオレッスン＋パーソナル'}]
     },
     {
       rank:2, name:'相模原店', tag:'アクション率 6.28%（4月：5.4%）',
       disp_yoy:9.7, ar:6.28, rank_rate:33.9,
       issue:'4月5.4%→5月6.28%と改善傾向。継続的にGBP整備を進めています。',
       action:'競合調査・カテゴリ整備を継続実施。',
-      competitors:[]
+      competitors:[{name:'FIT PLACE24 古淵店', cat:'24時間ジム', note:'近隣店舗　低価格帯'},{name:'エニタイムフィットネス 古淵店', cat:'24時間ジム', note:'駅前　近隣店舗'},{name:'スマートフィット100 相模原', cat:'24時間ジム', note:'近隣店舗　低価格帯　パーソナル無料'}]
     },
     {
       rank:3, name:'葛西店', tag:'アクション率 8.88%（4月：5.6%）',
@@ -4055,7 +4031,6 @@ const CHAIN_GBP = {
   'ホリデイスポーツクラブ':  [30, 60, 3.7, 2.0],
   'アクトス':              [30, 50, 3.6, 1.5],
   'NAS':                  [35, 70, 3.7, 2.0],
-  'コ・ス・パ':            [25, 40, 3.5, 1.5],
   'カーブス':              [5,  10, 4.3, 0.3],
   'BLEDA':                [15, 30, 4.0, 1.5],
   'LAVA':                 [15, 50, 4.0, 2.0],
