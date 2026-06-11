@@ -77,8 +77,8 @@
     gap: 10px;
     border-bottom: 2px solid rgba(255,255,255,0.08);
     position: sticky;
-    top: 56px;
-    z-index: 99;
+    top: 99px;
+    z-index: 98;
     box-shadow: 0 2px 12px rgba(0,0,0,0.25);
   }
   .tab-bar-label {
@@ -328,7 +328,7 @@
 </div>
 
 <!-- MONTH SELECTOR -->
-<div id="month-bar" style="background:#0F1E38;border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 24px;display:flex;align-items:center;gap:8px">
+<div id="month-bar" style="background:#0F1E38;border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 24px;display:flex;align-items:center;gap:8px;position:sticky;top:56px;z-index:99;box-shadow:0 1px 4px rgba(0,0,0,0.2)">
   <span style="font-size:10px;color:#64748B;letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-right:4px">対象月</span>
   <div id="month-btns" style="display:flex;gap:6px"></div>
 </div>
@@ -656,7 +656,7 @@ const TAB_HTML = {
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 次月以降の動き</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">初夏・GW後の需要を見据えた投稿テンプレートを展開します。表示数の月次推移を確認しながらGBP整備の優先度を判断していきます。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">夏前のボディメイク・筋トレ需要、および新生活が落ち着いた時期の習い事検討（まずはトライ）に合わせた投稿を展開。マップ経由の流入が増加しているため、写真・属性整備の優先度を高めていきます。</div>
     </div>
   </div>
 
@@ -917,7 +917,7 @@ const TAB_HTML = {
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 次月以降の動き</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">GWによる閲覧増加後の5月推移を確認します。表示増加がアクション率にも反映されるよう、GBPコンテンツ整備を続けます。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">表示の大幅増加が継続しています。夏前のプール・スイミング・サウナ需要と、習い事検討ニーズに対応した発信を強化し、表示増を来店意向へ確実に変換していきます。</div>
     </div>
   </div>
 
@@ -1052,7 +1052,7 @@ const TAB_HTML = {
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 次月以降の動き</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">GW後の5月にARが更に回復するか注視します。GBP変更有の2店舗（伊丹昆陽・浜松西）の整備を優先します。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">5月は表示増加にARが追いついていない状態。マップ経由の流入が増加しているため、夏前ボディメイク・習い事検討層への訴求を強化しつつ、GBP変更有の2店舗（伊丹昆陽・浜松西）の整備を優先します。</div>
     </div>
   </div>
 
@@ -1497,7 +1497,7 @@ const MONTHLY_TOKKA = {
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 次月以降の動き</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">初夏・GW後の需要を見据えた投稿テンプレートを展開します。表示数の月次推移を確認しながらGBP整備の優先度を判断していきます。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">夏前のボディメイク・筋トレ需要、および新生活が落ち着いた時期の習い事検討（まずはトライ）に合わせた投稿を展開。マップ経由の流入が増加しているため、写真・属性整備の優先度を高めていきます。</div>
     </div>
   </div>
 
@@ -2024,7 +2024,7 @@ TOKKA.fy25_ar = TOKKA.fy25_disp.map((d,i) => d>0 ? TOKKA.fy25_act[i]/d*100 : 0);
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 次月以降の動き</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">初夏・GW後の需要を見据えた投稿テンプレートを展開します。表示数の月次推移を確認しながらGBP整備の優先度を判断していきます。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">夏前のボディメイク・筋トレ需要、および新生活が落ち着いた時期の習い事検討（まずはトライ）に合わせた投稿を展開。マップ経由の流入が増加しているため、写真・属性整備の優先度を高めていきます。</div>
     </div>
   </div>
 
@@ -2129,7 +2129,7 @@ TOKKA.fy25_ar = TOKKA.fy25_disp.map((d,i) => d>0 ? TOKKA.fy25_act[i]/d*100 : 0);
   <!-- ⑥ ワースト -->
   <div class="section-title">⑥ ベスト・ワースト店舗 比較分析と改善ヒント（<strong style="text-decoration:underline">5月</strong>）</div>
   <div style="font-size:11px;color:var(--gray);background:#F8FAFC;border:1px solid var(--border);border-radius:6px;padding:8px 14px;margin-bottom:12px">
-    ※ ピックアップ条件：<strong>アクション率（表示回数に対するアクション数の割合）</strong>が低い店舗を優先的に選定しています。今月（<strong style="text-decoration:underline">5月</strong>）と先月（4月）を並べて継続状況を確認できます。
+    ※ <strong>アクション率（表示回数に対するアクション数の割合）</strong>が高い店舗（<strong style="color:#10B981">ベスト3</strong>）と低い店舗（<strong style="color:#EF4444">ワースト3</strong>）を比較し、差を作っている要因（口コミ数・上位表示率・エリア競合）を分析することで、改善のヒントを抽出します。
   </div>
   <div id="worst-cards" style="margin-bottom:20px"></div>
 
@@ -2169,7 +2169,7 @@ TOKKA.fy25_ar = TOKKA.fy25_disp.map((d,i) => d>0 ? TOKKA.fy25_act[i]/d*100 : 0);
           <strong style="color:#fff">継続ワースト（相模原・マリンピア）の改善実行＋新規ワースト（橋本）の競合分析開始</strong>
         </div>
         <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">📸 写真整備の継続</span><br>店舗別競合一覧で<strong>写真投稿数が少ない店舗</strong>を優先的に整備</div>
-        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">📝 投稿コンテンツの最適化</span><br>夏前体づくり・プール・スイミング訴求の継続投稿</div>
+        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">📝 投稿コンテンツの最適化</span><br>夏前ボディメイク・筋トレ訴求＋習い事検討タイミング（新生活慣れ層）向け投稿の展開</div>
         <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">🔗 サイテーション継続</span><br>各種ウェブディレクトリへの登録・情報更新</div>
         <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">🛠 GBP変更店舗対応</span><br>変更有：葛西・白根・宇多津・福井開発・古川橋駅前のカテゴリ・住所・電話番号の再確認</div>
         <div><span style="color:var(--teal);font-weight:700">📊 月次分析レポートの提供</span><br>ベスト・ワースト比較／キーワード動向／施策の効果検証</div>
@@ -2421,7 +2421,7 @@ const MONTHLY_SOGO = {
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 次月以降の動き</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">GWによる閲覧増加後の5月推移を確認します。表示増加がアクション率にも反映されるよう、GBPコンテンツ整備を続けます。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">表示の大幅増加が継続しています。夏前のプール・スイミング・サウナ需要と、習い事検討ニーズに対応した発信を強化し、表示増を来店意向へ確実に変換していきます。</div>
     </div>
   </div>
 
@@ -2556,7 +2556,7 @@ const MONTHLY_SOGO = {
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 次月以降の動き</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">GW後の5月にARが更に回復するか注視します。GBP変更有の2店舗（伊丹昆陽・浜松西）の整備を優先します。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">5月は表示増加にARが追いついていない状態。マップ経由の流入が増加しているため、夏前ボディメイク・習い事検討層への訴求を強化しつつ、GBP変更有の2店舗（伊丹昆陽・浜松西）の整備を優先します。</div>
     </div>
   </div>
 
@@ -2922,7 +2922,7 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 次月以降の動き</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">GWによる閲覧増加後の5月推移を確認します。表示増加がアクション率にも反映されるよう、GBPコンテンツ整備を続けます。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">表示の大幅増加が継続しています。夏前のプール・スイミング・サウナ需要と、習い事検討ニーズに対応した発信を強化し、表示増を来店意向へ確実に変換していきます。</div>
     </div>
   </div>
 
@@ -3057,7 +3057,7 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
     </div>
     <div style="border-left:1px solid #E2E8F0;padding-left:12px">
       <div style="font-size:10px;font-weight:700;color:#64748B;margin-bottom:4px">📌 次月以降の動き</div>
-      <div style="font-size:12px;color:#334155;line-height:1.75">GW後の5月にARが更に回復するか注視します。GBP変更有の2店舗（伊丹昆陽・浜松西）の整備を優先します。</div>
+      <div style="font-size:12px;color:#334155;line-height:1.75">5月は表示増加にARが追いついていない状態。マップ経由の流入が増加しているため、夏前ボディメイク・習い事検討層への訴求を強化しつつ、GBP変更有の2店舗（伊丹昆陽・浜松西）の整備を優先します。</div>
     </div>
   </div>
 
@@ -3159,7 +3159,7 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
   <!-- ⑥ ワースト店舗ピックアップ -->
   <div class="section-title">⑥ ベスト・ワースト店舗 比較分析と改善ヒント（<strong style="text-decoration:underline">5月</strong>）</div>
   <div style="font-size:11px;color:var(--gray);background:#F8FAFC;border:1px solid var(--border);border-radius:6px;padding:8px 14px;margin-bottom:12px">
-    ※ ピックアップ条件：<strong>アクション率（表示回数に対するアクション数の割合）</strong>が低い店舗を優先的に選定しています。今月（5月）と先月（3月）を並べて継続状況を確認できます。
+    ※ <strong>アクション率（表示回数に対するアクション数の割合）</strong>が高い店舗（<strong style="color:#10B981">ベスト3</strong>）と低い店舗（<strong style="color:#EF4444">ワースト3</strong>）を比較し、差を作っている要因（口コミ数・上位表示率・エリア競合）を分析することで、改善のヒントを抽出します。
   </div>
   <div id="worst-cards-sogo" style="margin-bottom:20px"></div>
 
@@ -3199,7 +3199,7 @@ SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);`,
           <strong style="color:#fff">継続ワースト（伊丹昆陽）の発信方向性調整を継続＋新規ワースト（3FIT岡崎・3FIT東浦）の競合分析開始</strong>
         </div>
         <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">📸 写真整備の継続</span><br>店舗別競合一覧で<strong>写真投稿数が少ない店舗</strong>を優先的に整備</div>
-        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">📝 投稿コンテンツの方向性調整</span><br>プール+71%・スイミング+210%・サウナ+42%の検索意図に応える投稿テンプレート展開</div>
+        <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">📝 投稿コンテンツの方向性調整</span><br>プール+71%・スイミング+210%・サウナ+42%の夏前需要に応える投稿展開＋習い事検討層への訴求</div>
         <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">🔗 サイテーション継続</span><br>各種ウェブディレクトリへの登録・情報更新</div>
         <div style="margin-bottom:6px"><span style="color:var(--teal);font-weight:700">🛠 GBP変更店舗対応</span><br>変更有：3FIT熱田千年店のカテゴリ・住所・電話番号の再確認</div>
         <div><span style="color:var(--teal);font-weight:700">📊 月次分析レポートの提供</span><br>ベスト・ワースト比較／キーワード動向／施策の効果検証</div>
@@ -3370,9 +3370,9 @@ function loadMonthData(monthKey) {
 
 // ─── DATA ──────────────────────────────────────────────────────────────────
 
-let MONTHS_LABEL = ['6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月','5月'];
+var MONTHS_LABEL = ['6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月','5月'];
 
-let TOKKA = {
+var TOKKA = {
   // 前年（2024年6月〜2025年5月）
   fy24_disp: [36737,50804,62607,50337,40971,40619,36845,46346,38447,42599,42213,47671],
   // 今年度（2025年6月〜2026年5月）
@@ -3385,7 +3385,7 @@ let TOKKA = {
 TOKKA.fy24_ar = TOKKA.fy24_disp.map((d,i) => d>0 ? TOKKA.fy24_act[i]/d*100 : 0);
 TOKKA.fy25_ar = TOKKA.fy25_disp.map((d,i) => d>0 ? TOKKA.fy25_act[i]/d*100 : 0);
 
-let SOGO = {
+var SOGO = {
   fy24_disp: [21007,39683,56062,62497,49104,37978,36526,36550,45495,39338,41797,42552],
   fy25_disp: [46401,44901,48561,57934,44128,38503,33566,30737,35057,39406,55567,53516],
   fy24_act:  [2579, 4180, 4445, 4660, 4532, 3682, 3675, 3742, 4169, 3927, 4656, 4591],
@@ -3398,7 +3398,7 @@ SOGO.fy24_ar = SOGO.fy24_disp.map((d,i) => SOGO.fy24_act[i]/d*100);
 SOGO.fy25_ar = SOGO.fy25_disp.map((d,i) => SOGO.fy25_act[i]/d*100);
 
 // 特化型 店舗別データ（32店舗）4月
-let TOKKA_STORES = [
+var TOKKA_STORES = [
   {name:'マリンピア店', d24:1480, d25:1679, ar24:9.3, ar25:7.2, rank:4.4, review:{total:12, mar:0, score:3.75}, addr:'千葉市美浜区高洲3-21-1'},
   {name:'上里店', d24:975, d25:523, ar24:10.7, ar25:21.8, rank:50.0, review:{total:5, mar:0, score:2.8}, addr:'児玉郡上里町金久保字蓮山359-1'},
   {name:'中条店', d24:716, d25:552, ar24:13.0, ar25:19.7, rank:100.0, review:{total:3, mar:0, score:2.33}, addr:'胎内市東本町2641'},
@@ -3433,7 +3433,7 @@ let TOKKA_STORES = [
   {name:'長浦店', d24:1123, d25:673, ar24:12.0, ar25:21.1, rank:99.6, review:{total:4, mar:0, score:3.5}, addr:'袖ケ浦市長浦駅前5-21'}
 ];
 
-let SOGO_STORES = [
+var SOGO_STORES = [
   {name:'伊丹昆陽店',      d24:2059, d25:2725, ar24:7.9, ar25:4.5,  rank:28.8, review:{total:73, mar:0, score:3.32},   addr:'伊丹市池尻4-1-1',                        gbp:'変更有'},
   {name:'3FIT 成田店',    d24:2760, d25:3183, ar24:15.8,ar25:7.1,  rank:25.0, review:{total:93, mar:0, score:3.32}, addr:'千葉県成田市ウィング土屋24',                   gbp:'正常'},
   {name:'3FIT 倉敷店',    d24:2013, d25:2227, ar24:12.9,ar25:10.5, rank:25.0, review:{total:60, mar:0, score:3.02}, addr:'倉敷市水江1',                              gbp:'正常'},
@@ -3453,21 +3453,21 @@ let SOGO_STORES = [
 
 // MEOキーワード
 // キーワード（4月月間 / 非ブランド）
-let KW_GYM = [
+var KW_GYM = [
   {name:'ジム', fy25:3738, yoy:15},
   {name:'スポーツジム', fy25:427, yoy:2},
   {name:'gym', fy25:183, yoy:9},
   {name:'スポーツクラブ', fy25:143, yoy:5},
   {name:'フィットネス', fy25:91, yoy:0},
 ];
-let KW_POOL = [
+var KW_POOL = [
   {name:'プール', fy25:554, yoy:60},
   {name:'サウナ', fy25:188, yoy:15},
   {name:'近くのジム', fy25:112, yoy:60},
   {name:'どこトレ', fy25:105, yoy:400},
   {name:'チョコザップ', fy25:204, yoy:26},
 ];
-let KW_BRAND = [
+var KW_BRAND = [
   {name:'マリンピア（地名）', fy25:309, yoy:5},
   {name:'コンビニ', fy25:217, yoy:2},
   {name:'そよら（モール）', fy25:140, yoy:26},
@@ -3476,7 +3476,7 @@ let KW_BRAND = [
 ];
 
 // 総合専用キーワード（実データ 2026年4月）
-let KW_GYM_SOGO_DATA = [
+var KW_GYM_SOGO_DATA = [
   {name:'ジム', fy25:2245, yoy:-36},
   {name:'プール', fy25:757, yoy:42},
   {name:'スポーツジム', fy25:334, yoy:-52},
@@ -3484,14 +3484,14 @@ let KW_GYM_SOGO_DATA = [
   {name:'スイミングスクール', fy25:121, yoy:-44},
   {name:'スポーツクラブ', fy25:44, yoy:0},
 ];
-let KW_POOL_SOGO_DATA = [
+var KW_POOL_SOGO_DATA = [
   {name:'サウナ', fy25:525, yoy:42},
   {name:'銭湯', fy25:308, yoy:431},
   {name:'温泉', fy25:246, yoy:1347},
   {name:'お風呂', fy25:244, yoy:-4},
   {name:'スーパー銭湯', fy25:113, yoy:565},
 ];
-let KW_BRAND_SOGO_DATA = [
+var KW_BRAND_SOGO_DATA = [
   {name:'ルネサンス', fy25:210, yoy:-13},
   {name:'チョコザップ', fy25:133, yoy:-56},
   {name:'エニタイムフィットネス', fy25:103, yoy:-81},
@@ -3502,7 +3502,7 @@ let KW_BRAND_SOGO_DATA = [
 
 // ─── WORST STORES ──────────────────────────────────────────────────────────
 
-let WORST_STORES = {
+var WORST_STORES = {
   apr: [
     {
       rank:1, name:'橋本店', tag:'アクション率 4.48%（5月）',
