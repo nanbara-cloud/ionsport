@@ -1227,7 +1227,7 @@ const TAB_HTML = {
     <span><span style="background:#D1FAE5;color:#065F46;padding:2px 6px;border-radius:3px;font-weight:700;font-size:10px">実測</span> Google検索で取得</span>
     <span><span style="background:#DBEAFE;color:#3B82F6;padding:2px 6px;border-radius:3px;font-weight:700;font-size:10px">チェーン平均</span> 業界平均値</span>
     <span><span style="background:#F1F5F9;color:#94A3B8;padding:2px 6px;border-radius:3px;font-weight:700;font-size:10px">一般推定</span> 個別推定</span>
-    <span><span style="color:#F59E0B;font-weight:700;font-size:10px">*</span> 写真は概数（正確な数は調査中）</span>
+    <span><span style="color:#F59E0B;font-weight:700;font-size:10px">*</span> 写真は概数（チェーン平均・推定）</span>
     <span style="margin-left:auto"><span style="background:#FEE2E2;color:#991B1B;padding:2px 6px;border-radius:3px;font-weight:700;font-size:10px">不足バッジ</span> 競合より少ない＝改善余地</span>
   </div>
 
@@ -4075,55 +4075,78 @@ function estimateGBP(compName) {
   return {vals: [10, 20, 3.5, 1.0], src:'一般推定'};
 }
 
+// 競合のGBP値を取得（COMP_DATAに実データがあれば最優先、なければ推定）
+function getCompGBP(c) {
+  // COMP_DATA側に reviews/score 等の実データがあればそれを使う
+  if (c.reviews !== undefined && c.score !== undefined) {
+    // 写真：直近枚数（photoRecent）を数値で。旧 photos(数値)もフォールバックで吸収
+    let photoRecent = null;
+    if (typeof c.photoRecent === 'number') photoRecent = c.photoRecent;
+    else if (typeof c.photos === 'number') photoRecent = c.photos;
+    // 月投稿：数値で。旧 posts(文字列)は0扱いにフォールバック
+    const posts = (typeof c.posts === 'number') ? c.posts : 0;
+    return {
+      vals: [photoRecent !== null ? photoRecent : 0, c.reviews, c.score, posts],
+      src: '実測',
+      photoRecent: photoRecent,
+      photoNote: (typeof c.photoNote === 'string') ? c.photoNote : null,
+      hasActual: true
+    };
+  }
+  // フォールバック：従来の推定
+  const est = estimateGBP(c.name);
+  return {vals: est.vals, src: est.src, photoRecent: null, photoNote: null, hasActual: false};
+}
+
 // イオン店舗のGBPデータ
 const AEON_GBP = {
-  'マリンピア店': {photos:12, reviews:12, score:3.75, posts:2.0},
-  '橋本店': {photos:12, reviews:3, score:3.0, posts:2.0},
-  '新潟東店': {photos:12, reviews:8, score:3.63, posts:2.0},
-  '葛西店': {photos:12, reviews:10, score:3.9, posts:2.0},
-  '名古屋茶屋店': {photos:12, reviews:20, score:3.85, posts:2.0},
-  '大利根店': {photos:12, reviews:12, score:3.75, posts:2.0},
-  '仙台泉大沢店': {photos:12, reviews:34, score:3.38, posts:2.0},
-  '近江八幡店': {photos:12, reviews:30, score:3.57, posts:2.0},
-  '水戸南店': {photos:12, reviews:8, score:3.63, posts:2.0},
-  '小山店': {photos:12, reviews:35, score:3.86, posts:2.0},
-  '大須賀店': {photos:12, reviews:1, score:5.0, posts:2.0},
-  '白根店': {photos:12, reviews:1, score:5.0, posts:2.0},
-  '相模原店': {photos:12, reviews:80, score:3.2, posts:2.0},
-  '天王町店': {photos:12, reviews:10, score:4.3, posts:2.0},
-  '十日市場店': {photos:12, reviews:7, score:3.29, posts:2.0},
-  '岐阜店': {photos:12, reviews:3, score:4.67, posts:2.0},
-  '古川橋駅前店': {photos:12, reviews:1, score:4.0, posts:2.0},
-  '東員店': {photos:12, reviews:17, score:3.71, posts:2.0},
-  '海浜幕張店': {photos:12, reviews:11, score:2.82, posts:2.0},
-  '昭島店': {photos:12, reviews:8, score:4.0, posts:2.0},
-  '笠間店': {photos:12, reviews:9, score:4.11, posts:2.0},
-  '大和店': {photos:12, reviews:14, score:3.29, posts:2.0},
-  '新利府店': {photos:12, reviews:10, score:4.1, posts:2.0},
-  '中条店': {photos:12, reviews:3, score:2.33, posts:2.0},
-  '戸塚店': {photos:12, reviews:10, score:3.3, posts:2.0},
-  '長浦店': {photos:12, reviews:4, score:3.5, posts:2.0},
-  '大安店': {photos:12, reviews:3, score:3.67, posts:2.0},
-  '上里店': {photos:12, reviews:5, score:2.8, posts:2.0},
-  '宇多津店': {photos:12, reviews:3, score:3.33, posts:2.0},
-  '福井開発店': {photos:12, reviews:1, score:3.0, posts:2.0},
-  '白山店': {photos:12, reviews:3, score:2.33, posts:2.0},
-  '西台店': {photos:12, reviews:0, score:0, posts:2.0},
-  '伊丹昆陽店': {photos:45, reviews:73, score:3.32, posts:3.0},
-  '3FIT 成田店': {photos:30, reviews:93, score:3.32, posts:3.0},
-  '3FIT 倉敷店': {photos:30, reviews:60, score:3.02, posts:3.0},
-  '3FIT 熱田千年店': {photos:30, reviews:37, score:3.54, posts:3.0},
-  '3FIT 浜松西店': {photos:30, reviews:44, score:3.36, posts:3.0},
-  '3FIT 高知店': {photos:30, reviews:78, score:3.59, posts:3.0},
-  'おゆみ野店': {photos:45, reviews:58, score:3.4, posts:3.0},
-  '3FIT 岡崎店': {photos:30, reviews:97, score:3.24, posts:3.0},
-  '3FIT 栃木店': {photos:30, reviews:27, score:3.0, posts:3.0},
-  '3FIT 東浦店': {photos:30, reviews:47, score:3.26, posts:3.0},
-  '3FIT 八事店': {photos:30, reviews:76, score:3.24, posts:3.0},
-  '3FIT 姫路店': {photos:30, reviews:48, score:3.46, posts:3.0},
-  '浦和美園店': {photos:30, reviews:56, score:3.14, posts:3.0},
-  '大高店': {photos:45, reviews:20, score:3.55, posts:3.0},
-  'レイクタウン店': {photos:45, reviews:55, score:3.2, posts:3.0},
+  'マリンピア店': {photos:12, reviews:12, score:3.75, posts:4.0},
+  '橋本店': {photos:12, reviews:3, score:3.0, posts:4.0},
+  '新潟東店': {photos:12, reviews:8, score:3.63, posts:4.0},
+  '葛西店': {photos:12, reviews:10, score:3.9, posts:4.0},
+  '名古屋茶屋店': {photos:12, reviews:20, score:3.85, posts:4.0},
+  '大利根店': {photos:12, reviews:12, score:3.75, posts:4.0},
+  '仙台泉大沢店': {photos:12, reviews:34, score:3.38, posts:4.0},
+  '近江八幡店': {photos:12, reviews:30, score:3.57, posts:4.0},
+  '水戸南店': {photos:12, reviews:8, score:3.63, posts:4.0},
+  '小山店': {photos:12, reviews:35, score:3.86, posts:4.0},
+  '大須賀店': {photos:12, reviews:1, score:5.0, posts:4.0},
+  '白根店': {photos:12, reviews:1, score:5.0, posts:4.0},
+  '相模原店': {photos:12, reviews:80, score:3.2, posts:4.0},
+  '天王町店': {photos:12, reviews:10, score:4.3, posts:4.0},
+  '十日市場店': {photos:12, reviews:7, score:3.29, posts:4.0},
+  '岐阜店': {photos:12, reviews:3, score:4.67, posts:4.0},
+  '古川橋駅前店': {photos:12, reviews:1, score:4.0, posts:4.0},
+  '東員店': {photos:12, reviews:17, score:3.71, posts:4.0},
+  '海浜幕張店': {photos:12, reviews:11, score:2.82, posts:4.0},
+  '昭島店': {photos:12, reviews:8, score:4.0, posts:4.0},
+  '笠間店': {photos:12, reviews:9, score:4.11, posts:4.0},
+  '大和店': {photos:12, reviews:14, score:3.29, posts:4.0},
+  '新利府店': {photos:12, reviews:10, score:4.1, posts:4.0},
+  '中条店': {photos:12, reviews:3, score:2.33, posts:4.0},
+  '戸塚店': {photos:12, reviews:10, score:3.3, posts:4.0},
+  '長浦店': {photos:12, reviews:4, score:3.5, posts:4.0},
+  '大安店': {photos:12, reviews:3, score:3.67, posts:4.0},
+  '上里店': {photos:12, reviews:5, score:2.8, posts:4.0},
+  '宇多津店': {photos:12, reviews:3, score:3.33, posts:4.0},
+  '福井開発店': {photos:12, reviews:1, score:3.0, posts:4.0},
+  '白山店': {photos:12, reviews:3, score:2.33, posts:4.0},
+  '西台店': {photos:12, reviews:0, score:0, posts:4.0},
+  '伊丹昆陽店': {photos:45, reviews:73, score:3.32, posts:4.0},
+  '3FIT 成田店': {photos:30, reviews:93, score:3.32, posts:4.0},
+  '3FIT 倉敷店': {photos:30, reviews:60, score:3.02, posts:4.0},
+  '3FIT 熱田千年店': {photos:30, reviews:37, score:3.54, posts:4.0},
+  '3FIT 浜松西店': {photos:30, reviews:44, score:3.36, posts:4.0},
+  '3FIT 高知店': {photos:30, reviews:78, score:3.59, posts:4.0},
+  'おゆみ野店': {photos:45, reviews:58, score:3.4, posts:4.0},
+  '3FIT 岡崎店': {photos:30, reviews:97, score:3.24, posts:4.0},
+  '3FIT 栃木店': {photos:30, reviews:27, score:3.0, posts:4.0},
+  '3FIT 東浦店': {photos:30, reviews:47, score:3.26, posts:4.0},
+  '3FIT 八事店': {photos:30, reviews:76, score:3.24, posts:4.0},
+  '3FIT 姫路店': {photos:30, reviews:48, score:3.46, posts:4.0},
+  '浦和美園店': {photos:30, reviews:56, score:3.14, posts:4.0},
+  '大高店': {photos:45, reviews:20, score:3.55, posts:4.0},
+  'レイクタウン店': {photos:45, reviews:55, score:3.2, posts:4.0},
 };
 
 function getAeonGBP(storeName) {
@@ -4137,7 +4160,7 @@ function getAeonGBP(storeName) {
       if (matchLen > bestLen) { best = data; bestLen = matchLen; }
     }
   }
-  return best || {photos:12, reviews:0, score:0, posts:2.0};
+  return best || {photos:12, reviews:0, score:0, posts:4.0};
 }
 
 function diffBadge(diff, isReview) {
@@ -4168,8 +4191,1364 @@ function gbpMetric(label, aeonVal, compVal, isScore, isPosts) {
 
 
 const COMP_DATA = {
-  tokka: [{"no": 1, "store": "3FIT マリンピア店", "area": "千葉県千葉市美浜区稲毛海岸", "eki": "JR稲毛海岸駅", "comps": [{"name": "エニタイムフィットネス 稲毛海岸店", "cat": "24時間ジム", "feature": "駅周辺　24時間　マシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/inagekaigan/"}, {"name": "chocoZAP稲毛海岸", "cat": "24時間ジム", "feature": "駅周辺　24時間　低価格　マシンジム", "note": "", "url": "https://chocozap.jp/studios/56"}, {"name": "BLUE FITNESS24＋studio 稲毛海岸", "cat": "24時間ジム", "feature": "駅周辺　24時間＋スタジオレッスン＋パーソナル", "note": "", "url": "https://www.blue-fitness24.com/inagekaigan_lp/"}]}, {"no": 2, "store": "3FIT 上里店", "area": "埼玉県児玉郡上里町（本庄・上里エリア）", "eki": "JR神保原駅", "comps": [{"name": "エニタイムフィットネス 本庄店", "cat": "24時間ジム", "feature": "本庄市内。24時間・低価格", "note": "", "url": "https://www.anytimefitness.co.jp/honjowaseda/"}, {"name": "ドゥ・スポーツプラザ上里24", "cat": "総合スポーツクラブ", "feature": "駅からバスで12分", "note": "", "url": "https://dspnet.co.jp/kamisato/"}, {"name": "chocoZAP 本庄南口", "cat": "24時間ジム", "feature": "駅周辺　24時間　低価格", "note": "", "url": "https://chocozap.jp/studios/1370"}]}, {"no": 3, "store": "3FIT 中条店", "area": "新潟県胎内市（中条エリア）", "eki": "JR中条駅", "comps": [{"name": "スポーツクラブ胎内", "cat": "公共トレーニング施設", "feature": "NPO法人運営　1回～450円以内", "note": "", "url": "https://sportsclub-tainai.or.jp/pages/17/"}, {"name": "FIT PLACE24 新発田店", "cat": "24時間ジム", "feature": "駅から車で6分　24時間　低価格", "note": "少し遠いが中条店様の近隣エリア周辺に競合が少ないため追加", "url": "https://fitplace.jp/gyms/shibata/"}]}, {"no": 4, "store": "3FIT 仙台泉大沢店", "area": "宮城県仙台市泉区泉大沢", "eki": "泉中央駅", "comps": [{"name": "エニタイムフィットネス 泉バイパス市名坂店", "cat": "24時間ジム", "feature": "泉中央駅から徒歩24分　24時間　マシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/izumibypass-ichinazaka/"}, {"name": "JOYFIT24 仙台泉", "cat": "24時間ジム", "feature": "駅から徒歩15分　24時間　マシンジム", "note": "", "url": "https://joyfit.jp/sendaiizumi/"}, {"name": "セントラルフィットネスクラブ仙台泉中央", "cat": "", "feature": "", "note": "", "url": "https://www.central.co.jp/club/izumi/"}]}, {"no": 5, "store": "3FIT 十日市場店", "area": "神奈川県横浜市緑区十日市場", "eki": "JR十日市場駅", "comps": [{"name": "LifeFit 長津田いぶき野店", "cat": "24時間ジム", "feature": "低価格　24時間　スタッフなし", "note": "", "url": "https://lifefit.tech/"}, {"name": "ジップスポーツパーク十日市場", "cat": "総合スポーツクラブ", "feature": "駅周辺　プールあり　スクールあり", "note": "月会費は中高価格帯", "url": "https://sports-zip.com/tokaichiba/fitness/"}, {"name": "chocoZAP横浜十日市場", "cat": "24時間ジム", "feature": "駅周辺　24時間　低価格　マシンジム", "note": "", "url": "https://chocozap.jp/studios/652"}]}, {"no": 6, "store": "3FIT 古川橋駅前店", "area": "大阪府門真市（古川橋駅前）", "eki": "古川橋駅", "comps": [{"name": "LifeFit 古川橋駅前店", "cat": "24時間ジム", "feature": "低価格　24時間　スタッフなし", "note": "", "url": "https://lifefit.tech/"}, {"name": "Be-fit24古川橋店", "cat": "24時間ジム", "feature": "駅周辺　24時間　低価格　マシンジム", "note": "", "url": "https://be-fit24.jp/furukawabashi/"}, {"name": "chocoZAP古川橋北口", "cat": "24時間ジム", "feature": "駅周辺　24時間　低価格　マシンジム", "note": "", "url": "https://chocozap.jp/studios/516"}]}, {"no": 7, "store": "3FIT 名古屋茶屋店", "area": "愛知県名古屋市中川区（茶屋エリア）", "eki": "荒子川公園駅", "comps": [{"name": "ワールドプラスジム名古屋茶屋店", "cat": "24時間ジム", "feature": "マシンジム　低価格帯", "note": "", "url": "https://www.worldplus-gym.com/shop/nagoya-chaya.html"}, {"name": "コパンスポ-ツクラブ名港", "cat": "総合スポーツクラブ", "feature": "スイミングあり　中価格帯", "note": "業態は異なるが近隣のスポーツジムとして競合になる可能性あり", "url": "https://www.copin.co.jp/shop/meiko/index.html"}, {"name": "LifeFit 太平通店", "cat": "24時間ジム", "feature": "低価格　24時間　無人店舗", "note": "", "url": "https://lifefit.tech/store/taiheidori"}]}, {"no": 8, "store": "3FIT 大利根店", "area": "埼玉県加須市大利根（旧大利根町）", "eki": "JR栗橋駅", "comps": [{"name": "LifeFit 花崎駅前店", "cat": "24時間ジム", "feature": "低価格　24時間　無人店舗", "note": "", "url": "https://store.lifefit.tech/store/hanasakiekimae"}, {"name": "スマートフィット100加須店", "cat": "24時間ジム", "feature": "マシンジム　スタッフサポートあり　", "note": "", "url": "https://smartfit100.com/shop/kazo/"}, {"name": "エニタイムフィットネス 加須諏訪店", "cat": "24時間ジム", "feature": "加須駅近く　マシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/kazo-suwa/"}]}, {"no": 9, "store": "3FIT 大和店", "area": "神奈川県大和市（大和・つきみ野エリア）", "eki": "JR高座渋谷駅", "comps": [{"name": "chocoZAP高座渋谷西口", "cat": "24時間ジム", "feature": "大和市内に複数展開", "note": "", "url": "https://chocozap.jp/studios/1219"}, {"name": "フィッツオールジム24H桜ヶ丘駅前店", "cat": "24時間ジム", "feature": "大型総合施設　主要競合", "note": "", "url": "https://fits-all.jp/sakura/"}, {"name": "スポーツクラブ メガロス大和", "cat": "総合スポーツクラブ", "feature": "駅周辺　24時間　中高価格帯　大型総合ジム", "note": "", "url": "https://megalos.co.jp/yamato/"}]}, {"no": 10, "store": "3FIT 大安店", "area": "三重県員弁郡大安町", "eki": "三里駅", "comps": [{"name": "エニタイムフィットネス 桑名店", "cat": "24時間ジム", "feature": "桑名市内", "note": "", "url": "https://www.anytimefitness.co.jp/kuwana/"}, {"name": "カーブス イオン大安", "cat": "女性専用30分ジム", "feature": "地域女性層", "note": "", "url": "https://www.curves.co.jp/search/tokai/mie/cat-288/90592.php"}, {"name": "その他地元個人ジム", "cat": "個人経営ジム", "feature": "パーソナル", "note": "農村エリアで競合少ないため、パーソナルも選択肢に入る可能性", "url": ""}]}, {"no": 11, "store": "3FIT 大須賀店", "area": "静岡県袋井市（大須賀エリア）", "eki": "袋井駅", "comps": [{"name": "スマイルジム 24時間 掛川店", "cat": "24時間ジム", "feature": "地域最安の月会費　家族会員あり", "note": "", "url": "https://training-gym-network.wixsite.com/smilegym"}, {"name": "Studio Shell ", "cat": "ピラティス・ヨガ", "feature": "近隣競合　女性向け　予約制", "note": "業態は異なるが1回から通えて周辺競合も少ないためユーザーの選択肢に入る可能性", "url": "https://studioshell-connect.com/"}, {"name": "フィットイージー 袋井店", "cat": "低価格ジム", "feature": "", "note": "エリアとしては離れているが最寄り駅は袋井駅", "url": "https://shops.fiteasy.jp/shop120?utm_medium=google&utm_source=google_business_profile"}]}, {"no": 12, "store": "3FIT 天王町店", "area": "神奈川県横浜市保土ケ谷区天王町", "eki": "天王町駅", "comps": [{"name": "スマートフィット100横浜天王町店", "cat": "24時間ジム", "feature": "駅周辺　24時間ジム　無料パーソナルあり", "note": "", "url": "https://smartfit100.com/shop/yokohamatennochou/"}, {"name": "クレッシェンド 横浜天王町店", "cat": "低価格ジム", "feature": "駅周辺　24時間ジム　低価格ジム", "note": "", "url": "https://cresc-gym.jp/"}, {"name": "chocoZAP横浜天王町", "cat": "24時間ジム", "feature": "駅周辺　24時間　低価格　マシンジム", "note": "", "url": "https://chocozap.jp/studios/1456"}]}, {"no": 13, "store": "3FIT 宇多津店", "area": "香川県綾歌郡宇多津町", "eki": "JR宇多津駅", "comps": [{"name": "チョコザップ宇多津駅前店", "cat": "24時間ジム", "feature": "駅周辺　24時間　低価格　マシンジム", "note": "", "url": "https://chocozap.jp/studios/14418"}, {"name": "JOYFIT24 LITE 丸亀", "cat": "24時間ジム", "feature": "近隣マシンジム　24時間　低価格", "note": "", "url": "https://joyfit.jp/marugame/"}, {"name": "FiT24 丸亀店", "cat": "24時間ジム", "feature": "24時間　低価格　マシンジム", "note": "", "url": "https://www.fit24.jp/shop/marugame.html"}]}, {"no": 14, "store": "3FIT 小山店", "area": "栃木県小山市", "eki": "JR小山駅", "comps": [{"name": "FIT365　小山犬塚店", "cat": "24時間ジム", "feature": "最も近隣の競合　24時間　低価格　マシンジム", "note": "", "url": "https://fit365.jp/oyama-inuzuka/"}, {"name": "エニタイムフィットネス 小山北店", "cat": "24時間ジム", "feature": "24時間　マシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/oyamakita/"}, {"name": "エニタイムフィットネス 小山店", "cat": "24時間ジム", "feature": "24時間　マシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/oyama/"}]}, {"no": 15, "store": "3FIT 岐阜店", "area": "岐阜県岐阜市", "eki": "JR岐阜駅", "comps": [{"name": "フィットイージー 岐阜島店", "cat": "24時間ジム", "feature": "24時間　マシンジム", "note": "", "url": "https://shops.fiteasy.jp/shop2"}, {"name": "chocoZAP 本巣北方", "cat": "24時間ジム", "feature": "24時間　マシンジム　低価格", "note": "", "url": "https://chocozap.jp/studios/14455"}, {"name": "フィットイージー 鷺山店", "cat": "24時間ジム", "feature": "最も近隣　24時間　マシンジム", "note": "", "url": "https://shops.fiteasy.jp/shop57"}]}, {"no": 16, "store": "3FIT 戸塚店", "area": "神奈川県横浜市戸塚区", "eki": "JR戸塚駅", "comps": [{"name": "chocoZAP戸塚", "cat": "24時間ジム", "feature": "駅周辺　24時間　低価格　マシンジム", "note": "", "url": "https://chocozap.jp/studios/186"}, {"name": "エニタイムフィットネス 戸塚店", "cat": "24時間ジム", "feature": "駅周辺　24時間　マシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/totsuka/"}, {"name": "スポーツクラブNAS戸塚", "cat": "総合スポーツクラブ", "feature": "駅周辺　総合ジム", "note": "業態は異なるが駅近店舗、導線からユーザーの選択肢に入る可能性", "url": "https://www.nas-club.co.jp/totsuka/"}]}, {"no": 17, "store": "3FIT 新利府店", "area": "宮城県宮城郡利府町（新利府イオン）", "eki": "JR新利府駅", "comps": [{"name": "フォースクエアフィットネスジム24 利府ペアガーデン店", "cat": "総合スポーツクラブ", "feature": "近隣の総合ジム　月会費や入会金は中高価格帯", "note": "業態は異なるが駅近店舗、近隣ジムのため競合のあたる可能性あり", "url": "https://www.4square.jp/branch/rifu"}, {"name": "フィットイージー イオンモール新利府北館店", "cat": "24時間ジム", "feature": "イオンモール内にあり　24時間　マシンジム", "note": "", "url": "https://shops.fiteasy.jp/shop90"}, {"name": "LAVA イオンモール新利府店", "cat": "ピラティス・ヨガ", "feature": "イオンモール内にあり　女性向け", "note": "業態は異なるが同施設内にあり。ダイエットや美容目的のユーザーは選択肢に入る可能性", "url": "https://yoga-lava.com/shop/miyagi/aeon_shinrifu/"}]}, {"no": 18, "store": "3FIT 新潟東店", "area": "新潟県新潟市東区", "eki": "JR大形駅", "comps": [{"name": "FIT365　新潟東区大形", "cat": "24時間ジム", "feature": "最も近隣店舗　24時間　マシンジム　家族割あり", "note": "", "url": "https://fit365.jp/niigatahigashiku/"}, {"name": "フィットイージー 新潟赤道店", "cat": "24時間ジム", "feature": "新潟市内の近隣24時間ジム　低価格　24時間", "note": "", "url": "https://shops.fiteasy.jp/shop218"}, {"name": "エニタイムフィットネス 新潟紫竹山店", "cat": "24時間ジム", "feature": "同市内　24時間　マシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/niigatashichiku/"}]}, {"no": 19, "store": "3FIT 昭島店", "area": "東京都昭島市", "eki": "JR昭島駅", "comps": [{"name": "chocoZAP昭島", "cat": "24時間ジム", "feature": "駅前　24時間　マシンジム　低価格", "note": "", "url": "https://chocozap.jp/studios/399"}, {"name": "THE24GYM 昭島店", "cat": "24時間ジム", "feature": "24時間　マシンジム　低価格", "note": "", "url": "https://www.the24gym.com/akishima/"}, {"name": "Link", "cat": "総合スポーツクラブ", "feature": "近隣ジム　キッズスクールあり", "note": "", "url": "https://gymandstudiolink.wixsite.com/link"}]}, {"no": 20, "store": "3FIT 東員店", "area": "三重県員弁郡東員町", "eki": "北勢中央公園口駅", "comps": [{"name": "エニタイムフィットネス 桑名店", "cat": "24時間ジム", "feature": "マシンジムとしては近隣店舗", "note": "", "url": "https://www.anytimefitness.co.jp/kuwana/"}, {"name": "SDフィットネス365 桑名星川店", "cat": "総合スポーツクラブ", "feature": "桑名市内　総合スポーツクラブ", "note": "業態は異なるがエリアとして競合になる可能性あり", "url": "https://www.sd-fit.jp/shop/kuwana/"}, {"name": "フィットイージー 桑名新西方店", "cat": "24時間ジム", "feature": "低価格　24時間", "note": "離れているがエリアとして競合になる可能性あり", "url": "https://shops.fiteasy.jp/shop40"}]}, {"no": 21, "store": "3FIT 橋本店", "area": "神奈川県相模原市緑区橋本", "eki": "JR橋本駅", "comps": [{"name": "エニタイムフィットネス 橋本", "cat": "24時間ジム", "feature": "橋本駅周辺。主要競合", "note": "", "url": "https://www.anytimefitness.co.jp/hashimotoekimae/"}, {"name": "chocoZAP橋本三丁目", "cat": "24時間ジム", "feature": "近隣　24時間　マシンジム　低価格", "note": "", "url": "https://chocozap.jp/studios/14164"}, {"name": "ルネサンス 橋本24", "cat": "総合スポーツクラブ", "feature": "近隣店舗　キッズスクールあり", "note": "業態は異なるがエリアとして競合になる可能性", "url": "https://www.s-re.jp/hashimoto/"}]}, {"no": 22, "store": "3FIT 水戸南店", "area": "茨城県水戸市（南エリア）", "eki": "JR水戸駅", "comps": [{"name": "エニタイムフィットネス水戸平須店", "cat": "24時間ジム", "feature": "近隣のマシンジム　水戸市内に複数　新店", "note": "", "url": "https://www.anytimefitness.co.jp/mitohirasu/"}, {"name": "エニタイムフィットネス 水戸米沢店", "cat": "24時間ジム", "feature": "近隣のマシンジム　水戸市内に複数", "note": "", "url": "https://www.anytimefitness.co.jp/mitoyonezawa/"}, {"name": "LifeFit 水戸笠原店", "cat": "24時間ジム", "feature": "低価格　24時間　スタッフなし", "note": "", "url": "https://lifefit.tech/store/mito-kasahara"}]}, {"no": 23, "store": "3FIT 海浜幕張店", "area": "千葉県千葉市美浜区海浜幕張", "eki": "JR海浜幕張駅", "comps": [{"name": "エニタイムフィットネス 海浜幕張店", "cat": "総合スポーツクラブ", "feature": "近隣店舗", "note": "業態は異なるがエリアとして競合になる可能性", "url": "https://www.beststylefitness.jp/makuhari/makuhari-price"}, {"name": "JEXER 東京ベイ海浜幕張", "cat": "総合スポーツクラブ", "feature": "駅近　中高価格帯", "note": "業態は異なるがエリアとして競合になる可能性", "url": "https://jexer.jp/fitnessloungejexer/kaihinmakuhari/index.html"}]}, {"no": 24, "store": "3FIT 白山店", "area": "石川県白山市", "eki": "野々市駅", "comps": [{"name": "エニタイムフィットネス 白山横江店", "cat": "24時間ジム", "feature": "近隣マシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/hakusanyokoe/"}, {"name": "Every白山松任店", "cat": "24時間ジム", "feature": "24時間　マシンジム　低価格", "note": "", "url": "https://every-24fitness.com/shop/hakusan-mattou/"}, {"name": "エイム 21", "cat": "総合スポーツクラブ", "feature": "野々市市内　キッズスクールあり", "note": "業態は異なるがエリアとして競合になる可能性", "url": "https://www.fitness-aim.com/club/aim21"}]}, {"no": 25, "store": "3FIT 白根店", "area": "新潟県新潟市南区白根", "eki": "JR矢代田駅", "comps": [{"name": "フィットネスジム IRON PARK", "cat": "24時間ジム", "feature": "南区内のマシンジム", "note": "", "url": "https://ironpark.hp.peraichi.com/"}, {"name": "エニタイムフィットネス 新津店", "cat": "24時間ジム", "feature": "隣駅のマシンジム", "note": "エリアとしては離れているため要確認", "url": "https://www.anytimefitness.co.jp/niitsu/"}]}, {"no": 26, "store": "3FIT 相模原店", "area": "神奈川県相模原市（相模原エリア）", "eki": "JR古淵駅", "comps": [{"name": "FIT PLACE24 古淵店", "cat": "24時間ジム", "feature": "近隣店舗　低価格帯", "note": "", "url": "https://fitplace.jp/gyms/kobuchi/"}, {"name": "エニタイムフィットネス 古淵店", "cat": "24時間ジム", "feature": "駅前　近隣店舗", "note": "", "url": "https://www.anytimefitness.co.jp/kobuchi/"}, {"name": "スマートフィット100 相模原", "cat": "24時間ジム", "feature": "近隣店舗　低価格帯　パーソナル無料", "note": "", "url": "https://smartfit100.com/shop/kobuchi/"}]}, {"no": 27, "store": "3FIT 福井開発店", "area": "福井県福井市（開発地区）", "eki": "越前開発駅", "comps": [{"name": "FIT365ワイプラザ新保", "cat": "24時間ジム", "feature": "近隣のマシンジム　家族割あり　低価格", "note": "", "url": "https://fit365.jp/shinbo/"}, {"name": "Every福井開発店", "cat": "24時間ジム", "feature": "近隣　24時間　マシンジム　低価格", "note": "", "url": "https://every-24fitness.com/shop/fukui-kaihotsu/"}, {"name": "HYPER FIT 24 福井乾徳店", "cat": "24時間ジム", "feature": "24時間　マシンジム　ジム以外のスペースもあり", "note": "", "url": "https://gym.alltimefitness.jp/detail/1803/"}]}, {"no": 28, "store": "3FIT 笠間店", "area": "茨城県笠間市", "eki": "JR笠間駅", "comps": [{"name": "chocoZAPカスミ笠間", "cat": "24時間ジム", "feature": "近隣　24時間　マシンジム　低価格", "note": "", "url": "https://chocozap.jp/studios/14598"}, {"name": "パシフィックスポーツプラザ笠間 スタジオアネックス", "cat": "総合スポーツクラブ", "feature": "近隣店舗　キッズスクールあり", "note": "", "url": "https://pacific-sp.jp/plaza-kasama"}, {"name": "ワールドプラスジム 桜川御領店", "cat": "24時間ジム", "feature": "マシンジム　低価格帯", "note": "競合の少ないエリアとなるため、笠間市寄りにある桜川のジム", "url": "https://www.worldplus-gym.com/shop/sakuragawagoryo.html"}]}, {"no": 29, "store": "3FIT 葛西店", "area": "東京都江戸川区葛西", "eki": "西葛西駅", "comps": [{"name": "LifeFit 西葛西店", "cat": "24時間ジム", "feature": "近隣店舗　低価格　24時間　無人ジム", "note": "", "url": "https://store.lifefit.tech/store/nishikasai"}, {"name": "BLUE FITNESS24西葛西店", "cat": "24時間ジム", "feature": "低価格　駅前店舗　パーソナル併設", "note": "", "url": "https://www.blue-fitness24.com/"}, {"name": "chocoZAP西葛西南口", "cat": "24時間ジム", "feature": "駅近　低価格　マシンジム", "note": "", "url": "https://chocozap.jp/studios/699"}]}, {"no": 30, "store": "3FIT 西台店", "area": "東京都板橋区西台", "eki": "西台駅", "comps": [{"name": "FIT PLACE24 西台店", "cat": "24時間ジム", "feature": "近隣店舗　低価格帯　主要競合", "note": "", "url": "https://fitplace.jp/gyms/nishidai/"}, {"name": "chocoZAP西台西口", "cat": "24時間ジム", "feature": "駅近　低価格　マシンジム", "note": "", "url": "https://chocozap.jp/"}, {"name": "エニタイムフィットネス 西台店", "cat": "低価格ジム", "feature": "駅前　24時間　マシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/nishidai/"}]}, {"no": 31, "store": "3FIT 近江八幡店", "area": "滋賀県近江八幡市", "eki": "JR近江八幡駅", "comps": [{"name": "エニタイムフィットネス 近江八幡店", "cat": "24時間ジム", "feature": "近隣24時間ジム", "note": "", "url": "https://www.anytimefitness.co.jp/omihachiman/"}, {"name": "HYPER FIT 24 イオン近江八幡ショッピングセンター店", "cat": "24時間ジム", "feature": "イオン内のマシンジム", "note": "", "url": "https://gym.alltimefitness.jp/detail/2501/"}]}, {"no": 32, "store": "3FIT 長浦店", "area": "千葉県袖ケ浦市長浦", "eki": "JR長浦駅", "comps": [{"name": "エニタイムフィットネス 袖ヶ浦蔵波店", "cat": "24時間ジム", "feature": "最も近隣のマシンジム", "note": "", "url": "https://www.anytimefitness.co.jp/sodegaurakuranami/"}, {"name": "エニタイムフィットネス 袖ヶ浦駅前店", "cat": "24時間ジム", "feature": "袖ヶ浦駅のマシンジム", "note": "競合の少ないエリア。となり駅にあるマシンジムも競合になる可能性あり", "url": "https://www.anytimefitness.co.jp/sodegaura-ekimae/"}, {"name": "セントラルフィットネスクラブ24 袖ケ浦駅前", "cat": "総合スポーツクラブ", "feature": "袖ヶ浦駅のマシンジム", "note": "となり駅にある総合ジムになるが、ジムの少ないエリアのため競合になる可能性あり", "url": "https://www.central.co.jp/club/cf-sodegaura/"}]}],
-  sogo:  [{"no": 1, "store": "伊丹昆陽店", "area": "兵庫県伊丹市", "eki": "", "comps": [{"name": "スポーツクラブ＆サウナスパ ルネサンス 伊丹24", "cat": "総合スポーツクラブ", "feature": "JR伊丹駅周辺。温浴・サウナ施設充実。ジムエリアは24時間営業", "note": "", "url": "https://www.s-re.jp/itami/"}, {"name": "エニタイムフィットネス 伊丹昆陽", "cat": "24時間ジム", "feature": "伊丹市昆陽エリア。24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.anytimefitness.co.jp/itami/"}, {"name": "FITBASE24 伊丹昆陽", "cat": "24時間ジム", "feature": "伊丹市昆陽エリア。24時間・低価格。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.cospa-wellness.co.jp/fitbase24/itamikoya/"}]}, {"no": 2, "store": "3FIT 成田店", "area": "千葉県成田市", "eki": "", "comps": [{"name": "エニタイムフィットネス 成田ウイング土屋店", "cat": "24時間ジム", "feature": "成田ウイング土屋エリア。24時間営業。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.anytimefitness.co.jp/naritauingutsuchiya/"}, {"name": "chocoZAP成田土屋", "cat": "24時間ジム", "feature": "成田土屋エリア。低価格帯の24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://chocozap.jp/studios/913"}]}, {"no": 3, "store": "3FIT 倉敷店", "area": "岡山県倉敷市", "eki": "", "comps": [{"name": "グンゼスポーツアイビースクエア", "cat": "総合スポーツクラブ", "feature": "倉敷アイビースクエア内。プール・スタジオ・温浴施設を備える総合型。", "note": "", "url": "https://www.gunzesports.com/kurashiki/"}, {"name": "LifeFit 倉敷平田店", "cat": "24時間ジム", "feature": "倉敷平田エリア。低価格帯の24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://lifefit.tech/store/kurashikihirata"}]}, {"no": 4, "store": "3FIT 熱田千年店", "area": "愛知県名古屋市熱田区", "eki": "", "comps": [{"name": "スポーツクラブ＆サウナスパ ルネサンス 名古屋熱田24", "cat": "総合スポーツクラブ", "feature": "熱田区エリア。スパ施設充実。プール・スタジオ完備でジムは24時間営業。", "note": "", "url": "https://www.s-re.jp/nagoya-atsuta/"}, {"name": "エニタイムフィットネス 熱田六番南店", "cat": "24時間ジム", "feature": "六番町駅周辺。24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.anytimefitness.co.jp/atsuta6s254/"}]}, {"no": 5, "store": "3FIT 浜松西店", "area": "静岡県浜松市", "eki": "", "comps": [{"name": "スポーツクラブ アクトス 浜松", "cat": "総合スポーツクラブ", "feature": "浜松エリア。プールやスタジオ完備の総合型。", "note": "", "url": "https://sc1.axtos.com/shop/hamamatsu/"}, {"name": "フィットイージー 浜松志都呂店", "cat": "24時間ジム", "feature": "浜松市志都呂エリア。サウナやスタジオ付きの24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://shops.fiteasy.jp/shop291"}]}, {"no": 6, "store": "3FIT 東浦店", "area": "愛知県知多郡東浦町", "eki": "", "comps": [{"name": "スポーツクラブ アクトス 刈谷", "cat": "総合スポーツクラブ", "feature": "刈谷市エリア。プール・スタジオ完備の総合型。", "note": "", "url": "https://sc1.axtos.com/shop/kariya/"}, {"name": "コナミスポーツクラブ 刈谷", "cat": "総合スポーツクラブ", "feature": "刈谷駅周辺。プール・スタジオ完備の大手総合型。", "note": "", "url": "https://information.konamisportsclub.jp/ksc/007855/"}, {"name": "FIT PLACE24 大府店", "cat": "24時間ジム", "feature": "大府エリア。低価格帯の24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://fitplace.jp/gyms/obu/"}]}, {"no": 7, "store": "3FIT 八事店", "area": "愛知県名古屋市昭和区", "eki": "", "comps": [{"name": "アクトス八事", "cat": "総合スポーツクラブ", "feature": "八事エリア。プール・スタジオ完備の総合型。", "note": "", "url": "https://sc1.axtos.com/shop/yagoto/"}, {"name": "ヨガ＆ジム アイレクス・ライト+24 名古屋八事", "cat": "24時間ジム", "feature": "八事エリア。本格的なヨガスタジオと24時間ジムが融合した施設。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.ilex-light.com/yagoto/"}, {"name": "エニタイムフィットネス 八事店", "cat": "24時間ジム", "feature": "八事駅周辺。24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.anytimefitness.co.jp/yagoto/"}]}, {"no": 8, "store": "3FIT 姫路店", "area": "兵庫県姫路市飾磨区", "eki": "", "comps": [{"name": "ホリデイスポーツクラブ 姫路", "cat": "総合スポーツクラブ", "feature": "姫路エリア。初心者や未経験者がターゲット。プールや温浴施設が充実。", "note": "", "url": "https://www.holiday-sc.jp/shops/067-himeji/"}, {"name": "Constant Gym 24 姫路飾磨店", "cat": "24時間ジム", "feature": "姫路市飾磨エリア。地域密着型の低価格24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.constantgym.com/"}, {"name": "FiT24 姫路飾磨店", "cat": "25時間ジム", "feature": "姫路市飾磨エリア。24時間営業。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.fit24.jp/shop/himejishikama.html"}]}, {"no": 9, "store": "浦和美園", "area": "nan", "eki": "", "comps": [{"name": "エニタイムフィットネス 浦和美園", "cat": "24時間ジム", "feature": "浦和美園駅周辺。24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.anytimefitness.co.jp/urawamisono/"}, {"name": "FiT24 東川口", "cat": "24時間ジム", "feature": "東川口エリア。24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.fit24.jp/shop/higashikawaguchi.html"}]}, {"no": 10, "store": "大高店", "area": "愛知県名古屋市緑区", "eki": "", "comps": [{"name": "スポーツクラブNAS大高", "cat": "総合スポーツクラブ", "feature": "大高エリア。大型プール、スタジオ、スパ施設を備える総合型。", "note": "", "url": "https://www.nas-club.co.jp/odaka/"}, {"name": "フィットネスクラブwish", "cat": "総合スポーツクラブ", "feature": "大高エリア。病院内にあるフィットネスジム。「運動と医療のノウハウ」が特徴。", "note": "", "url": "https://www.minami-hp.jp/shop/s01_wish/"}]}, {"no": 11, "store": "レイクタウン店", "area": "埼玉県越谷市", "eki": "", "comps": [{"name": "セントラルフィットネスクラブ24越谷レイクタウン", "cat": "総合スポーツクラブ", "feature": "越谷レイクタウン駅周辺。プール・温浴施設完備。ジムエリアは24時間利用可能。", "note": "", "url": "https://www.central.co.jp/club/koshigaya_lt/"}, {"name": "エニタイムフィットネス 越谷レイクタウン駅前店", "cat": "24時間ジム", "feature": "越谷レイクタウン駅前。24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.anytimefitness.co.jp/koshigayalaketown/"}]}, {"no": 12, "store": "3FIT 栃木店", "area": "栃木県栃木市", "eki": "", "comps": [{"name": "エニタイムフィットネス 栃木", "cat": "24時間ジム", "feature": "栃木市エリア。24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.anytimefitness.co.jp/tochigi/"}, {"name": "蔵の街スポーツクラブ", "cat": "総合スポーツクラブ", "feature": "栃木市エリア。地域密着型の総合クラブ。幅広い年齢層向けのプールやスタジオを完備。", "note": "", "url": "https://kurasupo.net/"}, {"name": "フィットネスジムFIT365ヨークタウン栃木平柳", "cat": "24時間ジム", "feature": "栃木平柳エリア。家族4人まで通える24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://fit365.jp/tochigihirayanagi/"}]}, {"no": 13, "store": "3FIT 高知店", "area": "高知県高知市", "eki": "", "comps": [{"name": "ホリデイスポーツクラブ 高知", "cat": "総合スポーツクラブ", "feature": "高知エリア。初心者や未経験者がターゲット。プールや温浴施設が充実。", "note": "", "url": "https://www.holiday-sc.jp/shops/087-kochi/"}, {"name": "フィットイージー 高知店", "cat": "24時間ジム", "feature": "高知エリア。サウナやスタジオ付きの24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://shops.fiteasy.jp/shop189"}, {"name": "コナミスポーツクラブ はりまや橋", "cat": "総合スポーツクラブ", "feature": "はりまや橋周辺。プール・スタジオ完備の大手総合型。", "note": "", "url": "https://information.konamisportsclub.jp/ksc/004075/"}]}, {"no": 14, "store": "3FIT 岡崎店", "area": "愛知県岡崎市", "eki": "", "comps": [{"name": "ホリデイ スポーツクラブ 岡崎", "cat": "総合スポーツクラブ", "feature": "岡崎エリア。初心者や未経験者がターゲット。プールや温浴施設が充実。", "note": "", "url": "https://www.holiday-sc.jp/shops/083-okazaki/"}, {"name": "ヨガ＆ジム アイレクス・ライト+24 岡崎戸崎", "cat": "24時間ジム", "feature": "岡崎戸崎エリア。本格的なヨガスタジオと24時間ジムが融合した施設。", "note": "", "url": "https://www.ilex-light.com/okazakitosaki/"}]}, {"no": 15, "store": "おゆみ野店", "area": "千葉県千葉市緑区", "eki": "", "comps": [{"name": "スポーツクラブNASおゆみ野", "cat": "総合スポーツクラブ", "feature": "おゆみ野エリア。大型プール、スタジオ、スパ施設を備える総合型。", "note": "", "url": "https://www.nas-club.co.jp/oyumino/"}, {"name": "ヴェルディスポーツプラザおゆみの", "cat": "総合スポーツクラブ", "feature": "おゆみ野エリア。地域密着型の総合クラブ。", "note": "", "url": "https://verdi.co.jp/"}, {"name": "エニタイムフィットネス おゆみ野店", "cat": "24時間ジム", "feature": "おゆみ野エリア。24時間ジム。", "note": "総合型でないが、近隣のため比較対象になる可能性有り", "url": "https://www.anytimefitness.co.jp/oyumino/"}]}]
+  tokka: [
+    {
+      no: 1,
+      store: '3FIT マリンピア店',
+      area: '千葉県千葉市美浜区稲毛海岸',
+      eki: 'JR稲毛海岸駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 稲毛海岸店',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間　マシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/inagekaigan/'
+        },
+        {
+          name: 'chocoZAP稲毛海岸',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間　低価格　マシンジム',
+          note: '',
+          url: 'https://chocozap.jp/studios/56'
+        },
+        {
+          name: 'BLUE FITNESS24＋studio 稲毛海岸',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間＋スタジオレッスン＋パーソナル',
+          note: '',
+          url: 'https://www.blue-fitness24.com/inagekaigan_lp/'
+        }
+      ]
+    },
+    {
+      no: 2,
+      store: '3FIT 上里店',
+      area: '埼玉県児玉郡上里町（本庄・上里エリア）',
+      eki: 'JR神保原駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 本庄店',
+          cat: '24時間ジム',
+          feature: '本庄市内。24時間・低価格',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/honjowaseda/'
+        },
+        {
+          name: 'ドゥ・スポーツプラザ上里24',
+          cat: '総合スポーツクラブ',
+          feature: '駅からバスで12分',
+          note: '',
+          url: 'https://dspnet.co.jp/kamisato/'
+        },
+        {
+          name: 'chocoZAP 本庄南口',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間　低価格',
+          note: '',
+          url: 'https://chocozap.jp/studios/1370'
+        }
+      ]
+    },
+    {
+      no: 3,
+      store: '3FIT 中条店',
+      area: '新潟県胎内市（中条エリア）',
+      eki: 'JR中条駅',
+      comps: [
+        {
+          name: 'スポーツクラブ胎内',
+          cat: '公共トレーニング施設',
+          feature: 'NPO法人運営　1回～450円以内',
+          note: '',
+          url: 'https://sportsclub-tainai.or.jp/pages/17/'
+        },
+        {
+          name: 'FIT PLACE24 新発田店',
+          cat: '24時間ジム',
+          feature: '駅から車で6分　24時間　低価格',
+          note: '少し遠いが中条店様の近隣エリア周辺に競合が少ないため追加',
+          url: 'https://fitplace.jp/gyms/shibata/'
+        }
+      ]
+    },
+    {
+      no: 4,
+      store: '3FIT 仙台泉大沢店',
+      area: '宮城県仙台市泉区泉大沢',
+      eki: '泉中央駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 泉バイパス市名坂店',
+          cat: '24時間ジム',
+          feature: '泉中央駅から徒歩24分　24時間　マシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/izumibypass-ichinazaka/'
+        },
+        {
+          name: 'JOYFIT24 仙台泉',
+          cat: '24時間ジム',
+          feature: '駅から徒歩15分　24時間　マシンジム',
+          note: '',
+          url: 'https://joyfit.jp/sendaiizumi/'
+        },
+        {
+          name: 'セントラルフィットネスクラブ仙台泉中央',
+          cat: '',
+          feature: '',
+          note: '',
+          url: 'https://www.central.co.jp/club/izumi/'
+        }
+      ]
+    },
+    {
+      no: 5,
+      store: '3FIT 十日市場店',
+      area: '神奈川県横浜市緑区十日市場',
+      eki: 'JR十日市場駅',
+      comps: [
+        {
+          name: 'LifeFit 長津田いぶき野店',
+          cat: '24時間ジム',
+          feature: '低価格　24時間　スタッフなし',
+          note: '',
+          url: 'https://lifefit.tech/'
+        },
+        {
+          name: 'ジップスポーツパーク十日市場',
+          cat: '総合スポーツクラブ',
+          feature: '駅周辺　プールあり　スクールあり',
+          note: '月会費は中高価格帯',
+          url: 'https://sports-zip.com/tokaichiba/fitness/'
+        },
+        {
+          name: 'chocoZAP横浜十日市場',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間　低価格　マシンジム',
+          note: '',
+          url: 'https://chocozap.jp/studios/652'
+        }
+      ]
+    },
+    {
+      no: 6,
+      store: '3FIT 古川橋駅前店',
+      area: '大阪府門真市（古川橋駅前）',
+      eki: '古川橋駅',
+      comps: [
+        {
+          name: 'LifeFit 古川橋駅前店',
+          cat: '24時間ジム',
+          feature: '低価格　24時間　スタッフなし',
+          note: '',
+          url: 'https://lifefit.tech/'
+        },
+        {
+          name: 'Be-fit24古川橋店',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間　低価格　マシンジム',
+          note: '',
+          url: 'https://be-fit24.jp/furukawabashi/'
+        },
+        {
+          name: 'chocoZAP古川橋北口',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間　低価格　マシンジム',
+          note: '',
+          url: 'https://chocozap.jp/studios/516'
+        }
+      ]
+    },
+    {
+      no: 7,
+      store: '3FIT 名古屋茶屋店',
+      area: '愛知県名古屋市中川区（茶屋エリア）',
+      eki: '荒子川公園駅',
+      comps: [
+        {
+          name: 'ワールドプラスジム名古屋茶屋店',
+          cat: '24時間ジム',
+          feature: 'マシンジム　低価格帯',
+          note: '',
+          url: 'https://www.worldplus-gym.com/shop/nagoya-chaya.html'
+        },
+        {
+          name: 'コパンスポ-ツクラブ名港',
+          cat: '総合スポーツクラブ',
+          feature: 'スイミングあり　中価格帯',
+          note: '業態は異なるが近隣のスポーツジムとして競合になる可能性あり',
+          url: 'https://www.copin.co.jp/shop/meiko/index.html'
+        },
+        {
+          name: 'LifeFit 太平通店',
+          cat: '24時間ジム',
+          feature: '低価格　24時間　無人店舗',
+          note: '',
+          url: 'https://lifefit.tech/store/taiheidori'
+        }
+      ]
+    },
+    {
+      no: 8,
+      store: '3FIT 大利根店',
+      area: '埼玉県加須市大利根（旧大利根町）',
+      eki: 'JR栗橋駅',
+      comps: [
+        {
+          name: 'LifeFit 花崎駅前店',
+          cat: '24時間ジム',
+          feature: '低価格　24時間　無人店舗',
+          note: '',
+          url: 'https://store.lifefit.tech/store/hanasakiekimae'
+        },
+        {
+          name: 'スマートフィット100加須店',
+          cat: '24時間ジム',
+          feature: 'マシンジム　スタッフサポートあり　',
+          note: '',
+          url: 'https://smartfit100.com/shop/kazo/'
+        },
+        {
+          name: 'エニタイムフィットネス 加須諏訪店',
+          cat: '24時間ジム',
+          feature: '加須駅近く　マシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/kazo-suwa/'
+        }
+      ]
+    },
+    {
+      no: 9,
+      store: '3FIT 大和店',
+      area: '神奈川県大和市（大和・つきみ野エリア）',
+      eki: 'JR高座渋谷駅',
+      comps: [
+        {
+          name: 'chocoZAP高座渋谷西口',
+          cat: '24時間ジム',
+          feature: '大和市内に複数展開',
+          note: '',
+          url: 'https://chocozap.jp/studios/1219'
+        },
+        {
+          name: 'フィッツオールジム24H桜ヶ丘駅前店',
+          cat: '24時間ジム',
+          feature: '大型総合施設　主要競合',
+          note: '',
+          url: 'https://fits-all.jp/sakura/'
+        },
+        {
+          name: 'スポーツクラブ メガロス大和',
+          cat: '総合スポーツクラブ',
+          feature: '駅周辺　24時間　中高価格帯　大型総合ジム',
+          note: '',
+          url: 'https://megalos.co.jp/yamato/'
+        }
+      ]
+    },
+    {
+      no: 10,
+      store: '3FIT 大安店',
+      area: '三重県員弁郡大安町',
+      eki: '三里駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 桑名店',
+          cat: '24時間ジム',
+          feature: '桑名市内',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/kuwana/'
+        },
+        {
+          name: 'カーブス イオン大安',
+          cat: '女性専用30分ジム',
+          feature: '地域女性層',
+          note: '',
+          url: 'https://www.curves.co.jp/search/tokai/mie/cat-288/90592.php'
+        },
+        {
+          name: 'その他地元個人ジム',
+          cat: '個人経営ジム',
+          feature: 'パーソナル',
+          note: '農村エリアで競合少ないため、パーソナルも選択肢に入る可能性',
+          url: ''
+        }
+      ]
+    },
+    {
+      no: 11,
+      store: '3FIT 大須賀店',
+      area: '静岡県袋井市（大須賀エリア）',
+      eki: '袋井駅',
+      comps: [
+        {
+          name: 'スマイルジム 24時間 掛川店',
+          cat: '24時間ジム',
+          feature: '地域最安の月会費　家族会員あり',
+          note: '',
+          url: 'https://training-gym-network.wixsite.com/smilegym'
+        },
+        {
+          name: 'Studio Shell ',
+          cat: 'ピラティス・ヨガ',
+          feature: '近隣競合　女性向け　予約制',
+          note: '業態は異なるが1回から通えて周辺競合も少ないためユーザーの選択肢に入る可能性',
+          url: 'https://studioshell-connect.com/'
+        },
+        {
+          name: 'フィットイージー 袋井店',
+          cat: '低価格ジム',
+          feature: '',
+          note: 'エリアとしては離れているが最寄り駅は袋井駅',
+          url: 'https://shops.fiteasy.jp/shop120?utm_medium=google&utm_source=google_business_profile'
+        }
+      ]
+    },
+    {
+      no: 12,
+      store: '3FIT 天王町店',
+      area: '神奈川県横浜市保土ケ谷区天王町',
+      eki: '天王町駅',
+      comps: [
+        {
+          name: 'スマートフィット100横浜天王町店',
+          cat: '24時間ジム',
+          feature: '24時間ジム　プロテインサーバー・無料パーソナル　口コミ★4.9と高評価',
+          note: '',
+          url: 'https://smartfit100.com/shop/yokohamatennochou/',
+          reviews: 118,
+          score: 4.9,
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 0
+        },
+        {
+          name: 'クレッシェンド 横浜天王町店',
+          cat: '低価格ジム',
+          feature: '24時間・低価格ジム　クレジットカード可',
+          note: '',
+          url: 'https://cresc-gym.jp/',
+          reviews: 30,
+          score: 4.5,
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 0
+        },
+        {
+          name: 'chocoZAP横浜天王町',
+          cat: '24時間ジム',
+          feature: '24時間・低価格　商品登録あり（ワークスペース・ピラティス・セルフ脱毛）',
+          note: '',
+          url: 'https://chocozap.jp/studios/1456',
+          reviews: 13,
+          score: 2.9,
+          photoRecent: 0,
+          photoNote: '5ヶ月前',
+          posts: 6
+        }
+      ]
+    },
+    {
+      no: 13,
+      store: '3FIT 宇多津店',
+      area: '香川県綾歌郡宇多津町',
+      eki: 'JR宇多津駅',
+      comps: [
+        {
+          name: 'チョコザップ宇多津駅前店',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間　低価格　マシンジム',
+          note: '',
+          url: 'https://chocozap.jp/studios/14418'
+        },
+        {
+          name: 'JOYFIT24 LITE 丸亀',
+          cat: '24時間ジム',
+          feature: '近隣マシンジム　24時間　低価格',
+          note: '',
+          url: 'https://joyfit.jp/marugame/'
+        },
+        {
+          name: 'FiT24 丸亀店',
+          cat: '24時間ジム',
+          feature: '24時間　低価格　マシンジム',
+          note: '',
+          url: 'https://www.fit24.jp/shop/marugame.html'
+        }
+      ]
+    },
+    {
+      no: 14,
+      store: '3FIT 小山店',
+      area: '栃木県小山市',
+      eki: 'JR小山駅',
+      comps: [
+        {
+          name: 'FIT365　小山犬塚店',
+          cat: '24時間ジム',
+          feature: '最も近隣の競合　24時間　低価格　マシンジム',
+          note: '',
+          url: 'https://fit365.jp/oyama-inuzuka/'
+        },
+        {
+          name: 'エニタイムフィットネス 小山北店',
+          cat: '24時間ジム',
+          feature: '24時間　マシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/oyamakita/'
+        },
+        {
+          name: 'エニタイムフィットネス 小山店',
+          cat: '24時間ジム',
+          feature: '24時間　マシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/oyama/'
+        }
+      ]
+    },
+    {
+      no: 15,
+      store: '3FIT 岐阜店',
+      area: '岐阜県岐阜市',
+      eki: 'JR岐阜駅',
+      comps: [
+        {
+          name: 'フィットイージー 岐阜島店',
+          cat: '24時間ジム',
+          feature: '24時間　マシンジム',
+          note: '',
+          url: 'https://shops.fiteasy.jp/shop2'
+        },
+        {
+          name: 'chocoZAP 本巣北方',
+          cat: '24時間ジム',
+          feature: '24時間　マシンジム　低価格',
+          note: '',
+          url: 'https://chocozap.jp/studios/14455'
+        },
+        {
+          name: 'フィットイージー 鷺山店',
+          cat: '24時間ジム',
+          feature: '最も近隣　24時間　マシンジム',
+          note: '',
+          url: 'https://shops.fiteasy.jp/shop57'
+        }
+      ]
+    },
+    {
+      no: 16,
+      store: '3FIT 戸塚店',
+      area: '神奈川県横浜市戸塚区',
+      eki: 'JR戸塚駅',
+      comps: [
+        {
+          name: 'chocoZAP戸塚',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間　低価格　マシンジム　スキンケア・月額定額プラン',
+          note: '',
+          url: 'https://chocozap.jp/studios/186',
+          reviews: 89,
+          score: 3.5,
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 0
+        },
+        {
+          name: 'エニタイムフィットネス 戸塚店',
+          cat: '24時間ジム',
+          feature: '駅周辺　24時間　マシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/totsuka/',
+          reviews: 72,
+          score: 3.4,
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 0
+        },
+        {
+          name: 'スポーツクラブNAS戸塚',
+          cat: '総合スポーツクラブ',
+          feature: '駅周辺　総合ジム（プール・サウナ・バスケットボールコート）　商品登録あり・SNSあり',
+          note: '業態は異なるが駅近店舗、導線からユーザーの選択肢に入る可能性',
+          url: 'https://www.nas-club.co.jp/totsuka/',
+          reviews: 208,
+          score: 3.3,
+          photoRecent: 14,
+          posts: 0
+        }
+      ]
+    },
+    {
+      no: 17,
+      store: '3FIT 新利府店',
+      area: '宮城県宮城郡利府町（新利府イオン）',
+      eki: 'JR新利府駅',
+      comps: [
+        {
+          name: 'フォースクエアフィットネスジム24 利府ペアガーデン店',
+          cat: '総合スポーツクラブ',
+          feature: '近隣の総合ジム　月会費や入会金は中高価格帯',
+          note: '業態は異なるが駅近店舗、近隣ジムのため競合のあたる可能性あり',
+          url: 'https://www.4square.jp/branch/rifu'
+        },
+        {
+          name: 'フィットイージー イオンモール新利府北館店',
+          cat: '24時間ジム',
+          feature: 'イオンモール内にあり　24時間　マシンジム',
+          note: '',
+          url: 'https://shops.fiteasy.jp/shop90'
+        },
+        {
+          name: 'LAVA イオンモール新利府店',
+          cat: 'ピラティス・ヨガ',
+          feature: 'イオンモール内にあり　女性向け',
+          note: '業態は異なるが同施設内にあり。ダイエットや美容目的のユーザーは選択肢に入る可能性',
+          url: 'https://yoga-lava.com/shop/miyagi/aeon_shinrifu/'
+        }
+      ]
+    },
+    {
+      no: 18,
+      store: '3FIT 新潟東店',
+      area: '新潟県新潟市東区',
+      eki: 'JR大形駅',
+      comps: [
+        {
+          name: 'FIT365　新潟東区大形',
+          cat: '24時間ジム',
+          feature: '最も近隣店舗　24時間　マシンジム　家族割あり',
+          note: '',
+          url: 'https://fit365.jp/niigatahigashiku/'
+        },
+        {
+          name: 'フィットイージー 新潟赤道店',
+          cat: '24時間ジム',
+          feature: '新潟市内の近隣24時間ジム　低価格　24時間',
+          note: '',
+          url: 'https://shops.fiteasy.jp/shop218'
+        },
+        {
+          name: 'エニタイムフィットネス 新潟紫竹山店',
+          cat: '24時間ジム',
+          feature: '同市内　24時間　マシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/niigatashichiku/'
+        }
+      ]
+    },
+    {
+      no: 19,
+      store: '3FIT 昭島店',
+      area: '東京都昭島市',
+      eki: 'JR昭島駅',
+      comps: [
+        {
+          name: 'chocoZAP昭島',
+          cat: '24時間ジム',
+          feature: '駅前　24時間　マシンジム　低価格',
+          note: '',
+          url: 'https://chocozap.jp/studios/399'
+        },
+        {
+          name: 'THE24GYM 昭島店',
+          cat: '24時間ジム',
+          feature: '24時間　マシンジム　低価格',
+          note: '',
+          url: 'https://www.the24gym.com/akishima/'
+        },
+        {
+          name: 'Link',
+          cat: '総合スポーツクラブ',
+          feature: '近隣ジム　キッズスクールあり',
+          note: '',
+          url: 'https://gymandstudiolink.wixsite.com/link'
+        }
+      ]
+    },
+    {
+      no: 20,
+      store: '3FIT 東員店',
+      area: '三重県員弁郡東員町',
+      eki: '北勢中央公園口駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 桑名店',
+          cat: '24時間ジム',
+          feature: 'マシンジムとしては近隣店舗',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/kuwana/'
+        },
+        {
+          name: 'SDフィットネス365 桑名星川店',
+          cat: '総合スポーツクラブ',
+          feature: '桑名市内　総合スポーツクラブ',
+          note: '業態は異なるがエリアとして競合になる可能性あり',
+          url: 'https://www.sd-fit.jp/shop/kuwana/'
+        },
+        {
+          name: 'フィットイージー 桑名新西方店',
+          cat: '24時間ジム',
+          feature: '低価格　24時間',
+          note: '離れているがエリアとして競合になる可能性あり',
+          url: 'https://shops.fiteasy.jp/shop40'
+        }
+      ]
+    },
+    {
+      no: 21,
+      store: '3FIT 橋本店',
+      area: '神奈川県相模原市緑区橋本',
+      eki: 'JR橋本駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 橋本',
+          cat: '24時間ジム',
+          feature: '橋本駅周辺。主要競合',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/hashimotoekimae/'
+        },
+        {
+          name: 'chocoZAP橋本三丁目',
+          cat: '24時間ジム',
+          feature: '近隣　24時間　マシンジム　低価格',
+          note: '',
+          url: 'https://chocozap.jp/studios/14164'
+        },
+        {
+          name: 'ルネサンス 橋本24',
+          cat: '総合スポーツクラブ',
+          feature: '近隣店舗　キッズスクールあり',
+          note: '業態は異なるがエリアとして競合になる可能性',
+          url: 'https://www.s-re.jp/hashimoto/'
+        }
+      ]
+    },
+    {
+      no: 22,
+      store: '3FIT 水戸南店',
+      area: '茨城県水戸市（南エリア）',
+      eki: 'JR水戸駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス水戸平須店',
+          cat: '24時間ジム',
+          feature: '近隣のマシンジム　水戸市内に複数　新店',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/mitohirasu/',
+          reviews: 2,
+          score: 5.0,
+          photoRecent: 2,
+          posts: 30
+        },
+        {
+          name: 'エニタイムフィットネス 水戸米沢店',
+          cat: '24時間ジム',
+          feature: '近隣のマシンジム　水戸市内に複数　商品登録あり・SNSあり',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/mitoyonezawa/',
+          reviews: 161,
+          score: 4.2,
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 3
+        },
+        {
+          name: 'LifeFit 水戸笠原店',
+          cat: '24時間ジム',
+          feature: '低価格　24時間　スタッフなし　商品登録あり・SNSあり',
+          note: '',
+          url: 'https://lifefit.tech/store/mito-kasahara',
+          reviews: 77,
+          score: 4.2,
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 0
+        }
+      ]
+    },
+    {
+      no: 23,
+      store: '3FIT 海浜幕張店',
+      area: '千葉県千葉市美浜区海浜幕張',
+      eki: 'JR海浜幕張駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 海浜幕張店',
+          cat: '総合スポーツクラブ',
+          feature: '近隣店舗',
+          note: '業態は異なるがエリアとして競合になる可能性',
+          url: 'https://www.beststylefitness.jp/makuhari/makuhari-price'
+        },
+        {
+          name: 'JEXER 東京ベイ海浜幕張',
+          cat: '総合スポーツクラブ',
+          feature: '駅近　中高価格帯',
+          note: '業態は異なるがエリアとして競合になる可能性',
+          url: 'https://jexer.jp/fitnessloungejexer/kaihinmakuhari/index.html'
+        }
+      ]
+    },
+    {
+      no: 24,
+      store: '3FIT 白山店',
+      area: '石川県白山市',
+      eki: '野々市駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 白山横江店',
+          cat: '24時間ジム',
+          feature: '近隣マシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/hakusanyokoe/'
+        },
+        {
+          name: 'Every白山松任店',
+          cat: '24時間ジム',
+          feature: '24時間　マシンジム　低価格',
+          note: '',
+          url: 'https://every-24fitness.com/shop/hakusan-mattou/'
+        },
+        {
+          name: 'エイム 21',
+          cat: '総合スポーツクラブ',
+          feature: '野々市市内　キッズスクールあり',
+          note: '業態は異なるがエリアとして競合になる可能性',
+          url: 'https://www.fitness-aim.com/club/aim21'
+        }
+      ]
+    },
+    {
+      no: 25,
+      store: '3FIT 白根店',
+      area: '新潟県新潟市南区白根',
+      eki: 'JR矢代田駅',
+      comps: [
+        {
+          name: 'フィットネスジム IRON PARK',
+          cat: '24時間ジム',
+          feature: '南区内のマシンジム',
+          note: '',
+          url: 'https://ironpark.hp.peraichi.com/'
+        },
+        {
+          name: 'エニタイムフィットネス 新津店',
+          cat: '24時間ジム',
+          feature: '隣駅のマシンジム',
+          note: 'エリアとしては離れているため要確認',
+          url: 'https://www.anytimefitness.co.jp/niitsu/'
+        }
+      ]
+    },
+    {
+      no: 26,
+      store: '3FIT 相模原店',
+      area: '神奈川県相模原市（相模原エリア）',
+      eki: 'JR古淵駅',
+      comps: [
+        {
+          name: 'FIT PLACE24 古淵店',
+          cat: '24時間ジム',
+          feature: '近隣店舗　低価格帯',
+          note: '',
+          url: 'https://fitplace.jp/gyms/kobuchi/'
+        },
+        {
+          name: 'エニタイムフィットネス 古淵店',
+          cat: '24時間ジム',
+          feature: '駅前　近隣店舗',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/kobuchi/'
+        },
+        {
+          name: 'スマートフィット100 相模原',
+          cat: '24時間ジム',
+          feature: '近隣店舗　低価格帯　パーソナル無料',
+          note: '',
+          url: 'https://smartfit100.com/shop/kobuchi/'
+        }
+      ]
+    },
+    {
+      no: 27,
+      store: '3FIT 福井開発店',
+      area: '福井県福井市（開発地区）',
+      eki: '越前開発駅',
+      comps: [
+        {
+          name: 'FIT365ワイプラザ新保',
+          cat: '24時間ジム',
+          feature: '近隣のマシンジム　家族割あり　低価格',
+          note: '',
+          url: 'https://fit365.jp/shinbo/'
+        },
+        {
+          name: 'Every福井開発店',
+          cat: '24時間ジム',
+          feature: '近隣　24時間　マシンジム　低価格',
+          note: '',
+          url: 'https://every-24fitness.com/shop/fukui-kaihotsu/'
+        },
+        {
+          name: 'HYPER FIT 24 福井乾徳店',
+          cat: '24時間ジム',
+          feature: '24時間　マシンジム　ジム以外のスペースもあり',
+          note: '',
+          url: 'https://gym.alltimefitness.jp/detail/1803/'
+        }
+      ]
+    },
+    {
+      no: 28,
+      store: '3FIT 笠間店',
+      area: '茨城県笠間市',
+      eki: 'JR笠間駅',
+      comps: [
+        {
+          name: 'chocoZAPカスミ笠間',
+          cat: '24時間ジム',
+          feature: '近隣　24時間　マシンジム　低価格',
+          note: '',
+          url: 'https://chocozap.jp/studios/14598'
+        },
+        {
+          name: 'パシフィックスポーツプラザ笠間 スタジオアネックス',
+          cat: '総合スポーツクラブ',
+          feature: '近隣店舗　キッズスクールあり',
+          note: '',
+          url: 'https://pacific-sp.jp/plaza-kasama'
+        },
+        {
+          name: 'ワールドプラスジム 桜川御領店',
+          cat: '24時間ジム',
+          feature: 'マシンジム　低価格帯',
+          note: '競合の少ないエリアとなるため、笠間市寄りにある桜川のジム',
+          url: 'https://www.worldplus-gym.com/shop/sakuragawagoryo.html'
+        }
+      ]
+    },
+    {
+      no: 29,
+      store: '3FIT 葛西店',
+      area: '東京都江戸川区葛西',
+      eki: '西葛西駅',
+      comps: [
+        {
+          name: 'LifeFit 西葛西店',
+          cat: '24時間ジム',
+          feature: '近隣店舗　低価格　24時間　無人ジム',
+          note: '',
+          url: 'https://store.lifefit.tech/store/nishikasai'
+        },
+        {
+          name: 'BLUE FITNESS24西葛西店',
+          cat: '24時間ジム',
+          feature: '低価格　駅前店舗　パーソナル併設',
+          note: '',
+          url: 'https://www.blue-fitness24.com/'
+        },
+        {
+          name: 'chocoZAP西葛西南口',
+          cat: '24時間ジム',
+          feature: '駅近　低価格　マシンジム',
+          note: '',
+          url: 'https://chocozap.jp/studios/699'
+        }
+      ]
+    },
+    {
+      no: 30,
+      store: '3FIT 西台店',
+      area: '東京都板橋区西台',
+      eki: '西台駅',
+      comps: [
+        {
+          name: 'FIT PLACE24 西台店',
+          cat: '24時間ジム',
+          feature: '近隣店舗　低価格帯　主要競合',
+          note: '',
+          url: 'https://fitplace.jp/gyms/nishidai/'
+        },
+        {
+          name: 'chocoZAP西台西口',
+          cat: '24時間ジム',
+          feature: '駅近　低価格　マシンジム',
+          note: '',
+          url: 'https://chocozap.jp/'
+        },
+        {
+          name: 'エニタイムフィットネス 西台店',
+          cat: '低価格ジム',
+          feature: '駅前　24時間　マシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/nishidai/'
+        }
+      ]
+    },
+    {
+      no: 31,
+      store: '3FIT 近江八幡店',
+      area: '滋賀県近江八幡市',
+      eki: 'JR近江八幡駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 近江八幡店',
+          cat: '24時間ジム',
+          feature: '近隣24時間ジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/omihachiman/'
+        },
+        {
+          name: 'HYPER FIT 24 イオン近江八幡ショッピングセンター店',
+          cat: '24時間ジム',
+          feature: 'イオン内のマシンジム',
+          note: '',
+          url: 'https://gym.alltimefitness.jp/detail/2501/'
+        }
+      ]
+    },
+    {
+      no: 32,
+      store: '3FIT 長浦店',
+      area: '千葉県袖ケ浦市長浦',
+      eki: 'JR長浦駅',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 袖ヶ浦蔵波店',
+          cat: '24時間ジム',
+          feature: '最も近隣のマシンジム',
+          note: '',
+          url: 'https://www.anytimefitness.co.jp/sodegaurakuranami/'
+        },
+        {
+          name: 'エニタイムフィットネス 袖ヶ浦駅前店',
+          cat: '24時間ジム',
+          feature: '袖ヶ浦駅のマシンジム',
+          note: '競合の少ないエリア。となり駅にあるマシンジムも競合になる可能性あり',
+          url: 'https://www.anytimefitness.co.jp/sodegaura-ekimae/'
+        },
+        {
+          name: 'セントラルフィットネスクラブ24 袖ケ浦駅前',
+          cat: '総合スポーツクラブ',
+          feature: '袖ヶ浦駅のマシンジム',
+          note: 'となり駅にある総合ジムになるが、ジムの少ないエリアのため競合になる可能性あり',
+          url: 'https://www.central.co.jp/club/cf-sodegaura/'
+        }
+      ]
+    }
+  ],
+  sogo: [
+    {
+      no: 1,
+      store: '伊丹昆陽店',
+      area: '兵庫県伊丹市',
+      eki: '',
+      comps: [
+        {
+          name: 'スポーツクラブ＆サウナスパ ルネサンス 伊丹24',
+          cat: '総合スポーツクラブ',
+          feature: 'JR伊丹駅周辺。温浴・サウナ施設充実。ジムエリアは24時間営業',
+          note: '',
+          url: 'https://www.s-re.jp/itami/'
+        },
+        {
+          name: 'エニタイムフィットネス 伊丹昆陽',
+          cat: '24時間ジム',
+          feature: '伊丹市昆陽エリア。24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.anytimefitness.co.jp/itami/'
+        },
+        {
+          name: 'FITBASE24 伊丹昆陽',
+          cat: '24時間ジム',
+          feature: '伊丹市昆陽エリア。24時間・低価格。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.cospa-wellness.co.jp/fitbase24/itamikoya/'
+        }
+      ]
+    },
+    {
+      no: 2,
+      store: '3FIT 成田店',
+      area: '千葉県成田市',
+      eki: '',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 成田ウイング土屋店',
+          cat: '24時間ジム',
+          feature: '成田ウイング土屋エリア。24時間営業。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.anytimefitness.co.jp/naritauingutsuchiya/'
+        },
+        {
+          name: 'chocoZAP成田土屋',
+          cat: '24時間ジム',
+          feature: '成田土屋エリア。低価格帯の24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://chocozap.jp/studios/913'
+        }
+      ]
+    },
+    {
+      no: 3,
+      store: '3FIT 倉敷店',
+      area: '岡山県倉敷市',
+      eki: '',
+      comps: [
+        {
+          name: 'グンゼスポーツアイビースクエア',
+          cat: '総合スポーツクラブ',
+          feature: '倉敷アイビースクエア内。プール・スタジオ・温浴施設を備える総合型。',
+          note: '',
+          url: 'https://www.gunzesports.com/kurashiki/'
+        },
+        {
+          name: 'LifeFit 倉敷平田店',
+          cat: '24時間ジム',
+          feature: '倉敷平田エリア。低価格帯の24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://lifefit.tech/store/kurashikihirata'
+        }
+      ]
+    },
+    {
+      no: 4,
+      store: '3FIT 熱田千年店',
+      area: '愛知県名古屋市熱田区',
+      eki: '',
+      comps: [
+        {
+          name: 'スポーツクラブ＆サウナスパ ルネサンス 名古屋熱田24',
+          cat: '総合スポーツクラブ',
+          feature: '熱田区エリア。スパ施設充実。プール・スタジオ完備でジムは24時間営業。',
+          note: '',
+          url: 'https://www.s-re.jp/nagoya-atsuta/'
+        },
+        {
+          name: 'エニタイムフィットネス 熱田六番南店',
+          cat: '24時間ジム',
+          feature: '六番町駅周辺。24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.anytimefitness.co.jp/atsuta6s254/'
+        }
+      ]
+    },
+    {
+      no: 5,
+      store: '3FIT 浜松西店',
+      area: '静岡県浜松市',
+      eki: '',
+      comps: [
+        {
+          name: 'スポーツクラブ アクトス 浜松',
+          cat: '総合スポーツクラブ',
+          feature: '浜松エリア。プールやスタジオ完備の総合型。商品登録あり・SNS連携あり',
+          note: '',
+          url: 'https://sc1.axtos.com/shop/hamamatsu/',
+          reviews: 86,
+          score: 4.0,
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 2
+        },
+        {
+          name: 'フィットイージー 浜松志都呂店',
+          cat: '24時間ジム',
+          feature: '浜松市志都呂エリア。サウナやスタジオ付きの24時間ジム。SNS連携あり',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://shops.fiteasy.jp/shop291',
+          reviews: 202,
+          score: 4.8,
+          photoRecent: 50,
+          photoNote: '以上',
+          posts: 0
+        }
+      ]
+    },
+    {
+      no: 6,
+      store: '3FIT 東浦店',
+      area: '愛知県知多郡東浦町',
+      eki: '',
+      comps: [
+        {
+          name: 'スポーツクラブ アクトス 刈谷',
+          cat: '総合スポーツクラブ',
+          feature: '刈谷市エリア。プール・スタジオ完備の総合型。',
+          note: '',
+          url: 'https://sc1.axtos.com/shop/kariya/'
+        },
+        {
+          name: 'コナミスポーツクラブ 刈谷',
+          cat: '総合スポーツクラブ',
+          feature: '刈谷駅周辺。プール・スタジオ完備の大手総合型。',
+          note: '',
+          url: 'https://information.konamisportsclub.jp/ksc/007855/'
+        },
+        {
+          name: 'FIT PLACE24 大府店',
+          cat: '24時間ジム',
+          feature: '大府エリア。低価格帯の24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://fitplace.jp/gyms/obu/'
+        }
+      ]
+    },
+    {
+      no: 7,
+      store: '3FIT 八事店',
+      area: '愛知県名古屋市昭和区',
+      eki: '',
+      comps: [
+        {
+          name: 'アクトス八事',
+          cat: '総合スポーツクラブ',
+          feature: '八事エリア。プール・スタジオ完備の総合型。',
+          note: '',
+          url: 'https://sc1.axtos.com/shop/yagoto/'
+        },
+        {
+          name: 'ヨガ＆ジム アイレクス・ライト+24 名古屋八事',
+          cat: '24時間ジム',
+          feature: '八事エリア。本格的なヨガスタジオと24時間ジムが融合した施設。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.ilex-light.com/yagoto/'
+        },
+        {
+          name: 'エニタイムフィットネス 八事店',
+          cat: '24時間ジム',
+          feature: '八事駅周辺。24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.anytimefitness.co.jp/yagoto/'
+        }
+      ]
+    },
+    {
+      no: 8,
+      store: '3FIT 姫路店',
+      area: '兵庫県姫路市飾磨区',
+      eki: '',
+      comps: [
+        {
+          name: 'ホリデイスポーツクラブ 姫路',
+          cat: '総合スポーツクラブ',
+          feature: '姫路エリア。初心者や未経験者がターゲット。プールや温浴施設が充実。商品登録あり・SNS連携あり',
+          note: '',
+          url: 'https://www.holiday-sc.jp/shops/067-himeji/',
+          reviews: 156,
+          score: 4.1,
+          photoRecent: 3,
+          posts: 30
+        },
+        {
+          name: 'Constant Gym 24 姫路飾磨店',
+          cat: '24時間ジム',
+          feature: '姫路市飾磨エリア。地域密着型の低価格24時間ジム。SNS連携あり',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.constantgym.com/',
+          reviews: 9,
+          score: 4.6,
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 0
+        },
+        {
+          name: 'FiT24 姫路飾磨店',
+          cat: '24時間ジム',
+          feature: '姫路市飾磨エリア。24時間営業。商品登録あり・SNS連携あり',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.fit24.jp/shop/himejishikama.html',
+          reviews: 2,
+          score: 4.5,
+          photoRecent: 4,
+          posts: 4
+        }
+      ]
+    },
+    {
+      no: 9,
+      store: '浦和美園',
+      area: 'nan',
+      eki: '',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 浦和美園',
+          cat: '24時間ジム',
+          feature: '浦和美園駅周辺。24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.anytimefitness.co.jp/urawamisono/'
+        },
+        {
+          name: 'FiT24 東川口',
+          cat: '24時間ジム',
+          feature: '東川口エリア。24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.fit24.jp/shop/higashikawaguchi.html'
+        }
+      ]
+    },
+    {
+      no: 10,
+      store: '大高店',
+      area: '愛知県名古屋市緑区',
+      eki: '',
+      comps: [
+        {
+          name: 'スポーツクラブNAS大高',
+          cat: '総合スポーツクラブ',
+          feature: '大高エリア。大型プール、スタジオ、スパ施設を備える総合型。',
+          note: '',
+          url: 'https://www.nas-club.co.jp/odaka/'
+        },
+        {
+          name: 'フィットネスクラブwish',
+          cat: '総合スポーツクラブ',
+          feature: '大高エリア。病院内にあるフィットネスジム。「運動と医療のノウハウ」が特徴。',
+          note: '',
+          url: 'https://www.minami-hp.jp/shop/s01_wish/'
+        }
+      ]
+    },
+    {
+      no: 11,
+      store: 'レイクタウン店',
+      area: '埼玉県越谷市',
+      eki: '',
+      comps: [
+        {
+          name: 'セントラルフィットネスクラブ24越谷レイクタウン',
+          cat: '総合スポーツクラブ',
+          feature: '越谷レイクタウン駅周辺。プール・温浴施設完備。ジムエリアは24時間利用可能。商品登録あり・SNS連携あり',
+          note: '',
+          url: 'https://www.central.co.jp/club/koshigaya_lt/',
+          reviews: 61,
+          score: 3.1,
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 2
+        },
+        {
+          name: 'エニタイムフィットネス 越谷レイクタウン駅前店',
+          cat: '24時間ジム',
+          feature: '越谷レイクタウン駅前。24時間ジム。商品登録あり・SNS連携あり',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.anytimefitness.co.jp/koshigayalaketown/',
+          reviews: 95,
+          score: 4.5,
+          photoRecent: 1,
+          posts: 1
+        }
+      ]
+    },
+    {
+      no: 12,
+      store: '3FIT 栃木店',
+      area: '栃木県栃木市',
+      eki: '',
+      comps: [
+        {
+          name: 'エニタイムフィットネス 栃木',
+          cat: '24時間ジム',
+          feature: '栃木市エリア。24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.anytimefitness.co.jp/tochigi/'
+        },
+        {
+          name: '蔵の街スポーツクラブ',
+          cat: '総合スポーツクラブ',
+          feature: '栃木市エリア。地域密着型の総合クラブ。幅広い年齢層向けのプールやスタジオを完備。',
+          note: '',
+          url: 'https://kurasupo.net/'
+        },
+        {
+          name: 'フィットネスジムFIT365ヨークタウン栃木平柳',
+          cat: '24時間ジム',
+          feature: '栃木平柳エリア。家族4人まで通える24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://fit365.jp/tochigihirayanagi/'
+        }
+      ]
+    },
+    {
+      no: 13,
+      store: '3FIT 高知店',
+      area: '高知県高知市',
+      eki: '',
+      comps: [
+        {
+          name: 'ホリデイスポーツクラブ 高知',
+          cat: '総合スポーツクラブ',
+          feature: '高知エリア。初心者や未経験者がターゲット。プールや温浴施設が充実。',
+          note: '',
+          url: 'https://www.holiday-sc.jp/shops/087-kochi/'
+        },
+        {
+          name: 'フィットイージー 高知店',
+          cat: '24時間ジム',
+          feature: '高知エリア。サウナやスタジオ付きの24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://shops.fiteasy.jp/shop189'
+        },
+        {
+          name: 'コナミスポーツクラブ はりまや橋',
+          cat: '総合スポーツクラブ',
+          feature: 'はりまや橋周辺。プール・スタジオ完備の大手総合型。',
+          note: '',
+          url: 'https://information.konamisportsclub.jp/ksc/004075/'
+        }
+      ]
+    },
+    {
+      no: 14,
+      store: '3FIT 岡崎店',
+      area: '愛知県岡崎市',
+      eki: '',
+      comps: [
+        {
+          name: 'ホリデイ スポーツクラブ 岡崎',
+          cat: '総合スポーツクラブ',
+          feature: '岡崎エリア。初心者や未経験者がターゲット。プールや温浴施設が充実。',
+          note: '',
+          url: 'https://www.holiday-sc.jp/shops/083-okazaki/'
+        },
+        {
+          name: 'ヨガ＆ジム アイレクス・ライト+24 岡崎戸崎',
+          cat: '24時間ジム',
+          feature: '岡崎戸崎エリア。本格的なヨガスタジオと24時間ジムが融合した施設。',
+          note: '',
+          url: 'https://www.ilex-light.com/okazakitosaki/'
+        }
+      ]
+    },
+    {
+      no: 15,
+      store: 'おゆみ野店',
+      area: '千葉県千葉市緑区',
+      eki: '',
+      comps: [
+        {
+          name: 'スポーツクラブNASおゆみ野',
+          cat: '総合スポーツクラブ',
+          feature: 'おゆみ野エリア。大型プール、スタジオ、スパ施設を備える総合型。',
+          note: '',
+          url: 'https://www.nas-club.co.jp/oyumino/'
+        },
+        {
+          name: 'ヴェルディスポーツプラザおゆみの',
+          cat: '総合スポーツクラブ',
+          feature: 'おゆみ野エリア。地域密着型の総合クラブ。',
+          note: '',
+          url: 'https://verdi.co.jp/'
+        },
+        {
+          name: 'エニタイムフィットネス おゆみ野店',
+          cat: '24時間ジム',
+          feature: 'おゆみ野エリア。24時間ジム。',
+          note: '総合型でないが、近隣のため比較対象になる可能性有り',
+          url: 'https://www.anytimefitness.co.jp/oyumino/'
+        }
+      ]
+    }
+  ]
 };
 
 let currentCompTab = 'tokka';
@@ -4196,12 +5575,14 @@ function buildCompList(tab) {
     const eki = store.eki ? `<span style="font-size:11px;color:#64748B;background:#F1F5F9;padding:2px 8px;border-radius:4px;margin-left:8px">🚉 ${store.eki}</span>` : '';
     const aeon = getAeonGBP(store.store);
     
-    // 競合の最大値をベンチマーク（写真・口コミ・評価）
-    const compEsts = store.comps.map(c => estimateGBP(c.name).vals);
-    const maxPhotos  = Math.max(...compEsts.map(v=>v[0]));
-    const maxReviews = Math.max(...compEsts.map(v=>v[1]));
-    const maxScore   = Math.max(...compEsts.map(v=>v[2]));
-    const avgPosts   = compEsts.reduce((s,v)=>s+v[3],0) / compEsts.length;
+    // 競合の最大値をベンチマーク（実データのある競合のみ対象）
+    const actualEsts = store.comps.map(c => getCompGBP(c)).filter(e => e.hasActual).map(e => e.vals);
+    const hasBenchmark = actualEsts.length > 0;
+    const maxPhotos  = hasBenchmark ? Math.max(...actualEsts.map(v=>v[0])) : 0;
+    const maxReviews = hasBenchmark ? Math.max(...actualEsts.map(v=>v[1])) : 0;
+    const maxScore   = hasBenchmark ? Math.max(...actualEsts.map(v=>v[2])) : 0;
+    const avgPosts   = hasBenchmark ? actualEsts.reduce((s,v)=>s+v[3],0) / actualEsts.length : 0;
+    const maxPosts   = hasBenchmark ? Math.max(...actualEsts.map(v=>v[3])) : 0;
     
     const photoBenchmark = maxPhotos;
     const reviewDeficit  = maxReviews - aeon.reviews;
@@ -4227,33 +5608,33 @@ function buildCompList(tab) {
           <div style="font-size:11px;font-weight:700;color:#64748B;margin-bottom:8px">📊 イオン店舗の現状 vs 競合ベンチマーク</div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
             <div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 10px">
-              <div style="font-size:10px;color:#64748B;margin-bottom:3px">📷 写真投稿数</div>
+              <div style="font-size:10px;color:#64748B;margin-bottom:3px">📷 写真投稿数（直近）</div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span style="font-size:14px;font-weight:700;color:#94A3B8">10枚〜<span style="font-size:10px;color:#F59E0B">調査中</span></span>
+                <span style="font-size:14px;font-weight:700;color:#94A3B8">店舗ごと</span>
               </div>
-              <div style="margin-top:4px;font-size:10px;color:#64748B">ベンチマーク：<strong style="color:#0F1E38">${maxPhotos}枚</strong>（最大競合）</div>
+              <div style="margin-top:4px;font-size:10px;color:#64748B">ベンチマーク：<strong style="color:#0F1E38">${hasBenchmark ? maxPhotos+'枚' : '調査中'}</strong>（最大競合）</div>
             </div>
             <div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 10px">
               <div style="font-size:10px;color:#64748B;margin-bottom:3px">💬 口コミ数</div>
               <div style="display:flex;align-items:baseline;gap:6px">
                 <span style="font-size:16px;font-weight:700;color:#0F1E38">${aeon.reviews}件</span>
-                <span style="font-size:10px;color:#94A3B8">vs ${maxReviews}件</span>
+                <span style="font-size:10px;color:#94A3B8">vs ${hasBenchmark ? maxReviews+'件' : '調査中'}</span>
               </div>
-              <div style="margin-top:4px">${diffBadge(reviewDeficit, true)}</div>
+              ${hasBenchmark ? `<div style="margin-top:4px">${diffBadge(reviewDeficit, true)}</div>` : ''}
             </div>
             <div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 10px">
               <div style="font-size:10px;color:#64748B;margin-bottom:3px">⭐ 評価</div>
               <div style="display:flex;align-items:baseline;gap:6px">
                 <span style="font-size:16px;font-weight:700;color:${aeon.score >= 4 ? '#F59E0B' : aeon.score >= 3 ? '#10B981' : aeon.score > 0 ? '#EF4444' : '#94A3B8'}">${aeon.score > 0 ? '★'+aeon.score.toFixed(1) : '未取得'}</span>
-                <span style="font-size:10px;color:#94A3B8">vs ★${maxScore.toFixed(1)}</span>
+                <span style="font-size:10px;color:#94A3B8">vs ${hasBenchmark ? '★'+maxScore.toFixed(1) : '調査中'}</span>
               </div>
-              ${aeon.score > 0 && scoreDeficit > 0 ? `<div style="margin-top:4px"><span style="background:#FEE2E2;color:#991B1B;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700">+${scoreDeficit.toFixed(1)}pt不足</span></div>` : (aeon.score > 0 && scoreDeficit <= 0 ? `<div style="margin-top:4px"><span style="background:#D1FAE5;color:#065F46;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700">最大競合以上</span></div>` : '')}
+              ${hasBenchmark && aeon.score > 0 && scoreDeficit > 0 ? `<div style="margin-top:4px"><span style="background:#FEE2E2;color:#991B1B;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700">+${scoreDeficit.toFixed(1)}pt不足</span></div>` : (hasBenchmark && aeon.score > 0 && scoreDeficit <= 0 ? `<div style="margin-top:4px"><span style="background:#D1FAE5;color:#065F46;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:700">最大競合以上</span></div>` : '')}
             </div>
             <div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 10px">
               <div style="font-size:10px;color:#64748B;margin-bottom:3px">📝 月間投稿数</div>
               <div style="display:flex;align-items:baseline;gap:6px">
-                <span style="font-size:16px;font-weight:700;color:#0F1E38">${aeon.posts.toFixed(1)}回</span>
-                <span style="font-size:10px;color:#94A3B8">vs ${avgPosts.toFixed(1)}回</span>
+                <span style="font-size:16px;font-weight:700;color:#0F1E38">${Number.isInteger(aeon.posts) ? aeon.posts : aeon.posts.toFixed(1)}回</span>
+                <span style="font-size:10px;color:#94A3B8">vs ${hasBenchmark ? maxPosts+'回' : '調査中'}</span>
               </div>
             </div>
           </div>
@@ -4276,18 +5657,48 @@ function buildCompList(tab) {
           </thead>
           <tbody>
             ${store.comps.map((c, i) => {
-              const est = estimateGBP(c.name);
+              const est = getCompGBP(c);
               const [photos, reviews, score, posts] = est.vals;
-              const srcColor = est.src === '実測' ? '#10B981' : est.src === 'チェーン平均' ? '#3B82F6' : '#94A3B8';
-              const srcBg = est.src === '実測' ? '#D1FAE5' : est.src === 'チェーン平均' ? '#DBEAFE' : '#F1F5F9';
+              const srcColor = est.src === '実測' ? '#10B981' : '#94A3B8';
+              const srcBg = est.src === '実測' ? '#D1FAE5' : '#F1F5F9';
+              const surveyCell = '<span style="color:#CBD5E1;font-weight:400">調査中</span>';
+              if (!est.hasActual) {
+                // 実データ未取得の競合は全指標を「調査中」に統一
+                return `
+                <tr style="border-bottom:1px solid #F1F5F9;${i % 2 === 0 ? '' : 'background:#FAFBFC'}">
+                  <td style="padding:10px 12px;font-weight:700;color:#0F1E38" data-comp="${c.name}">${c.name}</td>
+                  <td style="padding:10px 6px"><span style="background:#F1F5F9;border-radius:4px;padding:2px 6px;font-size:10px;color:#475569">${c.cat || '-'}</span></td>
+                  <td style="padding:10px 4px;text-align:center;font-size:11px">${surveyCell}</td>
+                  <td style="padding:10px 4px;text-align:center;font-size:11px">${surveyCell}</td>
+                  <td style="padding:10px 4px;text-align:center;font-size:11px">${surveyCell}</td>
+                  <td style="padding:10px 4px;text-align:center;font-size:11px">${surveyCell}</td>
+                  <td style="padding:10px 6px;color:#334155;font-size:11px;line-height:1.5">${c.feature || '-'}</td>
+                  <td style="padding:10px 6px;text-align:center"><span style="background:#F1F5F9;color:#94A3B8;border-radius:3px;padding:2px 5px;font-size:9px;font-weight:700">調査中</span></td>
+                  <td style="padding:10px 6px;text-align:center">${c.url ? `<a href="${c.url}" target="_blank" style="color:${accent};text-decoration:none;font-size:14px">🔗</a>` : '-'}</td>
+                </tr>
+              `;
+              }
+              // 写真セル：直近枚数を数字表示。0枚は「無し」（補足があれば付記）
+              let photoCell;
+              if (photos > 0) {
+                photoCell = est.photoNote
+                  ? `${photos}枚<span style="font-size:9px;color:#94A3B8;font-weight:400">${est.photoNote}</span>`
+                  : `${photos}枚`;
+              } else {
+                photoCell = est.photoNote
+                  ? `無し<div style="font-size:9px;color:#CBD5E1;font-weight:400">(${est.photoNote})</div>`
+                  : '無し';
+              }
+              // 月投稿セル：数値表示。0は「0」
+              const postCell = `${posts}`;
               return `
               <tr style="border-bottom:1px solid #F1F5F9;${i % 2 === 0 ? '' : 'background:#FAFBFC'}">
                 <td style="padding:10px 12px;font-weight:700;color:#0F1E38" data-comp="${c.name}">${c.name}</td>
                 <td style="padding:10px 6px"><span style="background:#F1F5F9;border-radius:4px;padding:2px 6px;font-size:10px;color:#475569">${c.cat || '-'}</span></td>
-                <td style="padding:10px 4px;text-align:center;font-weight:700;color:#94A3B8;font-size:11px" title="正確な数は調査中">${photos}<span style="font-size:9px;color:#F59E0B">*</span></td>
+                <td style="padding:10px 4px;text-align:center;font-weight:700;color:${photos > 0 ? '#475569' : '#94A3B8'};font-size:11px">${photoCell}</td>
                 <td style="padding:10px 4px;text-align:center;font-weight:700;color:#475569">${reviews}</td>
                 <td style="padding:10px 4px;text-align:center;font-weight:700;color:${score >= 4 ? '#F59E0B' : score >= 3.5 ? '#10B981' : '#EF4444'}">★${score.toFixed(1)}</td>
-                <td style="padding:10px 4px;text-align:center;color:#475569">${posts.toFixed(1)}</td>
+                <td style="padding:10px 4px;text-align:center;font-weight:700;color:${posts > 0 ? '#475569' : '#94A3B8'};font-size:11px">${postCell}</td>
                 <td style="padding:10px 6px;color:#334155;font-size:11px;line-height:1.5">${c.feature || '-'}</td>
                 <td style="padding:10px 6px;text-align:center"><span style="background:${srcBg};color:${srcColor};border-radius:3px;padding:2px 5px;font-size:9px;font-weight:700">${est.src}</span></td>
                 <td style="padding:10px 6px;text-align:center">${c.url ? `<a href="${c.url}" target="_blank" style="color:${accent};text-decoration:none;font-size:14px">🔗</a>` : '-'}</td>
@@ -4298,10 +5709,10 @@ function buildCompList(tab) {
 
         <!-- 改善提案フッター -->
         <div style="background:#FEF3C7;padding:10px 18px;border-top:1px solid #FCD34D;font-size:11px;color:#92400E;line-height:1.6">
-          <strong>💡 改善提案（最大競合ベンチマーク）：</strong>
+          ${hasBenchmark ? `<strong>💡 改善提案（最大競合ベンチマーク）：</strong>
           写真は<strong>${maxPhotos}枚</strong>を目標
           ／ 口コミは<strong>${maxReviews}件</strong>を目標${reviewDeficit > 0 ? `（あと <strong>+${Math.round(reviewDeficit)}件</strong>）` : '（達成）'}
-          ／ 評価は<strong>★${maxScore.toFixed(1)}</strong>を目標${aeon.score > 0 && scoreDeficit > 0 ? `（あと <strong>+${scoreDeficit.toFixed(1)}pt</strong>）` : aeon.score === 0 ? '（口コミ獲得から）' : '（達成）'}
+          ／ 評価は<strong>★${maxScore.toFixed(1)}</strong>を目標${aeon.score > 0 && scoreDeficit > 0 ? `（あと <strong>+${scoreDeficit.toFixed(1)}pt</strong>）` : aeon.score === 0 ? '（口コミ獲得から）' : '（達成）'}` : `<strong>💡 改善提案：</strong>競合のGBP指標を調査中です。データ取得後にベンチマークを表示します。`}
         </div>
       </div>
     `;
