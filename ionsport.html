@@ -721,7 +721,7 @@ const TAB_HTML = {
       <div id="kw-gym"></div>
     </div>
     <div class="kw-card">
-      <div class="kw-title">🛁 温浴・癒し系（5月）</div>
+      <div class="kw-title">🏊 施設・サービス系（5月）</div>
       <div id="kw-pool"></div>
     </div>
     <div class="kw-card">
@@ -1114,7 +1114,7 @@ const TAB_HTML = {
       <div id="kw-gym-sogo"></div>
     </div>
     <div class="kw-card">
-      <div class="kw-title">🛁 温浴・癒し系（4月）</div>
+      <div class="kw-title">🏊 施設・サービス系（4月）</div>
       <div id="kw-pool-sogo"></div>
     </div>
     <div class="kw-card">
@@ -1562,7 +1562,7 @@ const MONTHLY_TOKKA = {
       <div id="kw-gym"></div>
     </div>
     <div class="kw-card">
-      <div class="kw-title">🛁 温浴・癒し系（4月）</div>
+      <div class="kw-title">🏊 施設・サービス系（4月）</div>
       <div id="kw-pool"></div>
     </div>
     <div class="kw-card">
@@ -1748,7 +1748,6 @@ const KW_POOL = [
   {name:'サウナ', fy25:163, yoy:74},
   {name:'銭湯', fy25:61, yoy:53},
   {name:'温泉', fy25:40, yoy:25},
-  {name:'チョコザップ', fy25:162, yoy:35},
 ];
 const KW_BRAND = [
   {name:'マリンピア（地名）', fy25:294, yoy:null},
@@ -2617,7 +2616,7 @@ const MONTHLY_SOGO = {
       <div id="kw-gym-sogo"></div>
     </div>
     <div class="kw-card">
-      <div class="kw-title">🛁 温浴・癒し系（4月）</div>
+      <div class="kw-title">🏊 施設・サービス系（4月）</div>
       <div id="kw-pool-sogo"></div>
     </div>
     <div class="kw-card">
@@ -2779,13 +2778,13 @@ const MONTHLY_SOGO = {
 };`,
     kw_js:     `const KW_GYM_SOGO_DATA = [
   {name:'ジム', fy25:2245, yoy:-36},
-  {name:'プール', fy25:757, yoy:42},
   {name:'スポーツジム', fy25:334, yoy:-52},
-  {name:'スポーツ', fy25:323, yoy:-43},
-  {name:'スイミングスクール', fy25:121, yoy:-44},
   {name:'スポーツクラブ', fy25:44, yoy:0},
 ];
 const KW_POOL_SOGO_DATA = [
+  {name:'プール', fy25:757, yoy:42},
+  {name:'スポーツ', fy25:323, yoy:-43},
+  {name:'スイミングスクール', fy25:121, yoy:-44},
   {name:'サウナ', fy25:525, yoy:42},
   {name:'銭湯', fy25:308, yoy:431},
   {name:'温泉', fy25:246, yoy:1347},
@@ -3463,7 +3462,6 @@ var KW_POOL = [
   {name:'サウナ', fy25:188, yoy:15},
   {name:'近くのジム', fy25:112, yoy:60},
   {name:'どこトレ', fy25:105, yoy:400},
-  {name:'チョコザップ', fy25:204, yoy:26},
 ];
 var KW_BRAND = [
   {name:'マリンピア（地名）', fy25:309, yoy:5},
@@ -3473,16 +3471,16 @@ var KW_BRAND = [
   {name:'チョコザップ', fy25:204, yoy:26},
 ];
 
-// 総合専用キーワード（実データ 2026年4月）
+// 総合専用キーワード（実データ 2026年4月／5月の分類ルールに統一）
 var KW_GYM_SOGO_DATA = [
   {name:'ジム', fy25:2245, yoy:-36},
-  {name:'プール', fy25:757, yoy:42},
   {name:'スポーツジム', fy25:334, yoy:-52},
-  {name:'スポーツ', fy25:323, yoy:-43},
-  {name:'スイミングスクール', fy25:121, yoy:-44},
   {name:'スポーツクラブ', fy25:44, yoy:0},
 ];
 var KW_POOL_SOGO_DATA = [
+  {name:'プール', fy25:757, yoy:42},
+  {name:'スポーツ', fy25:323, yoy:-43},
+  {name:'スイミングスクール', fy25:121, yoy:-44},
   {name:'サウナ', fy25:525, yoy:42},
   {name:'銭湯', fy25:308, yoy:431},
   {name:'温泉', fy25:246, yoy:1347},
@@ -4077,16 +4075,18 @@ function estimateGBP(compName) {
 
 // 競合のGBP値を取得（COMP_DATAに実データがあれば最優先、なければ推定）
 function getCompGBP(c) {
-  // COMP_DATA側に reviews/score 等の実データがあればそれを使う
-  if (c.reviews !== undefined && c.score !== undefined) {
+  // COMP_DATA側に reviews（実データ）があればそれを使う。score未定義/0でも実測扱い（口コミ0件＝評価なしのケース）
+  if (c.reviews !== undefined) {
     // 写真：直近枚数（photoRecent）を数値で。旧 photos(数値)もフォールバックで吸収
     let photoRecent = null;
     if (typeof c.photoRecent === 'number') photoRecent = c.photoRecent;
     else if (typeof c.photos === 'number') photoRecent = c.photos;
     // 月投稿：数値で。旧 posts(文字列)は0扱いにフォールバック
     const posts = (typeof c.posts === 'number') ? c.posts : 0;
+    // 評価：未定義は0（評価なし）扱い
+    const score = (typeof c.score === 'number') ? c.score : 0;
     return {
-      vals: [photoRecent !== null ? photoRecent : 0, c.reviews, c.score, posts],
+      vals: [photoRecent !== null ? photoRecent : 0, c.reviews, score, posts],
       src: '実測',
       photoRecent: photoRecent,
       photoNote: (typeof c.photoNote === 'string') ? c.photoNote : null,
@@ -4201,23 +4201,37 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 稲毛海岸店',
           cat: '24時間ジム',
-          feature: '駅周辺　24時間　マシンジム',
+          feature: '駅周辺　24時間　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/inagekaigan/'
+          url: 'https://www.anytimefitness.co.jp/inagekaigan/',
+          photoRecent: 10,
+          posts: 4,
+          reviews: 76,
+          score: 3.9
         },
         {
           name: 'chocoZAP稲毛海岸',
           cat: '24時間ジム',
-          feature: '駅周辺　24時間　低価格　マシンジム',
+          feature: '駅周辺　24時間　低価格　マシンジム ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://chocozap.jp/studios/56'
+          url: 'https://chocozap.jp/studios/56',
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 4,
+          reviews: 47,
+          score: 3.3
         },
         {
           name: 'BLUE FITNESS24＋studio 稲毛海岸',
           cat: '24時間ジム',
-          feature: '駅周辺　24時間＋スタジオレッスン＋パーソナル',
+          feature: '駅周辺　24時間＋スタジオレッスン＋パーソナル ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://www.blue-fitness24.com/inagekaigan_lp/'
+          url: 'https://www.blue-fitness24.com/inagekaigan_lp/',
+          photoRecent: 0,
+          photoNote: '1年以上前',
+          posts: 0,
+          reviews: 124,
+          score: 4.8
         }
       ]
     },
@@ -4230,23 +4244,38 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 本庄店',
           cat: '24時間ジム',
-          feature: '本庄市内。24時間・低価格',
+          feature: '本庄市内。24時間・低価格 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/honjowaseda/'
+          url: 'https://www.anytimefitness.co.jp/honjowaseda/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 62,
+          score: 4.3
         },
         {
           name: 'ドゥ・スポーツプラザ上里24',
           cat: '総合スポーツクラブ',
-          feature: '駅からバスで12分',
+          feature: '駅からバスで12分 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://dspnet.co.jp/kamisato/'
+          url: 'https://dspnet.co.jp/kamisato/',
+          photoRecent: 0,
+          photoNote: '半年以上前+ストリートビュー',
+          posts: 30,
+          reviews: 96,
+          score: 3.6
         },
         {
           name: 'chocoZAP 本庄南口',
           cat: '24時間ジム',
-          feature: '駅周辺　24時間　低価格',
+          feature: '駅周辺　24時間　低価格 ／ SNS連携なし・商品登録あり',
           note: '',
-          url: 'https://chocozap.jp/studios/1370'
+          url: 'https://chocozap.jp/studios/1370',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 14,
+          score: 3.9
         }
       ]
     },
@@ -4266,9 +4295,14 @@ const COMP_DATA = {
         {
           name: 'FIT PLACE24 新発田店',
           cat: '24時間ジム',
-          feature: '駅から車で6分　24時間　低価格',
+          feature: '駅から車で6分　24時間　低価格 ／ SNS連携あり・商品登録あり',
           note: '少し遠いが中条店様の近隣エリア周辺に競合が少ないため追加',
-          url: 'https://fitplace.jp/gyms/shibata/'
+          url: 'https://fitplace.jp/gyms/shibata/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 97,
+          score: 4.6
         }
       ]
     },
@@ -4281,23 +4315,37 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 泉バイパス市名坂店',
           cat: '24時間ジム',
-          feature: '泉中央駅から徒歩24分　24時間　マシンジム',
+          feature: '泉中央駅から徒歩24分　24時間　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/izumibypass-ichinazaka/'
+          url: 'https://www.anytimefitness.co.jp/izumibypass-ichinazaka/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 33,
+          score: 3.5
         },
         {
           name: 'JOYFIT24 仙台泉',
           cat: '24時間ジム',
-          feature: '駅から徒歩15分　24時間　マシンジム',
+          feature: '駅から徒歩15分　24時間　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://joyfit.jp/sendaiizumi/'
+          url: 'https://joyfit.jp/sendaiizumi/',
+          photoRecent: 5,
+          posts: 30,
+          reviews: 218,
+          score: 4.1
         },
         {
           name: 'セントラルフィットネスクラブ仙台泉中央',
           cat: '',
-          feature: '',
+          feature: 'SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.central.co.jp/club/izumi/'
+          url: 'https://www.central.co.jp/club/izumi/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 56,
+          score: 3.3
         }
       ]
     },
@@ -4310,23 +4358,37 @@ const COMP_DATA = {
         {
           name: 'LifeFit 長津田いぶき野店',
           cat: '24時間ジム',
-          feature: '低価格　24時間　スタッフなし',
+          feature: '低価格　24時間　スタッフなし ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://lifefit.tech/'
+          url: 'https://lifefit.tech/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 23,
+          score: 4.9
         },
         {
           name: 'ジップスポーツパーク十日市場',
           cat: '総合スポーツクラブ',
-          feature: '駅周辺　プールあり　スクールあり',
+          feature: '駅周辺　プールあり　スクールあり ／ SNS連携あり・商品登録なし',
           note: '月会費は中高価格帯',
-          url: 'https://sports-zip.com/tokaichiba/fitness/'
+          url: 'https://sports-zip.com/tokaichiba/fitness/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 37,
+          score: 3.9
         },
         {
           name: 'chocoZAP横浜十日市場',
           cat: '24時間ジム',
-          feature: '駅周辺　24時間　低価格　マシンジム',
+          feature: '駅周辺　24時間　低価格　マシンジム ／ SNS連携なし・商品登録あり',
           note: '',
-          url: 'https://chocozap.jp/studios/652'
+          url: 'https://chocozap.jp/studios/652',
+          photoRecent: 1,
+          posts: 2,
+          reviews: 15,
+          score: 3.1
         }
       ]
     },
@@ -4339,23 +4401,36 @@ const COMP_DATA = {
         {
           name: 'LifeFit 古川橋駅前店',
           cat: '24時間ジム',
-          feature: '低価格　24時間　スタッフなし',
+          feature: '低価格　24時間　スタッフなし ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://lifefit.tech/'
+          url: 'https://lifefit.tech/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 23,
+          score: 4.1
         },
         {
           name: 'Be-fit24古川橋店',
           cat: '24時間ジム',
-          feature: '駅周辺　24時間　低価格　マシンジム',
+          feature: '駅周辺　24時間　低価格　マシンジム ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://be-fit24.jp/furukawabashi/'
+          url: 'https://be-fit24.jp/furukawabashi/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0
         },
         {
           name: 'chocoZAP古川橋北口',
           cat: '24時間ジム',
-          feature: '駅周辺　24時間　低価格　マシンジム',
+          feature: '駅周辺　24時間　低価格　マシンジム ／ SNS連携なし・商品登録あり',
           note: '',
-          url: 'https://chocozap.jp/studios/516'
+          url: 'https://chocozap.jp/studios/516',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 24,
+          score: 3.2
         }
       ]
     },
@@ -4368,23 +4443,38 @@ const COMP_DATA = {
         {
           name: 'ワールドプラスジム名古屋茶屋店',
           cat: '24時間ジム',
-          feature: 'マシンジム　低価格帯',
+          feature: 'マシンジム　低価格帯 ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://www.worldplus-gym.com/shop/nagoya-chaya.html'
+          url: 'https://www.worldplus-gym.com/shop/nagoya-chaya.html',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 26,
+          score: 4.8
         },
         {
           name: 'コパンスポ-ツクラブ名港',
           cat: '総合スポーツクラブ',
-          feature: 'スイミングあり　中価格帯',
+          feature: 'スイミングあり　中価格帯 ／ SNS連携あり・商品登録あり',
           note: '業態は異なるが近隣のスポーツジムとして競合になる可能性あり',
-          url: 'https://www.copin.co.jp/shop/meiko/index.html'
+          url: 'https://www.copin.co.jp/shop/meiko/index.html',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 25,
+          score: 3.2
         },
         {
           name: 'LifeFit 太平通店',
           cat: '24時間ジム',
-          feature: '低価格　24時間　無人店舗',
+          feature: '低価格　24時間　無人店舗 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://lifefit.tech/store/taiheidori'
+          url: 'https://lifefit.tech/store/taiheidori',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 23,
+          score: 4.5
         }
       ]
     },
@@ -4397,23 +4487,37 @@ const COMP_DATA = {
         {
           name: 'LifeFit 花崎駅前店',
           cat: '24時間ジム',
-          feature: '低価格　24時間　無人店舗',
+          feature: '低価格　24時間　無人店舗 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://store.lifefit.tech/store/hanasakiekimae'
+          url: 'https://store.lifefit.tech/store/hanasakiekimae',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 9,
+          score: 3.7
         },
         {
           name: 'スマートフィット100加須店',
           cat: '24時間ジム',
-          feature: 'マシンジム　スタッフサポートあり　',
+          feature: 'マシンジム　スタッフサポートあり　 ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://smartfit100.com/shop/kazo/'
+          url: 'https://smartfit100.com/shop/kazo/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 215,
+          score: 4.7
         },
         {
           name: 'エニタイムフィットネス 加須諏訪店',
           cat: '24時間ジム',
-          feature: '加須駅近く　マシンジム',
+          feature: '加須駅近く　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/kazo-suwa/'
+          url: 'https://www.anytimefitness.co.jp/kazo-suwa/',
+          photoRecent: 2,
+          posts: 0,
+          reviews: 110,
+          score: 4.4
         }
       ]
     },
@@ -4426,23 +4530,38 @@ const COMP_DATA = {
         {
           name: 'chocoZAP高座渋谷西口',
           cat: '24時間ジム',
-          feature: '大和市内に複数展開',
+          feature: '大和市内に複数展開 ／ SNS連携なし・商品登録あり',
           note: '',
-          url: 'https://chocozap.jp/studios/1219'
+          url: 'https://chocozap.jp/studios/1219',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 22,
+          score: 2.8
         },
         {
           name: 'フィッツオールジム24H桜ヶ丘駅前店',
           cat: '24時間ジム',
-          feature: '大型総合施設　主要競合',
+          feature: '大型総合施設　主要競合 ／ SNS連携なし・商品登録あり',
           note: '',
-          url: 'https://fits-all.jp/sakura/'
+          url: 'https://fits-all.jp/sakura/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 203,
+          score: 4.8
         },
         {
           name: 'スポーツクラブ メガロス大和',
           cat: '総合スポーツクラブ',
-          feature: '駅周辺　24時間　中高価格帯　大型総合ジム',
+          feature: '駅周辺　24時間　中高価格帯　大型総合ジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://megalos.co.jp/yamato/'
+          url: 'https://megalos.co.jp/yamato/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 172,
+          score: 3.3
         }
       ]
     },
@@ -4455,16 +4574,25 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 桑名店',
           cat: '24時間ジム',
-          feature: '桑名市内',
+          feature: '桑名市内 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/kuwana/'
+          url: 'https://www.anytimefitness.co.jp/kuwana/',
+          photoRecent: 3,
+          posts: 2,
+          reviews: 201,
+          score: 4.7
         },
         {
           name: 'カーブス イオン大安',
           cat: '女性専用30分ジム',
-          feature: '地域女性層',
+          feature: '地域女性層 ／ SNS連携なし・商品登録あり',
           note: '',
-          url: 'https://www.curves.co.jp/search/tokai/mie/cat-288/90592.php'
+          url: 'https://www.curves.co.jp/search/tokai/mie/cat-288/90592.php',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 22,
+          score: 4.4
         },
         {
           name: 'その他地元個人ジム',
@@ -4484,9 +4612,14 @@ const COMP_DATA = {
         {
           name: 'スマイルジム 24時間 掛川店',
           cat: '24時間ジム',
-          feature: '地域最安の月会費　家族会員あり',
+          feature: '地域最安の月会費　家族会員あり ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://training-gym-network.wixsite.com/smilegym'
+          url: 'https://training-gym-network.wixsite.com/smilegym',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 1,
+          score: 5
         },
         {
           name: 'Studio Shell ',
@@ -4498,9 +4631,14 @@ const COMP_DATA = {
         {
           name: 'フィットイージー 袋井店',
           cat: '低価格ジム',
-          feature: '',
+          feature: 'SNS連携あり・商品登録なし',
           note: 'エリアとしては離れているが最寄り駅は袋井駅',
-          url: 'https://shops.fiteasy.jp/shop120?utm_medium=google&utm_source=google_business_profile'
+          url: 'https://shops.fiteasy.jp/shop120?utm_medium=google&utm_source=google_business_profile',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 172,
+          score: 4.4
         }
       ]
     },
@@ -4564,16 +4702,25 @@ const COMP_DATA = {
         {
           name: 'JOYFIT24 LITE 丸亀',
           cat: '24時間ジム',
-          feature: '近隣マシンジム　24時間　低価格',
+          feature: '近隣マシンジム　24時間　低価格 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://joyfit.jp/marugame/'
+          url: 'https://joyfit.jp/marugame/',
+          photoRecent: 2,
+          posts: 4,
+          reviews: 208,
+          score: 4
         },
         {
           name: 'FiT24 丸亀店',
           cat: '24時間ジム',
-          feature: '24時間　低価格　マシンジム',
+          feature: '24時間　低価格　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.fit24.jp/shop/marugame.html'
+          url: 'https://www.fit24.jp/shop/marugame.html',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 41,
+          score: 4
         }
       ]
     },
@@ -4586,23 +4733,37 @@ const COMP_DATA = {
         {
           name: 'FIT365　小山犬塚店',
           cat: '24時間ジム',
-          feature: '最も近隣の競合　24時間　低価格　マシンジム',
+          feature: '最も近隣の競合　24時間　低価格　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://fit365.jp/oyama-inuzuka/'
+          url: 'https://fit365.jp/oyama-inuzuka/',
+          photoRecent: 2,
+          posts: 8,
+          reviews: 86,
+          score: 4.7
         },
         {
           name: 'エニタイムフィットネス 小山北店',
           cat: '24時間ジム',
-          feature: '24時間　マシンジム',
+          feature: '24時間　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/oyamakita/'
+          url: 'https://www.anytimefitness.co.jp/oyamakita/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 3,
+          reviews: 23,
+          score: 4.3
         },
         {
           name: 'エニタイムフィットネス 小山店',
           cat: '24時間ジム',
-          feature: '24時間　マシンジム',
+          feature: '24時間　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/oyama/'
+          url: 'https://www.anytimefitness.co.jp/oyama/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 3,
+          reviews: 119,
+          score: 4
         }
       ]
     },
@@ -4615,23 +4776,38 @@ const COMP_DATA = {
         {
           name: 'フィットイージー 岐阜島店',
           cat: '24時間ジム',
-          feature: '24時間　マシンジム',
+          feature: '24時間　マシンジム ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://shops.fiteasy.jp/shop2'
+          url: 'https://shops.fiteasy.jp/shop2',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 64,
+          score: 4.2
         },
         {
           name: 'chocoZAP 本巣北方',
           cat: '24時間ジム',
-          feature: '24時間　マシンジム　低価格',
+          feature: '24時間　マシンジム　低価格 ／ SNS連携なし・商品登録なし',
           note: '',
-          url: 'https://chocozap.jp/studios/14455'
+          url: 'https://chocozap.jp/studios/14455',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 21,
+          score: 2.8
         },
         {
           name: 'フィットイージー 鷺山店',
           cat: '24時間ジム',
-          feature: '最も近隣　24時間　マシンジム',
+          feature: '最も近隣　24時間　マシンジム ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://shops.fiteasy.jp/shop57'
+          url: 'https://shops.fiteasy.jp/shop57',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 75,
+          score: 4.2
         }
       ]
     },
@@ -4687,23 +4863,37 @@ const COMP_DATA = {
         {
           name: 'フォースクエアフィットネスジム24 利府ペアガーデン店',
           cat: '総合スポーツクラブ',
-          feature: '近隣の総合ジム　月会費や入会金は中高価格帯',
+          feature: '近隣の総合ジム　月会費や入会金は中高価格帯 ／ SNS連携あり・商品登録あり',
           note: '業態は異なるが駅近店舗、近隣ジムのため競合のあたる可能性あり',
-          url: 'https://www.4square.jp/branch/rifu'
+          url: 'https://www.4square.jp/branch/rifu',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 44,
+          score: 3.8
         },
         {
           name: 'フィットイージー イオンモール新利府北館店',
           cat: '24時間ジム',
-          feature: 'イオンモール内にあり　24時間　マシンジム',
+          feature: 'イオンモール内にあり　24時間　マシンジム ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://shops.fiteasy.jp/shop90'
+          url: 'https://shops.fiteasy.jp/shop90',
+          photoRecent: 1,
+          posts: 0,
+          reviews: 58,
+          score: 4.7
         },
         {
           name: 'LAVA イオンモール新利府店',
           cat: 'ピラティス・ヨガ',
-          feature: 'イオンモール内にあり　女性向け',
+          feature: 'イオンモール内にあり　女性向け ／ SNS連携あり・商品登録なし',
           note: '業態は異なるが同施設内にあり。ダイエットや美容目的のユーザーは選択肢に入る可能性',
-          url: 'https://yoga-lava.com/shop/miyagi/aeon_shinrifu/'
+          url: 'https://yoga-lava.com/shop/miyagi/aeon_shinrifu/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 113,
+          score: 4.7
         }
       ]
     },
@@ -4716,23 +4906,37 @@ const COMP_DATA = {
         {
           name: 'FIT365　新潟東区大形',
           cat: '24時間ジム',
-          feature: '最も近隣店舗　24時間　マシンジム　家族割あり',
+          feature: '最も近隣店舗　24時間　マシンジム　家族割あり ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://fit365.jp/niigatahigashiku/'
+          url: 'https://fit365.jp/niigatahigashiku/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 4,
+          score: 3.8
         },
         {
           name: 'フィットイージー 新潟赤道店',
           cat: '24時間ジム',
-          feature: '新潟市内の近隣24時間ジム　低価格　24時間',
+          feature: '新潟市内の近隣24時間ジム　低価格　24時間 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://shops.fiteasy.jp/shop218'
+          url: 'https://shops.fiteasy.jp/shop218',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 109,
+          score: 4.5
         },
         {
           name: 'エニタイムフィットネス 新潟紫竹山店',
           cat: '24時間ジム',
-          feature: '同市内　24時間　マシンジム',
+          feature: '同市内　24時間　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/niigatashichiku/'
+          url: 'https://www.anytimefitness.co.jp/niigatashichiku/',
+          photoRecent: 9,
+          posts: 1,
+          reviews: 621,
+          score: 4.8
         }
       ]
     },
@@ -4745,23 +4949,37 @@ const COMP_DATA = {
         {
           name: 'chocoZAP昭島',
           cat: '24時間ジム',
-          feature: '駅前　24時間　マシンジム　低価格',
+          feature: '駅前　24時間　マシンジム　低価格 ／ SNS連携なし・商品登録なし',
           note: '',
-          url: 'https://chocozap.jp/studios/399'
+          url: 'https://chocozap.jp/studios/399',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 34,
+          score: 2.2
         },
         {
           name: 'THE24GYM 昭島店',
           cat: '24時間ジム',
-          feature: '24時間　マシンジム　低価格',
+          feature: '24時間　マシンジム　低価格 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.the24gym.com/akishima/'
+          url: 'https://www.the24gym.com/akishima/',
+          photoRecent: 7,
+          posts: 2,
+          reviews: 46,
+          score: 3.9
         },
         {
           name: 'Link',
           cat: '総合スポーツクラブ',
-          feature: '近隣ジム　キッズスクールあり',
+          feature: '近隣ジム　キッズスクールあり ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://gymandstudiolink.wixsite.com/link'
+          url: 'https://gymandstudiolink.wixsite.com/link',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 13,
+          score: 4.7
         }
       ]
     },
@@ -4774,23 +4992,36 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 桑名店',
           cat: '24時間ジム',
-          feature: 'マシンジムとしては近隣店舗',
+          feature: 'マシンジムとしては近隣店舗 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/kuwana/'
+          url: 'https://www.anytimefitness.co.jp/kuwana/',
+          photoRecent: 3,
+          posts: 2,
+          reviews: 201,
+          score: 4.7
         },
         {
           name: 'SDフィットネス365 桑名星川店',
           cat: '総合スポーツクラブ',
-          feature: '桑名市内　総合スポーツクラブ',
+          feature: '桑名市内　総合スポーツクラブ ／ SNS連携あり・商品登録あり',
           note: '業態は異なるがエリアとして競合になる可能性あり',
-          url: 'https://www.sd-fit.jp/shop/kuwana/'
+          url: 'https://www.sd-fit.jp/shop/kuwana/',
+          photoRecent: 1,
+          posts: 0,
+          reviews: 19,
+          score: 3.7
         },
         {
           name: 'フィットイージー 桑名新西方店',
           cat: '24時間ジム',
-          feature: '低価格　24時間',
+          feature: '低価格　24時間 ／ SNS連携あり・商品登録なし',
           note: '離れているがエリアとして競合になる可能性あり',
-          url: 'https://shops.fiteasy.jp/shop40'
+          url: 'https://shops.fiteasy.jp/shop40',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 106,
+          score: 4.1
         }
       ]
     },
@@ -4803,23 +5034,38 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 橋本',
           cat: '24時間ジム',
-          feature: '橋本駅周辺。主要競合',
+          feature: '橋本駅周辺。主要競合 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/hashimotoekimae/'
+          url: 'https://www.anytimefitness.co.jp/hashimotoekimae/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 132,
+          score: 4.6
         },
         {
           name: 'chocoZAP橋本三丁目',
           cat: '24時間ジム',
-          feature: '近隣　24時間　マシンジム　低価格',
+          feature: '近隣　24時間　マシンジム　低価格 ／ SNS連携なし・商品登録なし',
           note: '',
-          url: 'https://chocozap.jp/studios/14164'
+          url: 'https://chocozap.jp/studios/14164',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 8,
+          score: 3.3
         },
         {
           name: 'ルネサンス 橋本24',
           cat: '総合スポーツクラブ',
-          feature: '近隣店舗　キッズスクールあり',
+          feature: '近隣店舗　キッズスクールあり ／ SNS連携あり・商品登録あり',
           note: '業態は異なるがエリアとして競合になる可能性',
-          url: 'https://www.s-re.jp/hashimoto/'
+          url: 'https://www.s-re.jp/hashimoto/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 30,
+          reviews: 130,
+          score: 3.5
         }
       ]
     },
@@ -4836,7 +5082,7 @@ const COMP_DATA = {
           note: '',
           url: 'https://www.anytimefitness.co.jp/mitohirasu/',
           reviews: 2,
-          score: 5.0,
+          score: 5,
           photoRecent: 2,
           posts: 30
         },
@@ -4875,16 +5121,26 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 海浜幕張店',
           cat: '総合スポーツクラブ',
-          feature: '近隣店舗',
+          feature: '近隣店舗 ／ SNS連携あり・商品登録なし',
           note: '業態は異なるがエリアとして競合になる可能性',
-          url: 'https://www.beststylefitness.jp/makuhari/makuhari-price'
+          url: 'https://www.beststylefitness.jp/makuhari/makuhari-price',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 94,
+          score: 4
         },
         {
           name: 'JEXER 東京ベイ海浜幕張',
           cat: '総合スポーツクラブ',
-          feature: '駅近　中高価格帯',
+          feature: '駅近　中高価格帯 ／ SNS連携なし・商品登録なし',
           note: '業態は異なるがエリアとして競合になる可能性',
-          url: 'https://jexer.jp/fitnessloungejexer/kaihinmakuhari/index.html'
+          url: 'https://jexer.jp/fitnessloungejexer/kaihinmakuhari/index.html',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 4,
+          score: 3.3
         }
       ]
     },
@@ -4897,23 +5153,38 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 白山横江店',
           cat: '24時間ジム',
-          feature: '近隣マシンジム',
+          feature: '近隣マシンジム ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/hakusanyokoe/'
+          url: 'https://www.anytimefitness.co.jp/hakusanyokoe/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 50,
+          score: 3.9
         },
         {
           name: 'Every白山松任店',
           cat: '24時間ジム',
-          feature: '24時間　マシンジム　低価格',
+          feature: '24時間　マシンジム　低価格 ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://every-24fitness.com/shop/hakusan-mattou/'
+          url: 'https://every-24fitness.com/shop/hakusan-mattou/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 3,
+          reviews: 30,
+          score: 4.1
         },
         {
           name: 'エイム 21',
           cat: '総合スポーツクラブ',
-          feature: '野々市市内　キッズスクールあり',
+          feature: '野々市市内　キッズスクールあり ／ SNS連携あり・商品登録あり',
           note: '業態は異なるがエリアとして競合になる可能性',
-          url: 'https://www.fitness-aim.com/club/aim21'
+          url: 'https://www.fitness-aim.com/club/aim21',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 75,
+          score: 3.9
         }
       ]
     },
@@ -4926,16 +5197,26 @@ const COMP_DATA = {
         {
           name: 'フィットネスジム IRON PARK',
           cat: '24時間ジム',
-          feature: '南区内のマシンジム',
+          feature: '南区内のマシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://ironpark.hp.peraichi.com/'
+          url: 'https://ironpark.hp.peraichi.com/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 26,
+          score: 4.8
         },
         {
           name: 'エニタイムフィットネス 新津店',
           cat: '24時間ジム',
-          feature: '隣駅のマシンジム',
+          feature: '隣駅のマシンジム ／ SNS連携あり・商品登録あり',
           note: 'エリアとしては離れているため要確認',
-          url: 'https://www.anytimefitness.co.jp/niitsu/'
+          url: 'https://www.anytimefitness.co.jp/niitsu/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 21,
+          score: 3.9
         }
       ]
     },
@@ -4948,23 +5229,38 @@ const COMP_DATA = {
         {
           name: 'FIT PLACE24 古淵店',
           cat: '24時間ジム',
-          feature: '近隣店舗　低価格帯',
+          feature: '近隣店舗　低価格帯 ／ SNS連携なし・商品登録なし',
           note: '',
-          url: 'https://fitplace.jp/gyms/kobuchi/'
+          url: 'https://fitplace.jp/gyms/kobuchi/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 0,
+          score: 0
         },
         {
           name: 'エニタイムフィットネス 古淵店',
           cat: '24時間ジム',
-          feature: '駅前　近隣店舗',
+          feature: '駅前　近隣店舗 ／ SNS連携なし・商品登録なし',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/kobuchi/'
+          url: 'https://www.anytimefitness.co.jp/kobuchi/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 42,
+          score: 3.5
         },
         {
           name: 'スマートフィット100 相模原',
           cat: '24時間ジム',
-          feature: '近隣店舗　低価格帯　パーソナル無料',
+          feature: '近隣店舗　低価格帯　パーソナル無料 ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://smartfit100.com/shop/kobuchi/'
+          url: 'https://smartfit100.com/shop/kobuchi/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 30,
+          reviews: 65,
+          score: 4.5
         }
       ]
     },
@@ -4977,23 +5273,38 @@ const COMP_DATA = {
         {
           name: 'FIT365ワイプラザ新保',
           cat: '24時間ジム',
-          feature: '近隣のマシンジム　家族割あり　低価格',
+          feature: '近隣のマシンジム　家族割あり　低価格 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://fit365.jp/shinbo/'
+          url: 'https://fit365.jp/shinbo/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 19,
+          score: 4.1
         },
         {
           name: 'Every福井開発店',
           cat: '24時間ジム',
-          feature: '近隣　24時間　マシンジム　低価格',
+          feature: '近隣　24時間　マシンジム　低価格 ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://every-24fitness.com/shop/fukui-kaihotsu/'
+          url: 'https://every-24fitness.com/shop/fukui-kaihotsu/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 21,
+          score: 4.1
         },
         {
           name: 'HYPER FIT 24 福井乾徳店',
           cat: '24時間ジム',
-          feature: '24時間　マシンジム　ジム以外のスペースもあり',
+          feature: '24時間　マシンジム　ジム以外のスペースもあり ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://gym.alltimefitness.jp/detail/1803/'
+          url: 'https://gym.alltimefitness.jp/detail/1803/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 30,
+          reviews: 17,
+          score: 2.8
         }
       ]
     },
@@ -5006,23 +5317,38 @@ const COMP_DATA = {
         {
           name: 'chocoZAPカスミ笠間',
           cat: '24時間ジム',
-          feature: '近隣　24時間　マシンジム　低価格',
+          feature: '近隣　24時間　マシンジム　低価格 ／ SNS連携なし・商品登録なし',
           note: '',
-          url: 'https://chocozap.jp/studios/14598'
+          url: 'https://chocozap.jp/studios/14598',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 9,
+          score: 2.9
         },
         {
           name: 'パシフィックスポーツプラザ笠間 スタジオアネックス',
           cat: '総合スポーツクラブ',
-          feature: '近隣店舗　キッズスクールあり',
+          feature: '近隣店舗　キッズスクールあり ／ SNS連携なし・商品登録なし',
           note: '',
-          url: 'https://pacific-sp.jp/plaza-kasama'
+          url: 'https://pacific-sp.jp/plaza-kasama',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 0,
+          score: 0
         },
         {
           name: 'ワールドプラスジム 桜川御領店',
           cat: '24時間ジム',
-          feature: 'マシンジム　低価格帯',
+          feature: 'マシンジム　低価格帯 ／ SNS連携あり・商品登録なし',
           note: '競合の少ないエリアとなるため、笠間市寄りにある桜川のジム',
-          url: 'https://www.worldplus-gym.com/shop/sakuragawagoryo.html'
+          url: 'https://www.worldplus-gym.com/shop/sakuragawagoryo.html',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 9,
+          score: 3.4
         }
       ]
     },
@@ -5035,23 +5361,38 @@ const COMP_DATA = {
         {
           name: 'LifeFit 西葛西店',
           cat: '24時間ジム',
-          feature: '近隣店舗　低価格　24時間　無人ジム',
+          feature: '近隣店舗　低価格　24時間　無人ジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://store.lifefit.tech/store/nishikasai'
+          url: 'https://store.lifefit.tech/store/nishikasai',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 0,
+          score: 0
         },
         {
           name: 'BLUE FITNESS24西葛西店',
           cat: '24時間ジム',
-          feature: '低価格　駅前店舗　パーソナル併設',
+          feature: '低価格　駅前店舗　パーソナル併設 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.blue-fitness24.com/'
+          url: 'https://www.blue-fitness24.com/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 201,
+          score: 4.6
         },
         {
           name: 'chocoZAP西葛西南口',
           cat: '24時間ジム',
-          feature: '駅近　低価格　マシンジム',
+          feature: '駅近　低価格　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://chocozap.jp/studios/699'
+          url: 'https://chocozap.jp/studios/699',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 30,
+          reviews: 27,
+          score: 3.7
         }
       ]
     },
@@ -5064,23 +5405,37 @@ const COMP_DATA = {
         {
           name: 'FIT PLACE24 西台店',
           cat: '24時間ジム',
-          feature: '近隣店舗　低価格帯　主要競合',
+          feature: '近隣店舗　低価格帯　主要競合 ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://fitplace.jp/gyms/nishidai/'
+          url: 'https://fitplace.jp/gyms/nishidai/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 4,
+          reviews: 263,
+          score: 4.8
         },
         {
           name: 'chocoZAP西台西口',
           cat: '24時間ジム',
-          feature: '駅近　低価格　マシンジム',
+          feature: '駅近　低価格　マシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://chocozap.jp/'
+          url: 'https://chocozap.jp/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 12,
+          score: 4.1
         },
         {
           name: 'エニタイムフィットネス 西台店',
           cat: '低価格ジム',
-          feature: '駅前　24時間　マシンジム',
+          feature: '駅前　24時間　マシンジム ／ SNS連携あり・商品登録なし',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/nishidai/'
+          url: 'https://www.anytimefitness.co.jp/nishidai/',
+          photoRecent: 1,
+          posts: 0,
+          reviews: 50,
+          score: 3.9
         }
       ]
     },
@@ -5093,16 +5448,26 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 近江八幡店',
           cat: '24時間ジム',
-          feature: '近隣24時間ジム',
+          feature: '近隣24時間ジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/omihachiman/'
+          url: 'https://www.anytimefitness.co.jp/omihachiman/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 1,
+          reviews: 49,
+          score: 3.8
         },
         {
           name: 'HYPER FIT 24 イオン近江八幡ショッピングセンター店',
           cat: '24時間ジム',
-          feature: 'イオン内のマシンジム',
+          feature: 'イオン内のマシンジム ／ SNS連携なし・商品登録なし',
           note: '',
-          url: 'https://gym.alltimefitness.jp/detail/2501/'
+          url: 'https://gym.alltimefitness.jp/detail/2501/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 36,
+          score: 3.7
         }
       ]
     },
@@ -5115,23 +5480,38 @@ const COMP_DATA = {
         {
           name: 'エニタイムフィットネス 袖ヶ浦蔵波店',
           cat: '24時間ジム',
-          feature: '最も近隣のマシンジム',
+          feature: '最も近隣のマシンジム ／ SNS連携あり・商品登録あり',
           note: '',
-          url: 'https://www.anytimefitness.co.jp/sodegaurakuranami/'
+          url: 'https://www.anytimefitness.co.jp/sodegaurakuranami/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 0,
+          reviews: 63,
+          score: 4.4
         },
         {
           name: 'エニタイムフィットネス 袖ヶ浦駅前店',
           cat: '24時間ジム',
-          feature: '袖ヶ浦駅のマシンジム',
+          feature: '袖ヶ浦駅のマシンジム ／ SNS連携あり・商品登録あり',
           note: '競合の少ないエリア。となり駅にあるマシンジムも競合になる可能性あり',
-          url: 'https://www.anytimefitness.co.jp/sodegaura-ekimae/'
+          url: 'https://www.anytimefitness.co.jp/sodegaura-ekimae/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 3,
+          reviews: 61,
+          score: 3.6
         },
         {
           name: 'セントラルフィットネスクラブ24 袖ケ浦駅前',
           cat: '総合スポーツクラブ',
-          feature: '袖ヶ浦駅のマシンジム',
+          feature: '袖ヶ浦駅のマシンジム ／ SNS連携あり・商品登録あり',
           note: 'となり駅にある総合ジムになるが、ジムの少ないエリアのため競合になる可能性あり',
-          url: 'https://www.central.co.jp/club/cf-sodegaura/'
+          url: 'https://www.central.co.jp/club/cf-sodegaura/',
+          photoRecent: 0,
+          photoNote: '半年以上前',
+          posts: 2,
+          reviews: 40,
+          score: 3.2
         }
       ]
     }
@@ -5245,7 +5625,7 @@ const COMP_DATA = {
           note: '',
           url: 'https://sc1.axtos.com/shop/hamamatsu/',
           reviews: 86,
-          score: 4.0,
+          score: 4,
           photoRecent: 0,
           photoNote: '1年以上前',
           posts: 2
@@ -5696,8 +6076,8 @@ function buildCompList(tab) {
                 <td style="padding:10px 12px;font-weight:700;color:#0F1E38" data-comp="${c.name}">${c.name}</td>
                 <td style="padding:10px 6px"><span style="background:#F1F5F9;border-radius:4px;padding:2px 6px;font-size:10px;color:#475569">${c.cat || '-'}</span></td>
                 <td style="padding:10px 4px;text-align:center;font-weight:700;color:${photos > 0 ? '#475569' : '#94A3B8'};font-size:11px">${photoCell}</td>
-                <td style="padding:10px 4px;text-align:center;font-weight:700;color:#475569">${reviews}</td>
-                <td style="padding:10px 4px;text-align:center;font-weight:700;color:${score >= 4 ? '#F59E0B' : score >= 3.5 ? '#10B981' : '#EF4444'}">★${score.toFixed(1)}</td>
+                <td style="padding:10px 4px;text-align:center;font-weight:700;color:${reviews > 0 ? '#475569' : '#94A3B8'}">${reviews > 0 ? reviews : '0'}</td>
+                <td style="padding:10px 4px;text-align:center;font-weight:700;color:${score >= 4 ? '#F59E0B' : score >= 3.5 ? '#10B981' : score > 0 ? '#EF4444' : '#94A3B8'}">${score > 0 ? '★'+score.toFixed(1) : '−'}</td>
                 <td style="padding:10px 4px;text-align:center;font-weight:700;color:${posts > 0 ? '#475569' : '#94A3B8'};font-size:11px">${postCell}</td>
                 <td style="padding:10px 6px;color:#334155;font-size:11px;line-height:1.5">${c.feature || '-'}</td>
                 <td style="padding:10px 6px;text-align:center"><span style="background:${srcBg};color:${srcColor};border-radius:3px;padding:2px 5px;font-size:9px;font-weight:700">${est.src}</span></td>
